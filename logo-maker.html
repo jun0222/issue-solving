@@ -1,0 +1,88 @@
+<div class="container">
+  <canvas id="canvas" width="400" height="400"></canvas>
+</div>
+
+<div class="container">
+  <button id="download-btn">Download Logo</button>
+</div>
+
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  function drawRandomRectangles(ctx, count, maxWidth, maxHeight) {
+    for (let i = 0; i < count; i++) {
+      const x = Math.random() * maxWidth;
+      const y = Math.random() * maxHeight;
+      const width = Math.random() * (maxWidth - x);
+      const height = Math.random() * (maxHeight - y);
+
+      const r = Math.floor(Math.random() * 256);
+      const g = Math.floor(Math.random() * 256);
+      const b = Math.floor(Math.random() * 256);
+
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+      ctx.fillRect(x, y, width, height);
+    }
+  }
+  // キャンバス全体を塗りつぶす
+  ctx.fillStyle = getRandomColor();
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // ランダムな四角形を描画
+  drawRandomRectangles(ctx, 20, canvas.width, canvas.height);
+
+  function getRandomColor() {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+  canvas.style.backgroundColor = getRandomColor();
+
+  const downloadBtn = document.getElementById("download-btn");
+  downloadBtn.addEventListener("click", () => {
+    const dataURL = canvas.toDataURL("image/jpeg", 1.0);
+    const link = document.createElement("a");
+    const date = new Date();
+    const today = `${date.getFullYear()}-${
+      date.getMonth() + 1
+    }-${date.getDate()}`;
+    const random = Math.floor(Math.random() * 10000);
+    link.download = `logo-${today}-${random}.jpg`;
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+</script>
+
+<style>
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #canvas {
+    border: 1px solid #ccc;
+    background-color: #fff;
+  }
+
+  #download-btn {
+    margin-top: 16px;
+    background-color: #4a5568;
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+
+  #download-btn:hover {
+    background-color: #2d3748;
+  }
+</style>
