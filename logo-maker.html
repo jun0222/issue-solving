@@ -8,6 +8,7 @@
 
 <script>
   const canvas = document.getElementById("canvas");
+  const dlBtn = document.getElementById("download-btn");
   const ctx = canvas.getContext("2d");
 
   function drawRandomRectangles(ctx, count, maxWidth, maxHeight) {
@@ -38,9 +39,10 @@
     for (let i = 0; i < 6; i++) {
       color += letters[Math.floor(Math.random() * 16)];
     }
+    canvas.style.backgroundColor = color;
+    dlBtn.style.backgroundColor = color;
     return color;
   }
-  canvas.style.backgroundColor = getRandomColor();
 
   const downloadBtn = document.getElementById("download-btn");
   downloadBtn.addEventListener("click", () => {
