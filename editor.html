@@ -23,9 +23,9 @@
       }
 
       #editor {
-        width: 90%;
-        height: 80vh;
-        font-size: 16px;
+        width: 80%;
+        height: 70vh;
+        font-size: 18px;
         border: 1px solid #ccc;
         padding: 10px;
         background-color: #fff;
@@ -63,6 +63,7 @@
     <div class="container">
       <textarea id="editor"></textarea>
       <div id="count"></div>
+      <button id="export-btn" class="stylish-button">Export Text</button>
     </div>
   </body>
 </html>
@@ -85,4 +86,70 @@
       count.innerHTML = savedText.length + " characters";
     }
   });
+
+  document.getElementById("export-btn").addEventListener("click", () => {
+    // ローカルストレージからテキストデータを取得
+    const textData = localStorage.getItem("text");
+
+    const currentDate = new Date();
+    const offsetInHours = 9; // JSTはUTC+9です
+    const jstDate = new Date(
+      currentDate.getTime() + offsetInHours * 60 * 60 * 1000
+    );
+    const year = jstDate.getFullYear();
+    const month = String(jstDate.getMonth() + 1).padStart(2, "0");
+    const day = String(jstDate.getDate()).padStart(2, "0");
+    const hours = String(jstDate.getHours()).padStart(2, "0");
+    const minutes = String(jstDate.getMinutes()).padStart(2, "0");
+    const seconds = String(jstDate.getSeconds()).padStart(2, "0");
+    const timestampString = `${year}${month}${day}${hours}${minutes}${seconds}`;
+    // const timestampString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    // console.log(timestampString); // 例: "2023-04-10T19:10:37"
+
+    // ブロブオブジェクトを作成
+    const blob = new Blob([textData], { type: "text/plain;charset=utf-8" });
+
+    // ダウンロード用のリンクを作成
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${timestampString}.txt`;
+
+    // リンクをクリックしてダウンロードを開始
+    document.body.appendChild(link);
+    link.click();
+
+    // リンクを削除
+    document.body.removeChild(link);
+  });
 </script>
+
+<style>
+  /* ボタンの基本スタイル */
+  .stylish-button {
+    background-color: #4a5568;
+    border: none;
+    color: #ffffff;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  /* ホバー時のスタイル */
+  .stylish-button:hover {
+    background-color: #2d3748;
+    color: #ffffff;
+  }
+
+  /* アクティブ時のスタイル */
+  .stylish-button:active {
+    background-color: #1a202c;
+    box-shadow: 0 5px #0d1117;
+    transform: translateY(4px);
+  }
+</style>
