@@ -1,29 +1,40 @@
 <title>logoメーカー</title>
 
 <div class="container">
+  <!-- キャンバスエレメントの作成 -->
   <canvas id="canvas" width="400" height="400"></canvas>
 </div>
 
 <div class="container">
-  <button id="download-btn">Download Logo</button>
+  <!-- ダウンロードボタンの作成 -->
+  <button id="download-btn">Download</button>
+  <!-- リロードボタンの作成 -->
+  <button id="reload-button">Reload</button>
 </div>
 
 <script>
+  // キャンバス、ダウンロードボタン、リロードボタンのDOM要素を取得
   const canvas = document.getElementById("canvas");
   const dlBtn = document.getElementById("download-btn");
+  const reloadBtn = document.getElementById("reload-button");
+  // キャンバスの2Dコンテキストを取得
   const ctx = canvas.getContext("2d");
 
+  // ランダムな矩形を描画する関数
   function drawRandomRectangles(ctx, count, maxWidth, maxHeight) {
     for (let i = 0; i < count; i++) {
+      // 矩形の位置とサイズをランダムに決定
       const x = Math.random() * maxWidth;
       const y = Math.random() * maxHeight;
       const width = Math.random() * (maxWidth - x);
       const height = Math.random() * (maxHeight - y);
 
+      // 矩形の色をランダムに決定
       const r = Math.floor(Math.random() * 256);
       const g = Math.floor(Math.random() * 256);
       const b = Math.floor(Math.random() * 256);
 
+      // 矩形を描画
       ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
       ctx.fillRect(x, y, width, height);
     }
@@ -35,47 +46,70 @@
   // ランダムな四角形を描画
   drawRandomRectangles(ctx, 20, canvas.width, canvas.height);
 
+  // ランダムな色を生成する関数
   function getRandomColor() {
     const letters = "0123456789ABCDEF";
     let color = "#";
     for (let i = 0; i < 6; i++) {
       color += letters[Math.floor(Math.random() * 16)];
     }
+    // キャンバスとボタンの背景色を設定
     canvas.style.backgroundColor = color;
     dlBtn.style.backgroundColor = color;
+    reloadBtn.style.backgroundColor = color;
     return color;
   }
 
+  // ダウンロードボタンにクリックイベントリスナーを追加
   const downloadBtn = document.getElementById("download-btn");
   downloadBtn.addEventListener("click", () => {
+    // キャンバスの画像データをDataURL形式で取得
     const dataURL = canvas.toDataURL("image/jpeg", 1.0);
+    // ダウンロード用のリンク要素を作成
     const link = document.createElement("a");
     const date = new Date();
     const today = `${date.getFullYear()}-${
       date.getMonth() + 1
     }-${date.getDate()}`;
+
     const random = Math.floor(Math.random() * 10000);
+    // リンク要素にダウンロード属性とファイル名を設定
     link.download = `logo-${today}-${random}.jpg`;
+    // リンク要素のhref属性にDataURLを設定
     link.href = dataURL;
+    // リンク要素をDOMに追加
     document.body.appendChild(link);
+    // リンク要素をクリックしてダウンロードを実行
     link.click();
+    // リンク要素をDOMから削除
     document.body.removeChild(link);
+  });
+
+  // リロードボタンにクリックイベントリスナーを追加
+  const reloadButton = document.getElementById("reload-button");
+  reloadButton.addEventListener("click", () => {
+    // ページをリロード
+    window.location.reload();
   });
 </script>
 
 <style>
+  /* コンテナのスタイル定義 */
   .container {
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
+  /* キャンバスのスタイル定義 */
   #canvas {
     border: 1px solid #ccc;
     background-color: #fff;
   }
 
-  #download-btn {
+  /* ダウンロードボタンとリロードボタンの共通スタイル定義 */
+  #download-btn,
+  #reload-button {
     margin-top: 16px;
     background-color: #4a5568;
     border: none;
@@ -84,8 +118,11 @@
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    margin-right: 1%;
+    min-width: 3rem;
   }
 
+  /* ダウンロードボタンのホバースタイル定義 */
   #download-btn:hover {
     background-color: #2d3748;
   }
