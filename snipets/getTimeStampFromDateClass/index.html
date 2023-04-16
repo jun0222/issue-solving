@@ -1,0 +1,80 @@
+<script>
+  // timestampを取得する関数
+  const getTimeStampFromDateClass = () => {
+    // 現在の日時を取得
+    const currentDate = new Date();
+
+    // オフセットを0時間として設定
+    const offsetInHours = 0;
+
+    // オフセットを考慮して新しい日付オブジェクトを生成
+    const jstDate = new Date(
+      currentDate.getTime() + offsetInHours * 60 * 60 * 1000
+    );
+    // 年を取得
+    const year = jstDate.getFullYear();
+
+    // 月を取得し、2桁に0埋め
+    const month = String(jstDate.getMonth() + 1).padStart(2, "0");
+
+    // 日を取得し、2桁に0埋め
+    const day = String(jstDate.getDate()).padStart(2, "0");
+
+    // 時を取得し、2桁に0埋め
+    const hours = String(jstDate.getHours()).padStart(2, "0");
+
+    // 分を取得し、2桁に0埋め
+    const minutes = String(jstDate.getMinutes()).padStart(2, "0");
+
+    // 秒を取得し、2桁に0埋め
+    const seconds = String(jstDate.getSeconds()).padStart(2, "0");
+
+    // タイムスタンプ文字列を作成
+    const timestampString = `${year}年${month}月${day}日${hours}時${minutes}分${seconds}秒`;
+
+    // タイムスタンプ文字列をコンソールに出力
+    console.log("↓Dateクラスで取得した現在時刻↓");
+    console.log(timestampString);
+    setTimeout(() => {
+      document.getElementById("dateField").innerText = timestampString;
+    }, 100);
+  };
+  getTimeStampFromDateClass();
+
+  // dateFieldのinnerTextをクリップボードにコピーする関数
+  function copyToClipboard() {
+    getTimeStampFromDateClass();
+    setTimeout(() => {
+      const textarea = document.createElement("textarea");
+      textarea.style.position = "fixed";
+      textarea.style.opacity = 0;
+      textarea.value = document.getElementById("dateField").innerText;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+
+      // copyBtnのinnerTextを「copied!」に変更
+      document.getElementById("copyBtn").innerText = "copied!";
+      // 1秒後にcopyBtnのinnerTextを「copy」に戻す
+      setTimeout(() => {
+        document.getElementById("copyBtn").innerText = "copy";
+      }, 100);
+    }, 100);
+  }
+</script>
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>getTimeStampFromDateClass</title>
+  </head>
+  <body>
+    <div>↓Dateクラスで取得した現在時刻↓</div>
+    <div id="dateField"></div>
+    <button id="copyBtn" onclick="copyToClipboard()">copy</button>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Day.js Sample</title>
+    <script src="https://unpkg.com/dayjs@1.10.7/dayjs.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1.10.7/plugin/relativeTime.js"></script>
+    <script src="https://unpkg.com/dayjs@1.10.7/plugin/advancedFormat.js"></script>
+    <script src="https://unpkg.com/dayjs@1.10.7/plugin/localizedFormat.js"></script>
+    <script src="https://unpkg.com/dayjs@1.10.7/plugin/utc.js"></script>
+    <script src="https://unpkg.com/dayjs@1.10.7/plugin/timezone.js"></script>
+    <script>
+      dayjs.extend(window.dayjs_plugin_relativeTime);
+      dayjs.extend(window.dayjs_plugin_advancedFormat);
+      dayjs.extend(window.dayjs_plugin_localizedFormat);
+      dayjs.extend(window.dayjs_plugin_utc);
+      dayjs.extend(window.dayjs_plugin_timezone);
+    </script>
+    <script>
+      window.onload = function () {
+        const now = dayjs();
+        const format1 = now.format("YYYY-MM-DD");
+        const format2 = now.format("dddd, MMMM D, YYYY");
+        const format3 = now.format("H:mm:ss");
+        const format4 = now.format("h:mm A");
+        const format5 = now.fromNow();
+        const format6 = now.utc().format();
+        const format7 = now.tz("Asia/Tokyo").format("YYYY-MM-DD HH:mm:ssZ");
+
+        const results = [
+          format1,
+          format2,
+          format3,
+          format4,
+          format5,
+          format6,
+          format7,
+        ];
+
+        const list = document.getElementById("time-formats");
+        for (const result of results) {
+          const listItem = document.createElement("li");
+          listItem.textContent = result;
+          list.appendChild(listItem);
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Day.js Sample</h1>
+    <ul id="time-formats"></ul>
+  </body>
+</html>
