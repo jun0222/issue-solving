@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>電子レンジ時間計算アプリ</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>電子レンジ時間計算アプリ</h1>
+    <div class="calculator">
+      <input type="number" id="initialPower" placeholder="元の電力 (W)" />
+      <input type="number" id="initialTime" placeholder="元の時間 (分)" />
+      <input type="number" id="targetPower" placeholder="貴方のワット (W)" />
+
+      <button id="calculateButton">計算</button>
+      <p id="result">温め時間: <span id="targetTime"></span> 分</p>
+    </div>
+    <p id="error" style="color: red; display: none"></p>
+    <script src="script.js"></script>
+  </body>
+</html>
+
+<style>
+  body {
+    font-family: "Arial", sans-serif;
+    text-align: center;
+  }
+
+  .calculator {
+    display: inline-block;
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  input {
+    display: block;
+    margin: 10px auto;
+    width: 80%;
+  }
+
+  button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+</style>
+
+<script>
+  document
+    .getElementById("calculateButton")
+    .addEventListener("click", function () {
+      const initialPower = parseFloat(
+        document.getElementById("initialPower").value
+      );
+      const initialTime = parseFloat(
+        document.getElementById("initialTime").value
+      );
+      const targetPower = parseFloat(
+        document.getElementById("targetPower").value
+      );
+
+      if (initialPower && initialTime && targetPower) {
+        if (initialPower <= 0 || initialTime <= 0 || targetPower <= 0) {
+          showError("すべてのフィールドに正の値を入力してください。");
+        } else {
+          const targetTime = (initialPower * initialTime) / targetPower;
+          document.getElementById("targetTime").innerText =
+            targetTime.toFixed(2);
+          hideError();
+        }
+      } else {
+        showError("すべてのフィールドに値を入力してください。");
+      }
+    });
+
+  function showError(message) {
+    const error = document.getElementById("error");
+    error.innerText = message;
+    error.style.display = "block";
+  }
+
+  function hideError() {
+    const error = document.getElementById("error");
+    error.style.display = "none";
+  }
+</script>
