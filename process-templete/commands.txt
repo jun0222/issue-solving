@@ -1,0 +1,3 @@
+echo 'コマンド1'#
+echo 'コマンド2'#
+vi hoge.txt#hogehogeな内容を記入し、fugafugaな内容が記載されていれば消してください。
