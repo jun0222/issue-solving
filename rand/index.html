@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Random String Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+
+      form {
+        margin: 30px;
+      }
+
+      #output {
+        margin: 30px;
+        font-size: 24px;
+        color: blue;
+      }
+
+      #output:hover {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+
+      #copied {
+        margin: 30px;
+        color: green;
+        visibility: hidden;
+      }
+      @media screen and (max-width: 768px) {
+        /* スクリーンサイズが768px以下の場合に適用するスタイル */
+        #output {
+          font-size: 18px;
+        }
+
+        form {
+          width: 90%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <form id="form">
+      <label for="length">Length:</label>
+      <input type="number" id="length" value="10" min="1" /><br />
+      <label for="characters">Characters:</label>
+      <select id="characters">
+        <option value="numeric">Numeric</option>
+        <option value="alphanumeric">Alphanumeric</option>
+        <option value="alphanumericSymbol">
+          Alphanumeric + Symbol
+        </option></select
+      ><br />
+    </form>
+    <div id="output"></div>
+    <button id="generateButton">Generate</button>
+    <div id="copied">Copied to clipboard!</div>
+    <script src="main.js"></script>
+  </body>
+</html>
