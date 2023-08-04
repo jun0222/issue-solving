@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>コードメモアプリ</title>
+    <style>
+      .codeMemo {
+        width: 100%;
+        min-height: 100px;
+        border: 1px solid #000;
+        padding: 10px;
+        box-sizing: border-box;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        font-family: monospace;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>コードメモアプリ</h1>
+    <script>
+      // テキストエリアを30個作成
+      for (let i = 0; i < 30; i++) {
+        const codeMemoElement = document.createElement("textarea");
+        codeMemoElement.className = "codeMemo";
+        codeMemoElement.placeholder =
+          "ここにコードやコマンドをメモしてください";
+        codeMemoElement.id = "codeMemo" + i;
+
+        // ページロード時にローカルストレージから内容をロード
+        codeMemoElement.value = localStorage.getItem("codeMemo" + i) || "";
+
+        // 内容が変更される度にローカルストレージへ自動保存
+        codeMemoElement.addEventListener("input", () => {
+          localStorage.setItem("codeMemo" + i, codeMemoElement.value);
+        });
+
+        document.body.appendChild(codeMemoElement);
+      }
+    </script>
+  </body>
+</html>
