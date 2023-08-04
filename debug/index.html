@@ -114,16 +114,14 @@
         });
       }
 
-      // 時刻と連番と絵文字のデータ
+      //   時刻と連番と絵文字のデータ;
       const timeData = Array.from(
         { length: 9 },
         (_, i) =>
-          `=========( )-${String(i).padStart(4, "0")}-${String(i).padStart(
+          `=========( )-${new Date().toLocaleTimeString()}-${String(i).padStart(
             2,
             "0"
-          )}-${String(i).padStart(2, "0")}:${
-            emojis[Math.floor(Math.random() * emojis.length)]
-          }`
+          )}-${emojis[Math.floor(Math.random() * emojis.length)]}`
       );
       createData(document.getElementById("timeContainer"), timeData);
 
