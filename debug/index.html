@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>コピー用データツール</title>
+    <style>
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .item {
+        border: 1px solid #000;
+        padding: 5px;
+        margin: 5px;
+        cursor: pointer;
+      }
+      #notification {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 10px;
+        text-align: center;
+        background-color: green;
+        color: white;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>クリックでコピー</h1>
+    <div id="notification">コピーしました</div>
+    <h2>時刻と連番と絵文字</h2>
+    <div class="container" id="timeContainer"></div>
+    <h2>ビジネスチャット表現</h2>
+    <div class="container" id="businessContainer"></div>
+    <h2>テスト文字列</h2>
+    <div class="container" id="testContainer"></div>
+    <h2>氏名</h2>
+    <div class="container" id="nameContainer"></div>
+    <h2>年齢</h2>
+    <div class="container" id="ageContainer"></div>
+    <h2>生年月日</h2>
+    <div class="container" id="dobContainer"></div>
+    <h2>性別</h2>
+    <div class="container" id="genderContainer"></div>
+    <h2>血液型</h2>
+    <div class="container" id="bloodTypeContainer"></div>
+    <h2>メールアドレス</h2>
+    <div class="container" id="emailContainer"></div>
+    <h2>電話番号</h2>
+    <div class="container" id="phoneNumberContainer"></div>
+    <h2>携帯電話番号</h2>
+    <div class="container" id="cellPhoneNumberContainer"></div>
+    <h2>住所</h2>
+    <div class="container" id="addressContainer"></div>
+    <h2>クレジットカード番号</h2>
+    <div class="container" id="creditCardNumberContainer"></div>
+    <h2>クレジットカード期限</h2>
+    <div class="container" id="creditCardExpiryContainer"></div>
+    <h2>マイナンバー</h2>
+    <div class="container" id="myNumberContainer"></div>
+    <h2>UUID</h2>
+    <div class="container" id="uuidContainer"></div>
+    <h2>動物の名前</h2>
+    <div class="container" id="animalNameContainer"></div>
+
+    <script>
+      const emojis = [
+        "😀",
+        "😃",
+        "😄",
+        "😁",
+        "😆",
+        "😅",
+        "🤣",
+        "😂",
+        "🙂",
+        "🙃",
+      ];
+      const businessExpressions = [
+        "承知しました。",
+        "了解です。",
+        "確認しました。",
+        "すみませんが、再度説明していただけますか？",
+      ];
+      const testExpressions = [
+        "これはテストです1。",
+        "これはテストです2。",
+        "これはテストです3。",
+      ];
+
+      function createData(container, data) {
+        data.forEach((text) => {
+          const item = document.createElement("div");
+          item.className = "item";
+          item.innerText = text;
+          item.addEventListener("click", function () {
+            navigator.clipboard
+              .writeText(text)
+              .then(() => {
+                document.getElementById("notification").style.display = "block";
+                setTimeout(() => {
+                  document.getElementById("notification").style.display =
+                    "none";
+                }, 2000);
+              })
+              .catch((err) => {
+                console.error("クリップボードにコピーできませんでした: " + err);
+              });
+          });
+          container.appendChild(item);
+        });
+      }
+
+      // 時刻と連番と絵文字のデータ
+      const timeData = Array.from(
+        { length: 9 },
+        (_, i) =>
+          `=========( )-${String(i).padStart(4, "0")}-${String(i).padStart(
+            2,
+            "0"
+          )}-${String(i).padStart(2, "0")}:${
+            emojis[Math.floor(Math.random() * emojis.length)]
+          }`
+      );
+      createData(document.getElementById("timeContainer"), timeData);
+
+      // ビジネスチャット表現
+      createData(
+        document.getElementById("businessContainer"),
+        businessExpressions
+      );
+
+      // テスト文字列
+      createData(document.getElementById("testContainer"), testExpressions);
+
+      // 以下、各カテゴリのデータを作成
+      createData(document.getElementById("nameContainer"), [
+        "日本太郎",
+        "田中花子",
+        "佐藤一郎",
+        "鈴木次郎",
+        "山田三郎",
+        "高橋四郎",
+      ]);
+      createData(document.getElementById("ageContainer"), [
+        "25",
+        "30",
+        "35",
+        "40",
+        "45",
+        "50",
+      ]);
+      createData(document.getElementById("dobContainer"), [
+        "1990-01-01",
+        "1985-05-15",
+        "1980-10-30",
+        "1975-12-05",
+        "1970-07-20",
+        "1965-02-28",
+      ]);
+      createData(document.getElementById("genderContainer"), [
+        "男性",
+        "女性",
+        "男性",
+        "女性",
+        "男性",
+        "女性",
+      ]);
+      createData(document.getElementById("bloodTypeContainer"), [
+        "A",
+        "B",
+        "O",
+        "AB",
+        "A",
+        "B",
+      ]);
+      createData(document.getElementById("emailContainer"), [
+        "user1@example.com",
+        "user2@example.com",
+        "user3@example.com",
+        "user4@example.com",
+        "user5@example.com",
+        "user6@example.com",
+      ]);
+      createData(document.getElementById("phoneNumberContainer"), [
+        "03-1234-XXXX",
+        "06-5678-XXXX",
+        "092-1111-XXXX",
+        "075-2222-XXXX",
+        "011-3333-XXXX",
+        "098-4444-XXXX",
+      ]);
+      createData(document.getElementById("cellPhoneNumberContainer"), [
+        "090-1234-XXXX",
+        "080-5678-XXXX",
+        "070-1111-XXXX",
+        "090-2222-XXXX",
+        "080-3333-XXXX",
+        "070-4444-XXXX",
+      ]);
+      createData(document.getElementById("addressContainer"), [
+        "東京都千代田区1-1",
+        "大阪府大阪市2-2",
+        "福岡県福岡市3-3",
+        "京都府京都市4-4",
+        "北海道札幌市5-5",
+        "沖縄県那覇市6-6",
+      ]);
+      createData(document.getElementById("creditCardNumberContainer"), [
+        "1234-5678-1234-XXXX",
+        "2345-6789-2345-XXXX",
+        "3456-7890-3456-XXXX",
+        "4567-8901-4567-XXXX",
+        "5678-9012-5678-XXXX",
+        "6789-0123-6789-XXXX",
+      ]);
+      createData(document.getElementById("creditCardExpiryContainer"), [
+        "01/25",
+        "02/26",
+        "03/27",
+        "04/28",
+        "05/29",
+        "06/30",
+      ]);
+      createData(document.getElementById("myNumberContainer"), [
+        "123456789012",
+        "234567890123",
+        "345678901234",
+        "456789012345",
+        "567890123456",
+        "678901234567",
+      ]);
+      createData(document.getElementById("uuidContainer"), [
+        "550e8400-e29b-41d4-a716-446655440000",
+        "6dbe45e4-c478-4302-9205-46db251792fc",
+        "c24a460e-ff78-4d71-a7c5-1b8adec73e9b",
+        "5ee5e24a-6f52-4e5e-8152-c9c748d21234",
+        "3a20921d-6f63-4529-b726-02f1ae493b01",
+        "d33d8abd-7601-4525-9fb3-ba7d9d5e11f0",
+      ]);
+      createData(document.getElementById("animalNameContainer"), [
+        "犬",
+        "猫",
+        "鳥",
+        "馬",
+        "象",
+        "ライオン",
+      ]);
+    </script>
+  </body>
+</html>
