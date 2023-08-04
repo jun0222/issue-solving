@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jQuery-SPA</title>
+    <style>
+      #container {
+        margin: 20px;
+      }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <nav>
+      <button class="nav-button" data-page="home">ホーム</button>
+      <button class="nav-button" data-page="code-memo">コードメモ</button>
+      <button class="nav-button" data-page="contact">コンタクト</button>
+    </nav>
+    <div id="container"></div>
+
+    <script>
+      $(document).ready(function () {
+        const pages = {
+          home: "<h1>ホームページ</h1><p>ようこそ！</p>",
+          "code-memo":
+            "<h1>コードメモ</h1><p>ここでコードをメモすることができます。</p>",
+          contact:
+            "<h1>コンタクトページ</h1><p>お問い合わせ内容を入力してください。</p>",
+        };
+
+        function loadPage(pageName) {
+          const content = pages[pageName] || "<h1>ページが見つかりません</h1>";
+          $("#container").html(content);
+        }
+
+        $(".nav-button").on("click", function () {
+          const pageName = $(this).data("page");
+          loadPage(pageName);
+        });
+
+        // デフォルトページのロード
+        loadPage("home");
+      });
+    </script>
+  </body>
+</html>
