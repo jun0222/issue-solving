@@ -31,11 +31,17 @@
   <body>
     <h1>クリックでコピー</h1>
     <h2>区切り</h2>
+    <div id="notification">コピーしました</div>
     <div class="container" id="separatorContainer"></div>
     <h2>日付と区切り</h2>
     <div class="container" id="dateDividerContainer"></div>
-    <div id="notification">コピーしました</div>
-    <h2>時刻と連番と絵文字</h2>
+    <h2>タイムスタンプ</h2>
+    <div class="container" id="currentYearContainer"></div>
+    <div class="container" id="currentYearMonthContainer"></div>
+    <div class="container" id="currentDateContainer"></div>
+    <div class="container" id="timestampContainer"></div>
+    <div class="container" id="timestampWithSecondsContainer"></div>
+    <h2>デバッグ用文字列</h2>
     <div class="container" id="timeContainer"></div>
     <h2>ビジネスチャット表現</h2>
     <div class="container" id="businessContainer"></div>
@@ -131,7 +137,65 @@
         formattedDate,
       ]);
 
-      //   時刻と連番と絵文字のデータ;
+      // タイムスタンプのデータ
+      const getFormattedData = (type) => {
+        const now = new Date();
+        switch (type) {
+          case "year":
+            return now.getFullYear().toString();
+          case "yearMonth":
+            return `${now.getFullYear()}${(now.getMonth() + 1)
+              .toString()
+              .padStart(2, "0")}`;
+          case "fullDate":
+            return `${now.getFullYear()}${(now.getMonth() + 1)
+              .toString()
+              .padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}`;
+          case "timeStamp":
+            return `${now.getFullYear()}${(now.getMonth() + 1)
+              .toString()
+              .padStart(2, "0")}${now
+              .getDate()
+              .toString()
+              .padStart(2, "0")}${now
+              .getHours()
+              .toString()
+              .padStart(2, "0")}${now
+              .getMinutes()
+              .toString()
+              .padStart(2, "0")}`;
+          case "timeStampWithSeconds":
+            return `${(now.getMonth() + 1).toString().padStart(2, "0")}${now
+              .getDate()
+              .toString()
+              .padStart(2, "0")}${now
+              .getHours()
+              .toString()
+              .padStart(2, "0")}${now
+              .getMinutes()
+              .toString()
+              .padStart(2, "0")}`;
+          default:
+            return "";
+        }
+      };
+      createData(document.getElementById("currentYearContainer"), [
+        getFormattedData("year"),
+      ]);
+      createData(document.getElementById("currentYearMonthContainer"), [
+        getFormattedData("yearMonth"),
+      ]);
+      createData(document.getElementById("currentDateContainer"), [
+        getFormattedData("fullDate"),
+      ]);
+      createData(document.getElementById("timestampContainer"), [
+        getFormattedData("timeStamp"),
+      ]);
+      createData(document.getElementById("timestampWithSecondsContainer"), [
+        getFormattedData("timeStampWithSeconds"),
+      ]);
+
+      // デバッグ用文字列
       const now = new Date();
       const formattedDateForTimeData =
         `${now.getMonth() + 1}`.padStart(2, "0") +
