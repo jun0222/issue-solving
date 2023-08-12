@@ -41,6 +41,12 @@
     <div class="container" id="currentDateContainer"></div>
     <div class="container" id="timestampContainer"></div>
     <div class="container" id="timestampWithSecondsContainer"></div>
+    <div class="container" id="currentYearWithSlashContainer"></div>
+    <div class="container" id="currentYearMonthWithSlashContainer"></div>
+    <div class="container" id="currentDateWithSlashContainer"></div>
+    <div class="container" id="timestampWithSlashContainer"></div>
+    <div class="container" id="timestampWithSecondsWithSlashContainer"></div>
+    <div class="container" id="timestampWithSecondsWithSlash2Container"></div>
     <h2>デバッグ用文字列</h2>
     <div class="container" id="timeContainer"></div>
     <h2>ビジネスチャット表現</h2>
@@ -194,6 +200,61 @@
       createData(document.getElementById("timestampWithSecondsContainer"), [
         getFormattedData("timeStampWithSeconds"),
       ]);
+
+      // スラッシュ区切りのタイムスタンプのデータ
+      const getFormattedDataWithSlash = (type) => {
+        const now = new Date();
+        switch (type) {
+          case "yearMonth":
+            return `${now.getFullYear()}/${(now.getMonth() + 1)
+              .toString()
+              .padStart(2, "0")}`;
+          case "fullDate":
+            return `${now.getFullYear()}/${(now.getMonth() + 1)
+              .toString()
+              .padStart(2, "0")}/${now.getDate().toString().padStart(2, "0")}`;
+          case "timeStamp":
+            return `${now.getFullYear()}/${(now.getMonth() + 1)
+              .toString()
+              .padStart(2, "0")}/${now
+              .getDate()
+              .toString()
+              .padStart(2, "0")}/${now
+              .getHours()
+              .toString()
+              .padStart(2, "0")}:${now
+              .getMinutes()
+              .toString()
+              .padStart(2, "0")}`;
+          case "timeStampWithSeconds":
+            return `${(now.getMonth() + 1).toString().padStart(2, "0")}/${now
+              .getDate()
+              .toString()
+              .padStart(2, "0")}/${now
+              .getHours()
+              .toString()
+              .padStart(2, "0")}:${now
+              .getMinutes()
+              .toString()
+              .padStart(2, "0")}`;
+          default:
+            return "";
+        }
+      };
+      createData(
+        document.getElementById("currentYearMonthWithSlashContainer"),
+        [getFormattedDataWithSlash("yearMonth")]
+      );
+      createData(document.getElementById("currentDateWithSlashContainer"), [
+        getFormattedDataWithSlash("fullDate"),
+      ]);
+      createData(document.getElementById("timestampWithSlashContainer"), [
+        getFormattedDataWithSlash("timeStamp"),
+      ]);
+      createData(
+        document.getElementById("timestampWithSecondsWithSlashContainer"),
+        [getFormattedDataWithSlash("timeStampWithSeconds")]
+      );
 
       // デバッグ用文字列
       const now = new Date();
