@@ -9,6 +9,10 @@
         display: flex;
         flex-wrap: wrap;
       }
+      .container-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+      }
       .item {
         border: 1px solid #000;
         padding: 5px;
@@ -36,17 +40,75 @@
     <h2>日付と区切り</h2>
     <div class="container" id="dateDividerContainer"></div>
     <h2>タイムスタンプ</h2>
-    <div class="container" id="currentYearContainer"></div>
-    <div class="container" id="currentYearMonthContainer"></div>
-    <div class="container" id="currentDateContainer"></div>
-    <div class="container" id="timestampContainer"></div>
-    <div class="container" id="timestampWithSecondsContainer"></div>
-    <div class="container" id="currentYearWithSlashContainer"></div>
-    <div class="container" id="currentYearMonthWithSlashContainer"></div>
-    <div class="container" id="currentDateWithSlashContainer"></div>
-    <div class="container" id="timestampWithSlashContainer"></div>
-    <div class="container" id="timestampWithSecondsWithSlashContainer"></div>
-    <div class="container" id="timestampWithSecondsWithSlash2Container"></div>
+    <div class="container">
+      <div class="container" id="currentYearContainer"></div>
+      <div class="container" id="currentYearMonthContainer"></div>
+      <div class="container" id="currentFullDateContainer"></div>
+      <div class="container" id="currentTimeStampContainer"></div>
+      <div class="container" id="currentTimeStampWithSecondsContainer"></div>
+    </div>
+    <div class="container">
+      <div class="container" id="currentYearWithSlashContainer"></div>
+      <div class="container" id="currentYearMonthWithSlashContainer"></div>
+      <div class="container" id="currentFullDateWithSlashContainer"></div>
+      <div class="container" id="currentTimeStampWithSlashContainer"></div>
+      <div
+        class="container"
+        id="currentTimeStampWithSecondsWithSlashContainer"
+      ></div>
+    </div>
+    <div class="container">
+      <div class="container" id="currentYearWithHyphenContainer"></div>
+      <div class="container" id="currentYearMonthWithHyphenContainer"></div>
+      <div class="container" id="currentFullDateWithHyphenContainer"></div>
+      <div class="container" id="currentTimeStampWithHyphenContainer"></div>
+      <div
+        class="container"
+        id="currentTimeStampWithSecondsWithHyphenContainer"
+      ></div>
+    </div>
+    <h2>コマンド</h2>
+    <p>カレントディレクトリ内で "example.txt" という名前のファイルを検索</p>
+    <div class="container" id="findCurrentDirectoryContainer"></div>
+    <p>
+      カレントディレクトリ内で "example.txt" という名前のファイルを再帰的に検索
+    </p>
+    <div class="container" id="findCurrentDirectoryRecursiveContainer"></div>
+    <p>
+      カレントディレクトリ内のすべてのファイルで "keyword" というテキストを検索
+    </p>
+    <div class="container" id="findCurrentDirectoryGrepContainer"></div>
+    <p>
+      カレントディレクトリおよびその下のサブディレクトリのすべてのファイルで
+      "keyword" というテキストを検索
+    </p>
+    <div
+      class="container"
+      id="findCurrentDirectoryGrepRecursiveContainer"
+    ></div>
+    <p>各コミットを一行で表示</p>
+    <div class="container" id="gitLogOnelineContainer"></div>
+    <p>"bugfix" というキーワードを含むコミットを検索</p>
+    <div class="container" id="gitLogOnelineGrepContainer"></div>
+    <p>
+      カラフルな表示:通常、git
+      diffは変更をカラフルに表示しますが、設定によってはカラーが無効になっていることもあります。
+    </p>
+    <div class="container" id="gitDiffColorContainer"></div>
+    <p>特定のファイル/ディレクトリの差分のみを表示</p>
+    <div class="container" id="gitDiffPathFileContainer"></div>
+    <p>特定のコミットとの差分を表示</p>
+    <div class="container" id="gitDiffCommitHashContainer"></div>
+    <p>2つのブランチ間の差分を表示</p>
+    <div class="container" id="gitDiffCompareBranchContainer"></div>
+    <p>名前のみを表示</p>
+    <div class="container" id="gitDiffNameOnlyContainer"></div>
+    <p>変更されたファイル数、追加された行数、削除された行数などの統計を表示</p>
+    <div class="container" id="gitDiffStatContainer"></div>
+    <p>行単位ではなく、ワード単位での差分を表示。文章の確認に便利</p>
+    <div class="container" id="gitDiffWordContainer"></div>
+    <p>2つのコミット間の差分を表示</p>
+    <div class="container" id="gitDiffCompareCommitContainer"></div>
     <h2>デバッグ用文字列</h2>
     <div class="container" id="timeContainer"></div>
     <h2>ビジネスチャット表現</h2>
@@ -83,18 +145,6 @@
     <div class="container" id="animalNameContainer"></div>
 
     <script>
-      const emojis = [
-        "😀",
-        "😃",
-        "😄",
-        "😁",
-        "😆",
-        "😅",
-        "🤣",
-        "😂",
-        "🙂",
-        "🙃",
-      ];
       const businessExpressions = [
         "承知しました。",
         "了解です。",
@@ -107,15 +157,19 @@
         "これはテストです3。",
       ];
 
+      // テキストをコンテナに追加し、クリック時にテキストをクリップボードにコピーする関数
       function createData(container, data) {
         data.forEach((text) => {
           const item = document.createElement("div");
           item.className = "item";
           item.innerText = text;
-          item.addEventListener("click", function () {
+
+          // クリックイベントのリスナー
+          item.addEventListener("click", () => {
             navigator.clipboard
               .writeText(text)
               .then(() => {
+                // コピー成功の通知
                 document.getElementById("notification").style.display = "block";
                 setTimeout(() => {
                   document.getElementById("notification").style.display =
@@ -130,131 +184,76 @@
         });
       }
 
-      // 区切りのデータ
+      // 現在の日付や時間を特定のフォーマットで取得する関数
+      function getFormattedData(type, separator, withColon = false) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, "0");
+        const date = now.getDate().toString().padStart(2, "0");
+        const hour = now.getHours().toString().padStart(2, "0");
+        const minute = now.getMinutes().toString().padStart(2, "0");
+
+        // 時刻の区切り文字の設定
+        const timeSeparator = withColon ? ":" : "";
+
+        switch (type) {
+          case "year":
+            return year.toString();
+          case "yearMonth":
+            return `${year}${separator}${month}`;
+          case "fullDate":
+            return `${year}${separator}${month}${separator}${date}`;
+          case "timeStamp":
+            return `${year}${separator}${month}${separator}${date}${separator}${hour}${timeSeparator}${minute}`;
+          case "timeStampWithSeconds":
+            return `${month}${separator}${date}${separator}${hour}${timeSeparator}${minute}`;
+          default:
+            return "";
+        }
+      }
+
+      // 区切りや日付データの作成
       const separator = `─────────────────────────────\n▼`;
       createData(document.getElementById("separatorContainer"), [separator]);
-
-      // 日付と区切りのデータ
-      const currentDate = new Date();
-      const formattedDate = `─────────────────────────────\n▼ ${currentDate.getFullYear()}/${String(
-        currentDate.getMonth() + 1
-      ).padStart(2, "0")}/${String(currentDate.getDate()).padStart(2, "0")}`;
+      const formattedDate = `─────────────────────────────\n▼ ${getFormattedData(
+        "fullDate",
+        "/"
+      )}`;
       createData(document.getElementById("dateDividerContainer"), [
         formattedDate,
       ]);
 
-      // タイムスタンプのデータ
-      const getFormattedData = (type) => {
-        const now = new Date();
-        switch (type) {
-          case "year":
-            return now.getFullYear().toString();
-          case "yearMonth":
-            return `${now.getFullYear()}${(now.getMonth() + 1)
-              .toString()
-              .padStart(2, "0")}`;
-          case "fullDate":
-            return `${now.getFullYear()}${(now.getMonth() + 1)
-              .toString()
-              .padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}`;
-          case "timeStamp":
-            return `${now.getFullYear()}${(now.getMonth() + 1)
-              .toString()
-              .padStart(2, "0")}${now
-              .getDate()
-              .toString()
-              .padStart(2, "0")}${now
-              .getHours()
-              .toString()
-              .padStart(2, "0")}${now
-              .getMinutes()
-              .toString()
-              .padStart(2, "0")}`;
-          case "timeStampWithSeconds":
-            return `${(now.getMonth() + 1).toString().padStart(2, "0")}${now
-              .getDate()
-              .toString()
-              .padStart(2, "0")}${now
-              .getHours()
-              .toString()
-              .padStart(2, "0")}${now
-              .getMinutes()
-              .toString()
-              .padStart(2, "0")}`;
-          default:
-            return "";
-        }
-      };
-      createData(document.getElementById("currentYearContainer"), [
-        getFormattedData("year"),
-      ]);
-      createData(document.getElementById("currentYearMonthContainer"), [
-        getFormattedData("yearMonth"),
-      ]);
-      createData(document.getElementById("currentDateContainer"), [
-        getFormattedData("fullDate"),
-      ]);
-      createData(document.getElementById("timestampContainer"), [
-        getFormattedData("timeStamp"),
-      ]);
-      createData(document.getElementById("timestampWithSecondsContainer"), [
-        getFormattedData("timeStampWithSeconds"),
-      ]);
-
-      // スラッシュ区切りのタイムスタンプのデータ
-      const getFormattedDataWithSlash = (type) => {
-        const now = new Date();
-        switch (type) {
-          case "yearMonth":
-            return `${now.getFullYear()}/${(now.getMonth() + 1)
-              .toString()
-              .padStart(2, "0")}`;
-          case "fullDate":
-            return `${now.getFullYear()}/${(now.getMonth() + 1)
-              .toString()
-              .padStart(2, "0")}/${now.getDate().toString().padStart(2, "0")}`;
-          case "timeStamp":
-            return `${now.getFullYear()}/${(now.getMonth() + 1)
-              .toString()
-              .padStart(2, "0")}/${now
-              .getDate()
-              .toString()
-              .padStart(2, "0")}/${now
-              .getHours()
-              .toString()
-              .padStart(2, "0")}:${now
-              .getMinutes()
-              .toString()
-              .padStart(2, "0")}`;
-          case "timeStampWithSeconds":
-            return `${(now.getMonth() + 1).toString().padStart(2, "0")}/${now
-              .getDate()
-              .toString()
-              .padStart(2, "0")}/${now
-              .getHours()
-              .toString()
-              .padStart(2, "0")}:${now
-              .getMinutes()
-              .toString()
-              .padStart(2, "0")}`;
-          default:
-            return "";
-        }
-      };
-      createData(
-        document.getElementById("currentYearMonthWithSlashContainer"),
-        [getFormattedDataWithSlash("yearMonth")]
-      );
-      createData(document.getElementById("currentDateWithSlashContainer"), [
-        getFormattedDataWithSlash("fullDate"),
-      ]);
-      createData(document.getElementById("timestampWithSlashContainer"), [
-        getFormattedDataWithSlash("timeStamp"),
-      ]);
-      createData(
-        document.getElementById("timestampWithSecondsWithSlashContainer"),
-        [getFormattedDataWithSlash("timeStampWithSeconds")]
-      );
+      // それぞれのデータタイプに対してcreateData関数を実行
+      [
+        "year",
+        "yearMonth",
+        "fullDate",
+        "timeStamp",
+        "timeStampWithSeconds",
+      ].forEach((type) => {
+        createData(
+          document.getElementById(
+            `current${type.charAt(0).toUpperCase() + type.slice(1)}Container`
+          ),
+          [getFormattedData(type, "")]
+        );
+        createData(
+          document.getElementById(
+            `current${
+              type.charAt(0).toUpperCase() + type.slice(1)
+            }WithSlashContainer`
+          ),
+          [getFormattedData(type, "/", true)]
+        );
+        createData(
+          document.getElementById(
+            `current${
+              type.charAt(0).toUpperCase() + type.slice(1)
+            }WithHyphenContainer`
+          ),
+          [getFormattedData(type, "-", true)]
+        );
+      });
 
       // デバッグ用文字列
       const now = new Date();
@@ -417,6 +416,65 @@
         "ハリネズミ",
         "コアラ",
         "アルマジロ",
+      ]);
+
+      // findCurrentDirectoryContainer
+      createData(document.getElementById("findCurrentDirectoryContainer"), [
+        'find . -maxdepth 1 -name "example.txt"',
+      ]);
+      // findCurrentDirectoryRecursiveContainer
+      createData(
+        document.getElementById("findCurrentDirectoryRecursiveContainer"),
+        ['find . -name "example.txt"']
+      );
+      // findCurrentDirectoryGrepContainer
+      createData(document.getElementById("findCurrentDirectoryGrepContainer"), [
+        'grep "keyword" *',
+      ]);
+      // findCurrentDirectoryGrepRecursiveContainer
+      createData(
+        document.getElementById("findCurrentDirectoryGrepRecursiveContainer"),
+        ['grep -r "keyword" .']
+      );
+      // gitLogOnelineContainer
+      createData(document.getElementById("gitLogOnelineContainer"), [
+        "git log --oneline",
+      ]);
+      // gitLogOnelineGrepContainer
+      createData(document.getElementById("gitLogOnelineGrepContainer"), [
+        'git log --oneline -S"bugfix"',
+      ]);
+      // gitDiffColorContainer
+      createData(document.getElementById("gitDiffColorContainer"), [
+        "git diff --color",
+      ]);
+      // gitDiffPathFileContainer
+      createData(document.getElementById("gitDiffPathFileContainer"), [
+        "git diff path/to/file_or_directory",
+      ]);
+      // gitDiffCommitHashContainer
+      createData(document.getElementById("gitDiffCommitHashContainer"), [
+        "git diff COMMIT_HASH",
+      ]);
+      // gitDiffCompareBranchContainer
+      createData(document.getElementById("gitDiffCompareBranchContainer"), [
+        "git diff branch1..branch2",
+      ]);
+      // gitDiffNameOnlyContainer
+      createData(document.getElementById("gitDiffNameOnlyContainer"), [
+        "git diff --name-only",
+      ]);
+      // gitDiffStatContainer
+      createData(document.getElementById("gitDiffStatContainer"), [
+        "git diff --stat",
+      ]);
+      // gitDiffWordContainer
+      createData(document.getElementById("gitDiffWordContainer"), [
+        "git diff --word-diff",
+      ]);
+      // gitDiffCompareCommitContainer
+      createData(document.getElementById("gitDiffCompareCommitContainer"), [
+        "git diff COMMIT_HASH1 COMMIT_HASH2",
       ]);
     </script>
   </body>
