@@ -318,17 +318,25 @@
         "B",
         "O",
         "AB",
-        "A",
-        "B",
       ]);
-      createData(document.getElementById("emailContainer"), [
-        "user1@example.com",
-        "user2@example.com",
-        "user3@example.com",
-        "user4@example.com",
-        "user5@example.com",
-        "user6@example.com",
-      ]);
+      // email
+      function generateRandomString(length) {
+        const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+        let result = "";
+        for (let i = 0; i < length; i++) {
+          result += characters.charAt(
+            Math.floor(Math.random() * characters.length)
+          );
+        }
+        return result;
+      }
+      function generateRandomEmail() {
+        return `${generateRandomString(8)}@example.com`;
+      }
+      const emailData = Array.from({ length: 6 }, (_, i) =>
+        generateRandomEmail()
+      );
+      createData(document.getElementById("emailContainer"), emailData);
       createData(document.getElementById("phoneNumberContainer"), [
         "03-1234-XXXX",
         "06-5678-XXXX",
@@ -369,22 +377,34 @@
         "05/29",
         "06/30",
       ]);
-      createData(document.getElementById("myNumberContainer"), [
-        "123456789012",
-        "234567890123",
-        "345678901234",
-        "456789012345",
-        "567890123456",
-        "678901234567",
-      ]);
-      createData(document.getElementById("uuidContainer"), [
-        "550e8400-e29b-41d4-a716-446655440000",
-        "6dbe45e4-c478-4302-9205-46db251792fc",
-        "c24a460e-ff78-4d71-a7c5-1b8adec73e9b",
-        "5ee5e24a-6f52-4e5e-8152-c9c748d21234",
-        "3a20921d-6f63-4529-b726-02f1ae493b01",
-        "d33d8abd-7601-4525-9fb3-ba7d9d5e11f0",
-      ]);
+
+      // 12桁のランダムな数字
+      function generateRandom12Digits() {
+        return (
+          Math.floor(Math.random() * (999999999999 - 100000000000 + 1)) +
+          100000000000
+        );
+      }
+      const random12Digits = Array.from({ length: 6 }, () =>
+        generateRandom12Digits()
+      );
+      createData(document.getElementById("myNumberContainer"), random12Digits);
+
+      // uuid
+      function generateUUIDv4() {
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+          /[xy]/g,
+          function (c) {
+            var r = (Math.random() * 16) | 0,
+              v = c === "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+          }
+        );
+      }
+      const uuids = Array.from({ length: 6 }, () => generateUUIDv4());
+      createData(document.getElementById("uuidContainer"), uuids);
+
+      // 動物
       createData(document.getElementById("animalNameContainer"), [
         "犬",
         "猫",
