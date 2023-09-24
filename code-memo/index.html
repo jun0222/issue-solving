@@ -14,7 +14,9 @@
         white-space: pre-wrap;
         overflow-wrap: break-word;
         font-family: monospace;
-        margin-bottom: 20px;
+      }
+      .memo-container {
+        margin-bottom: 25px;
       }
     </style>
   </head>
@@ -29,15 +31,55 @@
           "ここにコードやコマンドをメモしてください";
         codeMemoElement.id = "codeMemo" + i;
 
+        // コピーボタンを作成
+        const copyButton = document.createElement("button");
+        copyButton.textContent = "コピー";
+        copyButton.addEventListener("click", () => {
+          codeMemoElement.select();
+          document.execCommand("copy");
+          copyButton.textContent = "コピーしました";
+          setTimeout(() => {
+            copyButton.textContent = "コピー";
+          }, 1000);
+        });
+
+        // クリアボタンを作成
+        const clearButton = document.createElement("button");
+        clearButton.textContent = "クリア";
+        clearButton.addEventListener("click", () => {
+          if (confirm("本当にクリアしますか？")) {
+            codeMemoElement.value = "";
+            localStorage.removeItem("codeMemo" + i);
+            localStorage.removeItem("codeMemoHeight" + i);
+            codeMemoElement.style.height = "auto";
+          }
+        });
+
         // ページロード時にローカルストレージから内容をロード
         codeMemoElement.value = localStorage.getItem("codeMemo" + i) || "";
+
+        // 高さがローカルストレージからロードされるようにする
+        codeMemoElement.style.height =
+          localStorage.getItem("codeMemoHeight" + i) || "auto";
 
         // 内容が変更される度にローカルストレージへ自動保存
         codeMemoElement.addEventListener("input", () => {
           localStorage.setItem("codeMemo" + i, codeMemoElement.value);
+          localStorage.setItem(
+            "codeMemoHeight" + i,
+            codeMemoElement.style.height
+          );
+          codeMemoElement.style.height = "auto";
+          codeMemoElement.style.height = codeMemoElement.scrollHeight + "px";
         });
 
-        document.body.appendChild(codeMemoElement);
+        // テキストエリア、コピーボタン、クリアボタンを同じdivタグに追加
+        const div = document.createElement("div");
+        div.className = "memo-container";
+        div.appendChild(codeMemoElement);
+        div.appendChild(copyButton);
+        div.appendChild(clearButton);
+        document.body.appendChild(div);
       }
     </script>
   </body>
