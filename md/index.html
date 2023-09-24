@@ -41,18 +41,63 @@
   <body>
     <textarea id="editor"></textarea>
     <div id="preview"></div>
+    <button id="import">インポート</button>
+    <button id="export">エクスポート</button>
     <script>
       const editor = document.getElementById("editor");
       const preview = document.getElementById("preview");
+      const importButton = document.getElementById("import");
+      const exportButton = document.getElementById("export");
 
       // テキストをプレビューに反映する
       const updatePreview = () => {
         preview.innerHTML = marked(editor.value);
+        localStorage.setItem("mdEditorPjTnsXHVa", editor.value);
       };
 
       editor.addEventListener("input", updatePreview);
 
-      updatePreview();
+      // ローカルストレージからテキストを読み込む
+      const savedText = localStorage.getItem("mdEditorPjTnsXHVa");
+      if (savedText) {
+        editor.value = savedText;
+        updatePreview();
+      }
+
+      // CSVファイルをインポートする
+      importButton.addEventListener("click", () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".csv";
+        input.addEventListener("change", () => {
+          const file = input.files[0];
+          const reader = new FileReader();
+          reader.addEventListener("load", () => {
+            editor.value = reader.result;
+            updatePreview();
+          });
+          reader.readAsText(file);
+        });
+        input.click();
+      });
+
+      // CSVファイルをエクスポートする
+      exportButton.addEventListener("click", () => {
+        const now = new Date();
+        const timestamp = `${now.getFullYear()}${
+          now.getMonth() + 1
+        }${now.getDate()}${now.getHours()}${now.getMinutes()}${now.getSeconds()}`;
+        const fileName = `markdown_${timestamp}.csv`;
+        const blob = new Blob([editor.value], {
+          type: "mdEditorPjTnsXHVa/csv",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
     </script>
   </body>
 </html>
