@@ -64,11 +64,11 @@
         updatePreview();
       }
 
-      // CSVファイルをインポートする
+      // マークダウン形式のテキストをインポートする
       importButton.addEventListener("click", () => {
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = ".csv";
+        input.accept = ".md";
         input.addEventListener("change", () => {
           const file = input.files[0];
           const reader = new FileReader();
@@ -81,16 +81,14 @@
         input.click();
       });
 
-      // CSVファイルをエクスポートする
+      // マークダウン形式のテキストをエクスポートする
       exportButton.addEventListener("click", () => {
         const now = new Date();
         const timestamp = `${now.getFullYear()}${
           now.getMonth() + 1
         }${now.getDate()}${now.getHours()}${now.getMinutes()}${now.getSeconds()}`;
-        const fileName = `markdown_${timestamp}.csv`;
-        const blob = new Blob([editor.value], {
-          type: "mdEditorPjTnsXHVa/csv",
-        });
+        const fileName = `${timestamp}.md`;
+        const blob = new Blob([editor.value], { type: "text/markdown" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
