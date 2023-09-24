@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/styles/monokai_sublime.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/highlight.min.js"></script>
+
+    <title>マークダウンエディタ</title>
+    <style>
+      /* マークダウンエディタのスタイル。幅と高さを設定 */
+      #editor {
+        width: 50%;
+        height: 500px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        padding: 10px;
+        font-size: 16px;
+        float: left;
+      }
+
+      /* マークダウンプレビューのスタイル。幅と高さを設定 */
+      #preview {
+        width: 50%;
+        height: 500px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        padding: 10px;
+        font-size: 16px;
+        overflow-y: scroll;
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="editor"></textarea>
+    <div id="preview"></div>
+    <script>
+      const editor = document.getElementById("editor");
+      const preview = document.getElementById("preview");
+
+      // テキストをプレビューに反映する
+      const updatePreview = () => {
+        preview.innerHTML = marked(editor.value);
+      };
+
+      editor.addEventListener("input", updatePreview);
+
+      updatePreview();
+    </script>
+  </body>
+</html>
