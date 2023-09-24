@@ -1,8 +1,10 @@
 <style>
+  /* メモのコンテナ用のスタイル。各メモの下に余白を追加 */
   .memo-container {
     margin-bottom: 25px;
   }
 
+  /* テキストエリアのスタイル。リサイズは不可、全幅で表示、パディングとフォントサイズを設定 */
   .memo-textarea {
     resize: none;
     width: 100%;
@@ -13,6 +15,7 @@
     box-sizing: border-box;
   }
 
+  /* ボタン共通のスタイル。マージン、パディング、フォントサイズを設定 */
   .memo-button {
     margin-left: 10px;
     padding: 5px 10px;
@@ -22,11 +25,13 @@
     cursor: pointer;
   }
 
+  /* コピー用ボタンのスタイル。緑色の背景と白色の文字 */
   .memo-copy-button {
     background-color: #4caf50;
     color: #fff;
   }
 
+  /* クリア用ボタンのスタイル。赤色の背景と白色の文字 */
   .memo-clear-button {
     background-color: #f44336;
     color: #fff;
@@ -34,8 +39,10 @@
 </style>
 
 <script>
+  // メモの最大数を設定
   const MEMO_COUNT = 30;
 
+  // テキストエリアを生成する関数
   const createTextarea = (index) => {
     const textarea = document.createElement("textarea");
     textarea.className = "memo-textarea";
@@ -44,6 +51,7 @@
     return textarea;
   };
 
+  // コピー用ボタンを生成する関数
   const createCopyButton = (textarea) => {
     const button = document.createElement("button");
     button.className = "memo-button memo-copy-button";
@@ -59,6 +67,7 @@
     return button;
   };
 
+  // クリア用ボタンを生成する関数
   const createClearButton = (textarea, index) => {
     const button = document.createElement("button");
     button.className = "memo-button memo-clear-button";
@@ -74,17 +83,20 @@
     return button;
   };
 
+  // ローカルストレージからテキストエリアの内容を読み込む関数
   const loadTextarea = (textarea, index) => {
     textarea.value = localStorage.getItem(`codeMemo${index}`) || "";
     textarea.style.height =
       localStorage.getItem(`codeMemoHeight${index}`) || "auto";
   };
 
+  // テキストエリアの内容をローカルストレージに保存する関数
   const saveTextarea = (textarea, index) => {
     localStorage.setItem(`codeMemo${index}`, textarea.value);
     localStorage.setItem(`codeMemoHeight${index}`, textarea.style.height);
   };
 
+  // テキストエリアにイベントリスナーを追加する関数
   const addTextareaEventListeners = (textarea, index) => {
     textarea.addEventListener("input", () => {
       saveTextarea(textarea, index);
@@ -93,6 +105,7 @@
     });
   };
 
+  // ドキュメントの読み込みが完了したら、メモのセットを生成
   document.addEventListener("DOMContentLoaded", () => {
     Array.from({ length: MEMO_COUNT }, (_, i) => {
       const textarea = createTextarea(i);
