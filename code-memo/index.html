@@ -1,86 +1,111 @@
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>コードメモアプリ</title>
-    <style>
-      .codeMemo {
-        width: 100%;
-        min-height: 100px;
-        border: 1px solid #000;
-        padding: 10px;
-        box-sizing: border-box;
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-        font-family: monospace;
+<style>
+  .memo-container {
+    margin-bottom: 25px;
+  }
+
+  .memo-textarea {
+    resize: none;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+
+  .memo-button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .memo-copy-button {
+    background-color: #4caf50;
+    color: #fff;
+  }
+
+  .memo-clear-button {
+    background-color: #f44336;
+    color: #fff;
+  }
+</style>
+
+<script>
+  const MEMO_COUNT = 30;
+
+  const createTextarea = (index) => {
+    const textarea = document.createElement("textarea");
+    textarea.className = "memo-textarea";
+    textarea.placeholder = "ここにコードやコマンドをメモしてください";
+    textarea.id = `codeMemo${index}`;
+    return textarea;
+  };
+
+  const createCopyButton = (textarea) => {
+    const button = document.createElement("button");
+    button.className = "memo-button memo-copy-button";
+    button.textContent = "コピー";
+    button.addEventListener("click", () => {
+      textarea.select();
+      document.execCommand("copy");
+      button.textContent = "コピーしました";
+      setTimeout(() => {
+        button.textContent = "コピー";
+      }, 1000);
+    });
+    return button;
+  };
+
+  const createClearButton = (textarea, index) => {
+    const button = document.createElement("button");
+    button.className = "memo-button memo-clear-button";
+    button.textContent = "クリア";
+    button.addEventListener("click", () => {
+      if (confirm("本当にクリアしますか？")) {
+        textarea.value = "";
+        localStorage.removeItem(`codeMemo${index}`);
+        localStorage.removeItem(`codeMemoHeight${index}`);
+        textarea.style.height = "auto";
       }
-      .memo-container {
-        margin-bottom: 25px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>コードメモアプリ</h1>
-    <script>
-      // テキストエリアを30個作成
-      for (let i = 0; i < 30; i++) {
-        const codeMemoElement = document.createElement("textarea");
-        codeMemoElement.className = "codeMemo";
-        codeMemoElement.placeholder =
-          "ここにコードやコマンドをメモしてください";
-        codeMemoElement.id = "codeMemo" + i;
+    });
+    return button;
+  };
 
-        // コピーボタンを作成
-        const copyButton = document.createElement("button");
-        copyButton.textContent = "コピー";
-        copyButton.addEventListener("click", () => {
-          codeMemoElement.select();
-          document.execCommand("copy");
-          copyButton.textContent = "コピーしました";
-          setTimeout(() => {
-            copyButton.textContent = "コピー";
-          }, 1000);
-        });
+  const loadTextarea = (textarea, index) => {
+    textarea.value = localStorage.getItem(`codeMemo${index}`) || "";
+    textarea.style.height =
+      localStorage.getItem(`codeMemoHeight${index}`) || "auto";
+  };
 
-        // クリアボタンを作成
-        const clearButton = document.createElement("button");
-        clearButton.textContent = "クリア";
-        clearButton.addEventListener("click", () => {
-          if (confirm("本当にクリアしますか？")) {
-            codeMemoElement.value = "";
-            localStorage.removeItem("codeMemo" + i);
-            localStorage.removeItem("codeMemoHeight" + i);
-            codeMemoElement.style.height = "auto";
-          }
-        });
+  const saveTextarea = (textarea, index) => {
+    localStorage.setItem(`codeMemo${index}`, textarea.value);
+    localStorage.setItem(`codeMemoHeight${index}`, textarea.style.height);
+  };
 
-        // ページロード時にローカルストレージから内容をロード
-        codeMemoElement.value = localStorage.getItem("codeMemo" + i) || "";
+  const addTextareaEventListeners = (textarea, index) => {
+    textarea.addEventListener("input", () => {
+      saveTextarea(textarea, index);
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    });
+  };
 
-        // 高さがローカルストレージからロードされるようにする
-        codeMemoElement.style.height =
-          localStorage.getItem("codeMemoHeight" + i) || "auto";
-
-        // 内容が変更される度にローカルストレージへ自動保存
-        codeMemoElement.addEventListener("input", () => {
-          localStorage.setItem("codeMemo" + i, codeMemoElement.value);
-          localStorage.setItem(
-            "codeMemoHeight" + i,
-            codeMemoElement.style.height
-          );
-          codeMemoElement.style.height = "auto";
-          codeMemoElement.style.height = codeMemoElement.scrollHeight + "px";
-        });
-
-        // テキストエリア、コピーボタン、クリアボタンを同じdivタグに追加
-        const div = document.createElement("div");
-        div.className = "memo-container";
-        div.appendChild(codeMemoElement);
-        div.appendChild(copyButton);
-        div.appendChild(clearButton);
-        document.body.appendChild(div);
-      }
-    </script>
-  </body>
-</html>
+  document.addEventListener("DOMContentLoaded", () => {
+    Array.from({ length: MEMO_COUNT }, (_, i) => {
+      const textarea = createTextarea(i);
+      const copyButton = createCopyButton(textarea);
+      const clearButton = createClearButton(textarea, i);
+      loadTextarea(textarea, i);
+      addTextareaEventListeners(textarea, i);
+      const container = document.createElement("div");
+      container.className = "memo-container";
+      container.appendChild(textarea);
+      container.appendChild(copyButton);
+      container.appendChild(clearButton);
+      document.body.appendChild(container);
+    });
+  });
+</script>
