@@ -10,15 +10,46 @@ class RandomStringGenerator {
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
       alphanumericSymbol:
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()",
+      customPattern: this.generateCustomPattern(),
     };
 
     let result = "";
     const characters = charSet[this.characterSet];
     const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    if (this.characterSet === "customPattern") {
+      result = characters;
+    } else {
+      for (let i = 0; i < length; i++) {
+        result += characters.charAt(
+          Math.floor(Math.random() * charactersLength)
+        );
+      }
     }
     return result;
+  }
+
+  generateCustomPattern() {
+    const words = [
+      "Apple",
+      "Cherry",
+      "Grape",
+      "Kiwi",
+      "Lemon",
+      "Mango",
+      "Nectarine",
+      "Orange",
+      "Pear",
+      "Pineapple",
+      "Strawberry",
+      "Watermelon",
+    ];
+    const symbols = "@#$+-_&";
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    const randomSymbol = symbols.charAt(
+      Math.floor(Math.random() * symbols.length)
+    );
+    const randomNumber = Math.floor(Math.random() * 900 + 100);
+    return `${randomWord}${randomSymbol}${randomNumber}`;
   }
 }
 
