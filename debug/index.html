@@ -109,6 +109,8 @@
     <div class="container" id="gitDiffWordContainer"></div>
     <p>2つのコミット間の差分を表示</p>
     <div class="container" id="gitDiffCompareCommitContainer"></div>
+    <h2>タスクテンプレート</h2>
+    <div class="container" id="taskTemplate"></div>
     <h2>デバッグ用文字列</h2>
     <div class="container" id="timeContainer"></div>
     <h2>ビジネスチャット表現</h2>
@@ -495,6 +497,11 @@
       // gitDiffCompareCommitContainer
       createData(document.getElementById("gitDiffCompareCommitContainer"), [
         "git diff COMMIT_HASH1 COMMIT_HASH2",
+      ]);
+
+      createData(document.getElementById("taskTemplate"), [
+        `- [ ] 期限日———-- 内容———-
+- [ ] XXXX-XX-XX 概要を書く、詳細を書くなら構造化。`,
       ]);
     </script>
   </body>
