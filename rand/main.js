@@ -31,17 +31,25 @@ class RandomStringGenerator {
   generateCustomPattern() {
     const words = [
       "Apple",
-      "Cherry",
+      "Fish",
       "Grape",
       "Kiwi",
       "Lemon",
-      "Mango",
-      "Nectarine",
+      "Dog",
+      "Cat",
       "Orange",
-      "Pear",
-      "Pineapple",
-      "Strawberry",
-      "Watermelon",
+      "Bird",
+      "Color",
+      "Red",
+      "Train",
+      "Car",
+      "Lion",
+      "Tiger",
+      "Family",
+      "House",
+      "Room",
+      "Rice",
+      "Road",
     ];
     const symbols = "@#$+-_&";
     const randomWord = words[Math.floor(Math.random() * words.length)];
