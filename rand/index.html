@@ -32,6 +32,10 @@
         color: green;
         visibility: hidden;
       }
+
+      button {
+        width: 40%;
+      }
       @media screen and (max-width: 768px) {
         /* スクリーンサイズが768px以下の場合に適用するスタイル */
         #output {
@@ -46,15 +50,36 @@
   </head>
   <body>
     <form id="form">
-      <label for="length">Length:</label>
+      <label for="length">文字数:</label>
       <input type="number" id="length" value="10" min="1" /><br />
-      <label for="characters">Characters:</label>
-      <select id="characters">
-        <option value="numeric">例）8667800229</option>
-        <option value="alphanumeric">例）pmzFHyOjw0</option>
-        <option value="alphanumericSymbol">例）gpKf*T(y8e</option>
-        <option value="customPattern">例）Kiwi_663</option></select
-      ><br />
+      <div id="characters">
+        <input
+          type="radio"
+          id="customPattern"
+          name="characterSet"
+          value="customPattern"
+          checked
+        />
+        <label for="customPattern">Kiwi_663 形式</label><br />
+        <input type="radio" id="numeric" name="characterSet" value="numeric" />
+        <label for="numeric">8667800229 形式</label><br />
+        <input
+          type="radio"
+          id="alphanumeric"
+          name="characterSet"
+          value="alphanumeric"
+        />
+        <label for="alphanumeric">pmzFHyOjw0 形式</label><br />
+        <input
+          type="radio"
+          id="alphanumericSymbol"
+          name="characterSet"
+          value="alphanumericSymbol"
+        />
+        <label for="alphanumericSymbol">gpKf*T(y8e 形式</label><br />
+        <br />
+      </div>
+      <br />
     </form>
     <div id="output"></div>
     <button id="generateButton">生成</button>

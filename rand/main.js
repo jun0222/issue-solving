@@ -64,7 +64,9 @@ class RandomStringGenerator {
 document
   .getElementById("generateButton")
   .addEventListener("click", function () {
-    const characterSet = document.getElementById("characters").value;
+    const characterSet = document.querySelector(
+      'input[name="characterSet"]:checked'
+    ).value;
     const length = parseInt(document.getElementById("length").value);
 
     const generator = new RandomStringGenerator(characterSet);
@@ -82,7 +84,9 @@ document
   });
 
 document.getElementById("form").addEventListener("input", function (event) {
-  const characterSet = document.getElementById("characters").value;
+  const characterSet = document.querySelector(
+    'input[name="characterSet"]:checked'
+  ).value;
   const length = parseInt(document.getElementById("length").value);
 
   const generator = new RandomStringGenerator(characterSet);
