@@ -73,6 +73,14 @@ document
     document.getElementById("output").textContent = output;
   });
 
+document.getElementById("generateButton").click();
+
+document
+  .getElementById("generateButton")
+  .addEventListener("mouseover", function () {
+    document.getElementById("generateButton").click();
+  });
+
 document.getElementById("form").addEventListener("input", function (event) {
   const characterSet = document.getElementById("characters").value;
   const length = parseInt(document.getElementById("length").value);
