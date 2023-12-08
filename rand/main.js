@@ -64,23 +64,25 @@ class RandomStringGenerator {
 document
   .getElementById("generateButton")
   .addEventListener("click", function () {
-    const characterSet = document.querySelector(
-      'input[name="characterSet"]:checked'
-    ).value;
-    const length = parseInt(document.getElementById("length").value);
-
-    const generator = new RandomStringGenerator(characterSet);
-    const output = generator.generate(length);
-
-    document.getElementById("output").textContent = output;
+    generatePassword();
   });
 
 document.getElementById("generateButton").click();
+
+document.getElementById("copyButton").addEventListener("click", function () {
+  copyToClipboard();
+});
 
 document
   .getElementById("generateButton")
   .addEventListener("mouseover", function () {
     document.getElementById("generateButton").click();
+  });
+
+document
+  .getElementById("copyButton")
+  .addEventListener("mouseover", function () {
+    document.getElementById("copyButton").click();
   });
 
 document.getElementById("form").addEventListener("input", function (event) {
@@ -90,22 +92,33 @@ document.getElementById("form").addEventListener("input", function (event) {
   const length = parseInt(document.getElementById("length").value);
 
   const generator = new RandomStringGenerator(characterSet);
-  const output = generator.generate(length);
+  const passwordOutput = generator.generate(length);
 
-  document.getElementById("output").textContent = output;
+  document.getElementById("passwordOutput").textContent = passwordOutput;
 });
 
-document.getElementById("output").addEventListener("click", function () {
-  const range = document.createRange();
-  range.selectNode(document.getElementById("output"));
-  window.getSelection().removeAllRanges();
-  window.getSelection().addRange(range);
-  document.execCommand("copy");
-  window.getSelection().removeAllRanges();
+function generatePassword() {
+  const characterSet = document.querySelector(
+    'input[name="characterSet"]:checked'
+  ).value;
+  const length = parseInt(document.getElementById("length").value);
+  const generator = new RandomStringGenerator(characterSet);
+  const passwordOutput = generator.generate(length);
 
-  // Show 'Copied to clipboard!' message
+  document.getElementById("passwordOutput").value = passwordOutput; // input 要素に表示
+}
+
+function copyToClipboard() {
+  const passwordOutput = document.getElementById("passwordOutput");
+  passwordOutput.select();
+  document.execCommand("copy");
+
   document.getElementById("copied").style.visibility = "visible";
   setTimeout(function () {
     document.getElementById("copied").style.visibility = "hidden";
   }, 2000);
+}
+
+document.getElementById("form").addEventListener("change", function () {
+  generatePassword();
 });
