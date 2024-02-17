@@ -63,7 +63,12 @@
     <div class="container">
       <textarea id="editor"></textarea>
       <div id="count"></div>
-      <button id="export-btn" class="stylish-button">Export Text</button>
+      <div style="display: flex">
+        <button id="export-btn" class="stylish-button">DL</button>
+        <button id="insert-todo" class="stylish-button">- []</button>
+        <button id="insert-dash" class="stylish-button">-</button>
+        <button id="insert-spaces" class="stylish-button"></button>
+      </div>
     </div>
   </body>
 </html>
@@ -120,6 +125,30 @@
 
     // リンクを削除
     document.body.removeChild(link);
+  });
+
+  function insertTextAtCursor(textArea, text) {
+    const startPos = textArea.selectionStart;
+    const endPos = textArea.selectionEnd;
+    textArea.value =
+      textArea.value.substring(0, startPos) +
+      text +
+      textArea.value.substring(endPos, textArea.value.length);
+    textArea.selectionStart = startPos + text.length;
+    textArea.selectionEnd = startPos + text.length;
+    textArea.focus();
+  }
+
+  document.getElementById("insert-todo").addEventListener("click", () => {
+    insertTextAtCursor(editor, "- [ ] ");
+  });
+
+  document.getElementById("insert-dash").addEventListener("click", () => {
+    insertTextAtCursor(editor, "- ");
+  });
+
+  document.getElementById("insert-spaces").addEventListener("click", () => {
+    insertTextAtCursor(editor, "  "); // 半角スペース2つ
   });
 </script>
 
