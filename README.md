@@ -27,3 +27,9 @@
 - [Date クラスでの timestamp 取得、clipboard へのコピー](https://tools.juns-app.com/snipets/getTimeStampFromDateClass/)
 - [React の ContextAPI でダークテーマ切り替え](https://tools.juns-app.com/snipets/react-context-darkmode/)
 - [react-hook-form とバリデーションのサンプル](https://next-tools.juns-app.com/rhf)
+
+# アイデア
+
+- [組織課題](https://github.com/jun0222/tools/blob/main/docs/organization-issue.md)
+- [技術課題](https://github.com/jun0222/tools/blob/main/docs/tech-issue.md)
+- [基礎知識](https://github.com/jun0222/tools/blob/main/docs/basic-knowledge.md)
