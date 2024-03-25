@@ -19,9 +19,9 @@
 
 # アイデア
 
-- [組織課題](https://github.com/jun0222/tools/blob/main/docs/organization-issue.md)
-- [技術課題](https://github.com/jun0222/tools/blob/main/docs/tech-issue.md)
-- [基礎知識](https://github.com/jun0222/tools/blob/main/docs/basic-knowledge.md)
+- [組織課題](https://github.com/jun0222/issue-solving/blob/main/ideas/organization-issue.md)
+- [技術課題](https://github.com/jun0222/issue-solving/blob/main/ideas/tech-issue.md)
+- [基礎知識](https://github.com/jun0222/issue-solving/blob/main/ideas/basic-knowledge.md)
 
 # ツール
 
