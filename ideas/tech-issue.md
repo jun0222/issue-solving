@@ -13,6 +13,7 @@
   - [Next.js](#nextjs)
   - [Nuxt.js](#nuxtjs)
 - [アトミックデザインについて](#アトミックデザインについて)
+- [SSR と CSR の使い分け](#ssr-と-csr-の使い分け)
 - [フロントエンドディレクトリ構成、コンポーネント以外](#フロントエンドディレクトリ構成コンポーネント以外)
 - [フロントエンドテスト設計](#フロントエンドテスト設計)
 - [E2E テスト](#e2e-テスト)
@@ -20,7 +21,6 @@
 - [フロントエンドビルド設定](#フロントエンドビルド設定)
 - [アクセシビリティ](#アクセシビリティ)
 - [設計](#設計)
-- [SSR と CSR の使い分け](#ssr-と-csr-の使い分け)
 - [Cookie, LocalStorage, SessionStorage の使い分け](#cookie-localstorage-sessionstorage-の使い分け)
 - [Websocket, Webhook, api polling の使い分け](#websocket-webhook-api-polling-の使い分け)
 - [SaaS と DB の使い分け](#saas-と-db-の使い分け)
@@ -221,6 +221,10 @@ flowchart TB
 
 ```
 
+## SSR と CSR の使い分け
+
+![picture 1](../images/7a83e09127a903e32822b930bd50a7983ff81fd394f2ff8f2d93db4d372e356e.png)
+
 ## フロントエンドディレクトリ構成、コンポーネント以外
 
 ## フロントエンドテスト設計
@@ -234,8 +238,6 @@ flowchart TB
 ## アクセシビリティ
 
 ## 設計
-
-## SSR と CSR の使い分け
 
 ## Cookie, LocalStorage, SessionStorage の使い分け
 
