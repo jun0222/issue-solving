@@ -7,6 +7,7 @@
 - [git stash のやり方](#git-stash-のやり方)
 - [linux のパーミッション](#linux-のパーミッション)
 - [ssh 接続設定](#ssh-接続設定)
+- [エラー解決](#エラー解決)
 
 <!-- /TOC -->
 
@@ -34,3 +35,5 @@ gif と数行で説明
 ## ssh 接続設定
 
 - [Hatebu](https://akiniwa.hatenablog.jp/entry/2013/09/09/080718)
+
+## エラー解決
