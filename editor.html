@@ -105,22 +105,22 @@
     });
 
     // エンターキーでToDoリストの項目を自動挿入
-    editor.addEventListener("keydown", function (e) {
-      // エンターキーで `- [ ]` または `- ` を自動挿入
-      if (e.key === "Enter") {
-        const currentLine = editor.value
-          .substring(0, editor.selectionStart)
-          .split("\n")
-          .pop();
-        if (currentLine.startsWith("- [ ] ")) {
-          e.preventDefault(); // エンターキーのデフォルト動作をキャンセル
-          insertTextAtCursor(editor, "\n- [ ] ");
-        } else if (currentLine.startsWith("- ")) {
-          e.preventDefault(); // エンターキーのデフォルト動作をキャンセル
-          insertTextAtCursor(editor, "\n- ");
-        }
-      }
-    });
+    // editor.addEventListener("keydown", function (e) {
+    //   // エンターキーで `- [ ]` または `- ` を自動挿入
+    //   if (e.key === "Enter") {
+    //     const currentLine = editor.value
+    //       .substring(0, editor.selectionStart)
+    //       .split("\n")
+    //       .pop();
+    //     if (currentLine.startsWith("- [ ] ")) {
+    //       e.preventDefault(); // エンターキーのデフォルト動作をキャンセル
+    //       insertTextAtCursor(editor, "\n- [ ] ");
+    //     } else if (currentLine.startsWith("- ")) {
+    //       e.preventDefault(); // エンターキーのデフォルト動作をキャンセル
+    //       insertTextAtCursor(editor, "\n- ");
+    //     }
+    //   }
+    // });
   });
 
   // ファイルダウンロードの処理を変更
