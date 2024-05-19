@@ -3,98 +3,129 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.js"></script>
+    <title>Markdown Editor</title>
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/styles/monokai_sublime.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
     />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/highlight.min.js"></script>
-
-    <title>マークダウンエディタ</title>
     <style>
-      /* マークダウンエディタのスタイル。幅と高さを設定 */
-      #editor {
-        width: 50%;
-        height: 500px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-sizing: border-box;
-        padding: 10px;
-        font-size: 16px;
-        float: left;
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
       }
-
-      /* マークダウンプレビューのスタイル。幅と高さを設定 */
-      #preview {
+      .container {
+        display: flex;
+        flex-direction: column;
+      }
+      .editor {
+        display: flex;
+        flex-grow: 1;
+      }
+      textarea {
         width: 50%;
-        height: 500px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-sizing: border-box;
+        height: 90vh;
         padding: 10px;
         font-size: 16px;
-        overflow-y: scroll;
-        float: right;
+        font-family: monospace;
+        white-space: pre;
+      }
+      .preview {
+        width: 50%;
+        height: 90vh;
+        padding: 10px;
+        border-left: 1px solid #ddd;
+        overflow-y: auto;
+      }
+      .controls {
+        margin-bottom: 10px;
+        text-align: right;
       }
     </style>
   </head>
   <body>
-    <textarea id="editor"></textarea>
-    <div id="preview"></div>
-    <button id="import">インポート</button>
-    <button id="export">エクスポート</button>
+    <div id="app" class="container">
+      <div class="controls">
+        <button @click="downloadMarkdown">ダウンロード</button>
+      </div>
+      <div class="editor">
+        <textarea
+          v-model="input"
+          @keydown.tab.prevent="insertTab"
+          @keydown.enter="insertNewLine"
+          placeholder="ここにMarkdownを書いてください..."
+        ></textarea>
+        <div class="preview" v-html="renderedMarkdown"></div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
     <script>
-      const editor = document.getElementById("editor");
-      const preview = document.getElementById("preview");
-      const importButton = document.getElementById("import");
-      const exportButton = document.getElementById("export");
+      new Vue({
+        el: "#app",
+        data: {
+          input: localStorage.getItem("markdown") || "",
+        },
+        watch: {
+          input(newInput) {
+            localStorage.setItem("markdown", newInput);
+          },
+        },
+        computed: {
+          renderedMarkdown() {
+            return this.md.render(this.input);
+          },
+        },
+        created() {
+          this.md = window.markdownit();
+        },
+        methods: {
+          insertTab(event) {
+            const textarea = event.target;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
 
-      // テキストをプレビューに反映する
-      const updatePreview = () => {
-        preview.innerHTML = marked(editor.value);
-        localStorage.setItem("mdEditorPjTnsXHVa", editor.value);
-      };
+            // Insert tab character
+            this.input =
+              this.input.substring(0, start) + "\t" + this.input.substring(end);
 
-      editor.addEventListener("input", updatePreview);
+            // Move the cursor
+            textarea.selectionStart = textarea.selectionEnd = start + 1;
 
-      // ローカルストレージからテキストを読み込む
-      const savedText = localStorage.getItem("mdEditorPjTnsXHVa");
-      if (savedText) {
-        editor.value = savedText;
-        updatePreview();
-      }
+            // Prevent the default action
+            event.preventDefault();
+          },
+          insertNewLine(event) {
+            const textarea = event.target;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const lineStart = this.input.lastIndexOf("\n", start - 1) + 1;
+            const lineText = this.input.substring(lineStart, start);
+            const match = lineText.match(/^(\s*[-*]\s*)/);
 
-      // マークダウン形式のテキストをインポートする
-      importButton.addEventListener("click", () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = ".md";
-        input.addEventListener("change", () => {
-          const file = input.files[0];
-          const reader = new FileReader();
-          reader.addEventListener("load", () => {
-            editor.value = reader.result;
-            updatePreview();
-          });
-          reader.readAsText(file);
-        });
-        input.click();
-      });
-
-      // マークダウン形式のテキストをエクスポートする
-      exportButton.addEventListener("click", () => {
-        const now = new Date();
-        const timestamp = `${now.getFullYear()}${
-          now.getMonth() + 1
-        }${now.getDate()}${now.getHours()}${now.getMinutes()}${now.getSeconds()}`;
-        const fileName = `${timestamp}.md`;
-        const blob = new Blob([editor.value], { type: "text/markdown" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileName;
-        a.click();
-        URL.revokeObjectURL(url);
+            if (match) {
+              const prefix = match[1];
+              this.input =
+                this.input.substring(0, start) +
+                "\n" +
+                prefix +
+                this.input.substring(end);
+              textarea.selectionStart = textarea.selectionEnd =
+                start + prefix.length + 1;
+              event.preventDefault();
+            }
+          },
+          downloadMarkdown() {
+            const blob = new Blob([this.input], { type: "text/markdown" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "markdown.md";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          },
+        },
       });
     </script>
   </body>
