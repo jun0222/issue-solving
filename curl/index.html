@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>curlコマンド生成ツール</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: auto;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-top: 10px;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      input[type="checkbox"] {
+        width: unset;
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      pre {
+        background-color: #f8f8f8;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        cursor: pointer;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .show {
+        display: block;
+      }
+
+      .templates {
+        margin-top: 20px;
+      }
+
+      .templates label {
+        display: block;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>curlコマンド生成ツール</h1>
+      <form id="curlForm">
+        <label for="url">URL:</label>
+        <input type="text" id="url" name="url" required />
+
+        <label for="method">HTTPメソッド:</label>
+        <select id="method" name="method" required>
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+        </select>
+
+        <label for="headers">ヘッダー (key:value 形式で複数行):</label>
+        <textarea
+          id="headers"
+          name="headers"
+          rows="5"
+          placeholder="Content-Type: application/json"
+        ></textarea>
+
+        <label for="body">ボディ (JSON形式):</label>
+        <textarea
+          id="body"
+          name="body"
+          rows="5"
+          placeholder='{"key":"value"}'
+        ></textarea>
+
+        <div class="templates">
+          <label
+            ><input type="checkbox" id="headerTemplate" /> Content-Type:
+            application/json を追加</label
+          >
+          <label
+            ><input type="checkbox" id="bodyTemplate" />
+            サンプルボディを追加</label
+          >
+        </div>
+
+        <button type="button" onclick="generateCurlCommand()">
+          curlコマンドを生成
+        </button>
+      </form>
+
+      <h2>生成されたcurlコマンド:</h2>
+      <pre id="curlCommand" onclick="copyToClipboard()"></pre>
+      <p id="copyAlert" class="hidden">コピーしました！</p>
+    </div>
+    <script>
+      const uuidKey = "curlToolUUID";
+      let storageKey = localStorage.getItem(uuidKey);
+
+      if (!storageKey) {
+        storageKey = "curlTool_" + generateUUID();
+        localStorage.setItem(uuidKey, storageKey);
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlInput = document.getElementById("url");
+        const savedUrl = localStorage.getItem(storageKey);
+
+        if (savedUrl) {
+          urlInput.value = savedUrl;
+        }
+
+        urlInput.addEventListener("input", () => {
+          localStorage.setItem(storageKey, urlInput.value);
+        });
+
+        document
+          .getElementById("headerTemplate")
+          .addEventListener("change", (event) => {
+            const headersInput = document.getElementById("headers");
+            if (event.target.checked) {
+              headersInput.value += headersInput.value
+                ? "\nContent-Type: application/json"
+                : "Content-Type: application/json";
+            } else {
+              headersInput.value = headersInput.value.replace(
+                /\n?Content-Type: application\/json/g,
+                ""
+              );
+            }
+          });
+
+        document
+          .getElementById("bodyTemplate")
+          .addEventListener("change", (event) => {
+            const bodyInput = document.getElementById("body");
+            const sampleBody = '{"sampleKey":"sampleValue"}';
+            if (event.target.checked) {
+              bodyInput.value += bodyInput.value
+                ? "\n" + sampleBody
+                : sampleBody;
+            } else {
+              bodyInput.value = bodyInput.value.replace(
+                new RegExp("\n?" + sampleBody),
+                ""
+              );
+            }
+          });
+      });
+
+      function generateCurlCommand() {
+        const url = document.getElementById("url").value;
+        const method = document.getElementById("method").value;
+        const headers = document.getElementById("headers").value;
+        const body = document.getElementById("body").value;
+
+        let curlCommand = `curl -X ${method} "${url}"`;
+
+        if (headers) {
+          const headersArray = headers.split("\n");
+          headersArray.forEach((header) => {
+            curlCommand += ` -H "${header.trim()}"`;
+          });
+        }
+
+        if (method === "POST" && body) {
+          curlCommand += ` -d '${body}'`;
+        }
+
+        document.getElementById("curlCommand").textContent = curlCommand;
+      }
+
+      function copyToClipboard() {
+        const curlCommandElement = document.getElementById("curlCommand");
+        const range = document.createRange();
+        range.selectNode(curlCommandElement);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand("copy");
+        window.getSelection().removeAllRanges();
+
+        const copyAlert = document.getElementById("copyAlert");
+        copyAlert.classList.remove("hidden");
+        setTimeout(() => copyAlert.classList.add("hidden"), 2000);
+      }
+
+      function generateUUID() {
+        // UUIDv4生成関数
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+          /[xy]/g,
+          function (c) {
+            const r = (Math.random() * 16) | 0,
+              v = c === "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+          }
+        );
+      }
+    </script>
+  </body>
+</html>
