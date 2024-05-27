@@ -97,6 +97,8 @@
         <select id="method" name="method" required>
           <option value="GET">GET</option>
           <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="DELETE">DELETE</option>
         </select>
 
         <label for="headers">ヘッダー (key:value 形式で複数行):</label>
@@ -116,13 +118,26 @@
         ></textarea>
 
         <div class="templates">
+          <h3>テンプレート</h3>
           <label
-            ><input type="checkbox" id="headerTemplate" /> Content-Type:
-            application/json を追加</label
+            ><input type="checkbox" id="headerTemplate1" /> Content-Type:
+            application/json</label
           >
           <label
-            ><input type="checkbox" id="bodyTemplate" />
-            サンプルボディを追加</label
+            ><input type="checkbox" id="headerTemplate2" /> Authorization:
+            Bearer {token}</label
+          >
+          <label
+            ><input type="checkbox" id="headerTemplate3" /> Accept:
+            application/json</label
+          >
+          <label
+            ><input type="checkbox" id="bodyTemplate1" />
+            {"sampleKey":"sampleValue"}</label
+          >
+          <label
+            ><input type="checkbox" id="bodyTemplate2" />
+            {"username":"user","password":"pass"}</label
           >
         </div>
 
@@ -157,38 +172,58 @@
         });
 
         document
-          .getElementById("headerTemplate")
-          .addEventListener("change", (event) => {
-            const headersInput = document.getElementById("headers");
-            if (event.target.checked) {
-              headersInput.value += headersInput.value
-                ? "\nContent-Type: application/json"
-                : "Content-Type: application/json";
-            } else {
-              headersInput.value = headersInput.value.replace(
-                /\n?Content-Type: application\/json/g,
-                ""
-              );
-            }
-          });
-
+          .getElementById("headerTemplate1")
+          .addEventListener("change", handleTemplateChange);
         document
-          .getElementById("bodyTemplate")
-          .addEventListener("change", (event) => {
-            const bodyInput = document.getElementById("body");
-            const sampleBody = '{"sampleKey":"sampleValue"}';
-            if (event.target.checked) {
-              bodyInput.value += bodyInput.value
-                ? "\n" + sampleBody
-                : sampleBody;
-            } else {
-              bodyInput.value = bodyInput.value.replace(
-                new RegExp("\n?" + sampleBody),
-                ""
-              );
-            }
-          });
+          .getElementById("headerTemplate2")
+          .addEventListener("change", handleTemplateChange);
+        document
+          .getElementById("headerTemplate3")
+          .addEventListener("change", handleTemplateChange);
+        document
+          .getElementById("bodyTemplate1")
+          .addEventListener("change", handleTemplateChange);
+        document
+          .getElementById("bodyTemplate2")
+          .addEventListener("change", handleTemplateChange);
       });
+
+      function handleTemplateChange(event) {
+        const headersInput = document.getElementById("headers");
+        const bodyInput = document.getElementById("body");
+        const templateId = event.target.id;
+        const templates = {
+          headerTemplate1: "Content-Type: application/json",
+          headerTemplate2: "Authorization: Bearer {token}",
+          headerTemplate3: "Accept: application/json",
+          bodyTemplate1: '{"sampleKey":"sampleValue"}',
+          bodyTemplate2: '{"username":"user","password":"pass"}',
+        };
+
+        if (event.target.checked) {
+          if (templateId.startsWith("header")) {
+            headersInput.value += headersInput.value
+              ? "\n" + templates[templateId]
+              : templates[templateId];
+          } else {
+            bodyInput.value += bodyInput.value
+              ? "\n" + templates[templateId]
+              : templates[templateId];
+          }
+        } else {
+          if (templateId.startsWith("header")) {
+            headersInput.value = headersInput.value.replace(
+              new RegExp("\n?" + templates[templateId]),
+              ""
+            );
+          } else {
+            bodyInput.value = bodyInput.value.replace(
+              new RegExp("\n?" + templates[templateId]),
+              ""
+            );
+          }
+        }
+      }
 
       function generateCurlCommand() {
         const url = document.getElementById("url").value;
@@ -205,7 +240,7 @@
           });
         }
 
-        if (method === "POST" && body) {
+        if ((method === "POST" || method === "PUT") && body) {
           curlCommand += ` -d '${body}'`;
         }
 
