@@ -64,13 +64,6 @@
           <div class="flex items-center justify-between">
             <button
               type="button"
-              id="saveButton"
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              保存
-            </button>
-            <button
-              type="button"
               id="copyButton"
               class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
@@ -90,6 +83,7 @@
         const type = document.getElementById("commitType").value;
         const fullMessage = `${type}: ${message}`;
         localStorage.setItem(commitMessageKey, fullMessage);
+        document.getElementById("displayMessage").textContent = fullMessage;
       }
 
       function loadCommitMessage() {
@@ -99,6 +93,9 @@
           const message = messageParts.join(": ");
           document.getElementById("commitMessage").value = message;
           document.getElementById("commitType").value = type;
+          document.getElementById(
+            "displayMessage"
+          ).textContent = `${type}: ${message}`;
         }
       }
 
@@ -112,12 +109,16 @@
       document.addEventListener("DOMContentLoaded", () => {
         loadCommitMessage();
         document
-          .getElementById("saveButton")
-          .addEventListener("click", saveCommitMessage);
+          .getElementById("commitMessage")
+          .addEventListener("input", saveCommitMessage);
+        document
+          .getElementById("commitType")
+          .addEventListener("change", saveCommitMessage);
         document
           .getElementById("copyButton")
           .addEventListener("click", copyToClipboard);
       });
     </script>
+    <p id="displayMessage" class="text-center text-gray-700 mt-4"></p>
   </body>
 </html>
