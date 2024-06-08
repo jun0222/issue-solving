@@ -18,8 +18,10 @@
         margin-top: 10px;
       }
       .history-item {
-        background-color: #f4f4f4;
-        border: 1px solid #ddd;
+        background-color: #333;
+        color: #fff;
+        font-family: "Courier New", Courier, monospace;
+        border: 1px solid #666;
         padding: 10px;
         margin-top: 5px;
         cursor: pointer;
@@ -64,17 +66,7 @@
               <option value="revert">revert</option>
               <option value="style">style</option>
               <option value="test">test</option>
-              <option value="Build">Build</option>
-              <option value="Chore">Chore</option>
-              <option value="Ci">Ci</option>
-              <option value="Docs">Docs</option>
-              <option value="Feat">Feat</option>
-              <option value="Fix">Fix</option>
-              <option value="Perf">Perf</option>
-              <option value="Refactor">Refactor</option>
-              <option value="Revert">Revert</option>
-              <option value="Style">Style</option>
-              <option value="Test">Test</option>
+              <option value="custom">カスタム</option>
             </select>
           </div>
           <div class="mb-6">
@@ -119,6 +111,7 @@
     <script>
       const commitMessageKey = "gitCommitMessage";
       const commitTypeKey = "gitCommitType";
+      const commitHistoryKey = "gitCommitHistory";
       const commitMessageTemplates = {
         build: "ビルドシステムを更新しました。",
         chore: "定期的なタスクを実行しました。",
@@ -131,17 +124,7 @@
         revert: "以前のコミットを取り消しました。",
         style: "コードのスタイルを整えました。",
         test: "テストを追加しました。",
-        Build: "ビルドシステムを更新しました。",
-        Chore: "定期的なタスクを実行しました。",
-        Ci: "CIの設定を更新しました。",
-        Docs: "ドキュメントを更新しました。",
-        Feat: "新しい機能を追加しました。",
-        Fix: "バグを修正しました。",
-        Perf: "パフォーマンスを向上させました。",
-        Refactor: "コードをリファクタリングしました。",
-        Revert: "以前のコミットを取り消しました。",
-        Style: "コードのスタイルを整えました。",
-        Test: "テストを追加しました。",
+        custom: "カスタムメッセージを入力してください。",
       };
 
       function updateCommitMessage() {
@@ -161,22 +144,38 @@
 
       function saveToHistory() {
         const fullMessage = localStorage.getItem(commitMessageKey);
-        const historyList = document.getElementById("historyList");
-        const newItem = document.createElement("div");
-        newItem.className = "history-item";
-        newItem.innerHTML = `
-          <span>${fullMessage}</span>
-          <button class="delete-button" onclick="deleteHistoryItem(this)">削除</button>
-        `;
-        newItem.onclick = function () {
-          navigator.clipboard.writeText(this.querySelector("span").textContent);
-        };
-        historyList.appendChild(newItem);
+        let history = JSON.parse(localStorage.getItem(commitHistoryKey)) || [];
+        history.push(fullMessage);
+        localStorage.setItem(commitHistoryKey, JSON.stringify(history));
+        renderHistory();
       }
 
-      function deleteHistoryItem(button) {
-        const item = button.parentElement;
-        item.remove();
+      function renderHistory() {
+        const historyList = document.getElementById("historyList");
+        historyList.innerHTML = '<h3 class="text-gray-700 text-lg">履歴:</h3>';
+        const history =
+          JSON.parse(localStorage.getItem(commitHistoryKey)) || [];
+        history.forEach((message, index) => {
+          const newItem = document.createElement("div");
+          newItem.className = "history-item";
+          newItem.innerHTML = `
+            <span>${message}</span>
+            <button class="delete-button" onclick="deleteHistoryItem(${index})">削除</button>
+          `;
+          newItem.onclick = function () {
+            navigator.clipboard.writeText(
+              this.querySelector("span").textContent
+            );
+          };
+          historyList.appendChild(newItem);
+        });
+      }
+
+      function deleteHistoryItem(index) {
+        let history = JSON.parse(localStorage.getItem(commitHistoryKey)) || [];
+        history.splice(index, 1);
+        localStorage.setItem(commitHistoryKey, JSON.stringify(history));
+        renderHistory();
       }
 
       function copyToClipboard() {
@@ -197,6 +196,7 @@
         document
           .getElementById("commitType")
           .addEventListener("change", saveCommitMessage);
+        renderHistory();
       });
     </script>
   </body>
