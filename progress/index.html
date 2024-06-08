@@ -8,6 +8,10 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css"
+    />
   </head>
   <body>
     <div class="container mt-5">
@@ -44,9 +48,11 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js"></script>
     <script>
       const localStorageKeyTotal = "progressAppTotal";
       const localStorageKeyAchieved = "progressAppAchieved";
+      const notyf = new Notyf();
 
       window.onload = function () {
         const savedTotal = localStorage.getItem(localStorageKeyTotal);
@@ -72,6 +78,27 @@
 
         localStorage.setItem(localStorageKeyTotal, total);
         localStorage.setItem(localStorageKeyAchieved, achieved);
+
+        showEncouragement(percentage);
+      }
+
+      function showEncouragement(percentage) {
+        const thresholds = [1, 10, 30, 50, 80, 90, 100];
+        const messages = {
+          1: "良いスタートです！続けましょう！",
+          10: "10%達成！次のステップへ！",
+          30: "進捗順調ですね！30%も達成しました！",
+          50: "半分達成しました！この調子で！",
+          80: "もう少しです！80%も達成しました！",
+          90: "ほぼ完了です！あと少し！",
+          100: "おめでとうございます！完遂です！",
+        };
+
+        thresholds.forEach((threshold) => {
+          if (percentage >= threshold && percentage < threshold + 10) {
+            notyf.success(messages[threshold]);
+          }
+        });
       }
     </script>
   </body>
