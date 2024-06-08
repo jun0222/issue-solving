@@ -17,6 +17,24 @@
         border-radius: 5px;
         margin-top: 10px;
       }
+      .history-item {
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-top: 5px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .delete-button {
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 5px;
+        cursor: pointer;
+        border-radius: 3px;
+      }
     </style>
   </head>
   <body class="bg-gray-100">
@@ -78,11 +96,23 @@
               type="button"
               id="copyButton"
               class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              onclick="copyToClipboard()"
             >
               コピー
             </button>
+            <button
+              type="button"
+              id="saveButton"
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              onclick="saveToHistory()"
+            >
+              履歴に保存
+            </button>
           </div>
         </form>
+      </div>
+      <div id="historyList" class="mt-5">
+        <h3 class="text-gray-700 text-lg">履歴:</h3>
       </div>
     </div>
 
@@ -129,17 +159,24 @@
         document.getElementById("displayMessage").textContent = fullMessage;
       }
 
-      function loadCommitMessage() {
-        const savedMessage = localStorage.getItem(commitMessageKey);
-        if (savedMessage) {
-          const [type, ...messageParts] = savedMessage.split(": ");
-          const message = messageParts.join(": ");
-          document.getElementById("commitMessage").value = message;
-          document.getElementById("commitType").value = type;
-          document.getElementById(
-            "displayMessage"
-          ).textContent = `${type}: ${message}`;
-        }
+      function saveToHistory() {
+        const fullMessage = localStorage.getItem(commitMessageKey);
+        const historyList = document.getElementById("historyList");
+        const newItem = document.createElement("div");
+        newItem.className = "history-item";
+        newItem.innerHTML = `
+          <span>${fullMessage}</span>
+          <button class="delete-button" onclick="deleteHistoryItem(this)">削除</button>
+        `;
+        newItem.onclick = function () {
+          navigator.clipboard.writeText(this.querySelector("span").textContent);
+        };
+        historyList.appendChild(newItem);
+      }
+
+      function deleteHistoryItem(button) {
+        const item = button.parentElement;
+        item.remove();
       }
 
       function copyToClipboard() {
@@ -154,16 +191,12 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
-        loadCommitMessage();
         document
           .getElementById("commitMessage")
           .addEventListener("input", saveCommitMessage);
         document
           .getElementById("commitType")
           .addEventListener("change", saveCommitMessage);
-        document
-          .getElementById("copyButton")
-          .addEventListener("click", copyToClipboard);
       });
     </script>
   </body>

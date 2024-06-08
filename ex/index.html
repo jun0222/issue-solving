@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>スプレッドシート</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      input {
+        border: none;
+        width: 100%;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <table id="excelTable">
+      <tr>
+        <th>A</th>
+        <th>B</th>
+        <th>C</th>
+      </tr>
+      <tr>
+        <td><input type="text" oninput="updateCell(1, 'A', this.value)" /></td>
+        <td><input type="text" oninput="updateCell(1, 'B', this.value)" /></td>
+        <td><input type="text" oninput="updateCell(1, 'C', this.value)" /></td>
+      </tr>
+      <tr>
+        <td><input type="text" oninput="updateCell(2, 'A', this.value)" /></td>
+        <td><input type="text" oninput="updateCell(2, 'B', this.value)" /></td>
+        <td><input type="text" oninput="updateCell(2, 'C', this.value)" /></td>
+      </tr>
+      <!-- 他の行も同様に追加 -->
+    </table>
+
+    <script>
+      let data = {};
+
+      function updateCell(row, column, value) {
+        if (!data[row]) {
+          data[row] = {};
+        }
+        data[row][column] = value;
+        console.log(data);
+      }
+    </script>
+  </body>
+</html>
