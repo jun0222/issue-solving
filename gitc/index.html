@@ -145,7 +145,7 @@
       function saveToHistory() {
         const fullMessage = localStorage.getItem(commitMessageKey);
         let history = JSON.parse(localStorage.getItem(commitHistoryKey)) || [];
-        history.push(fullMessage);
+        history.unshift(fullMessage);
         localStorage.setItem(commitHistoryKey, JSON.stringify(history));
         renderHistory();
       }
@@ -162,10 +162,19 @@
             <span>${message}</span>
             <button class="delete-button" onclick="deleteHistoryItem(${index})">削除</button>
           `;
+          newItem.onmouseenter = function () {
+            this.querySelector("span").textContent = "クリックしてコピー";
+          };
+          newItem.onmouseleave = function () {
+            this.querySelector("span").textContent = message;
+          };
           newItem.onclick = function () {
-            navigator.clipboard.writeText(
-              this.querySelector("span").textContent
-            );
+            navigator.clipboard.writeText(message).then(() => {
+              this.querySelector("span").textContent = "コピーOK";
+              setTimeout(() => {
+                this.querySelector("span").textContent = message;
+              }, 2000);
+            });
           };
           historyList.appendChild(newItem);
         });
