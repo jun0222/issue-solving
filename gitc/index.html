@@ -139,6 +139,8 @@
         const type = document.getElementById("commitType").value;
         const fullMessage = `${type}: ${message}`;
         localStorage.setItem(commitMessageKey, fullMessage);
+        localStorage.setItem(commitTypeKey, type);
+        localStorage.setItem(commitMessageKey, message);
         document.getElementById("displayMessage").textContent = fullMessage;
       }
 
