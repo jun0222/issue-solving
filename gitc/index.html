@@ -33,6 +33,7 @@
             <select
               id="commitType"
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              onchange="updateCommitMessage()"
             >
               <option value="build">build</option>
               <option value="chore">chore</option>
@@ -88,6 +89,37 @@
     <script>
       const commitMessageKey = "gitCommitMessage";
       const commitTypeKey = "gitCommitType";
+      const commitMessageTemplates = {
+        build: "ビルドシステムを更新しました。",
+        chore: "定期的なタスクを実行しました。",
+        ci: "CIの設定を更新しました。",
+        docs: "ドキュメントを更新しました。",
+        feat: "新しい機能を追加しました。",
+        fix: "バグを修正しました。",
+        perf: "パフォーマンスを向上させました。",
+        refactor: "コードをリファクタリングしました。",
+        revert: "以前のコミットを取り消しました。",
+        style: "コードのスタイルを整えました。",
+        test: "テストを追加しました。",
+        Build: "ビルドシステムを更新しました。",
+        Chore: "定期的なタスクを実行しました。",
+        Ci: "CIの設定を更新しました。",
+        Docs: "ドキュメントを更新しました。",
+        Feat: "新しい機能を追加しました。",
+        Fix: "バグを修正しました。",
+        Perf: "パフォーマンスを向上させました。",
+        Refactor: "コードをリファクタリングしました。",
+        Revert: "以前のコミットを取り消しました。",
+        Style: "コードのスタイルを整えました。",
+        Test: "テストを追加しました。",
+      };
+
+      function updateCommitMessage() {
+        const type = document.getElementById("commitType").value;
+        const template = commitMessageTemplates[type];
+        document.getElementById("commitMessage").value = template;
+        saveCommitMessage();
+      }
 
       function saveCommitMessage() {
         const message = document.getElementById("commitMessage").value;
@@ -113,7 +145,11 @@
       function copyToClipboard() {
         const fullMessage = localStorage.getItem(commitMessageKey);
         navigator.clipboard.writeText(fullMessage).then(() => {
-          alert("コピーしました！");
+          const copyButton = document.getElementById("copyButton");
+          copyButton.textContent = "コピーOK";
+          setTimeout(() => {
+            copyButton.textContent = "コピー";
+          }, 2000);
         });
       }
 
