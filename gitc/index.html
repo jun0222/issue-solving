@@ -8,9 +8,20 @@
       href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
     />
+    <style>
+      #displayMessage {
+        background-color: black;
+        color: limegreen;
+        font-family: "Courier New", Courier, monospace;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+    </style>
   </head>
   <body class="bg-gray-100">
     <div class="container mx-auto p-5">
+      <p id="displayMessage" class="text-center"></p>
       <div class="max-w-md mx-auto bg-white p-5 rounded shadow">
         <form>
           <div class="mb-4">
@@ -119,6 +130,5 @@
           .addEventListener("click", copyToClipboard);
       });
     </script>
-    <p id="displayMessage" class="text-center text-gray-700 mt-4"></p>
   </body>
 </html>
