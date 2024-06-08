@@ -38,6 +38,7 @@
           id="total"
           class="form-control"
           oninput="updateProgress()"
+          min="0"
         />
         <label for="achieved">現在達成個数:</label>
         <input
@@ -45,6 +46,7 @@
           id="achieved"
           class="form-control"
           oninput="updateProgress()"
+          min="0"
         />
         <button class="btn btn-primary mt-2" onclick="incrementAchieved(1)">
           +1
@@ -57,6 +59,9 @@
         </button>
         <button class="btn btn-warning mt-2" onclick="incrementAchieved(-10)">
           -10
+        </button>
+        <button class="btn btn-info mt-2" onclick="resetValues()">
+          リセット
         </button>
       </div>
     </div>
@@ -110,6 +115,41 @@
       const localStorageKeyAchieved = "progressAppAchieved";
       const notyf = new Notyf();
 
+      const encouragementMessages = [
+        "素晴らしいです！",
+        "よくできました！",
+        "素晴らしい努力です！",
+        "その調子です！",
+        "見事です！",
+        "すごいですね！",
+        "続けてください！",
+        "素晴らしい成果です！",
+        "驚きました！",
+        "完璧です！",
+        "エクセレント！",
+        "天才！",
+        "すばらしい才能ですね！",
+        "素晴らしい達成感ですね！",
+        "感動しました！",
+        "あなたは本当に優秀ですね！",
+        "素敵な仕事ぶりです！",
+        "あなたの努力に感謝します！",
+        "あなたは本当にすごいです！",
+        "素晴らしい結果ですね！",
+        "期待以上の出来栄えです！",
+        "あなたの実力に脱帽です！",
+        "素晴らしい才能の持ち主ですね！",
+        "あなたの力量に感服しました！",
+        "素晴らしい出来栄えに感激しました！",
+        "素晴らしい成果を上げましたね！",
+        "あなたの実力は本物ですね！",
+        "驚くべき達成感ですね！",
+        "あなたの努力は報われましたね！",
+        "素晴らしい結果に感謝します！",
+        "あなたの実力には感服するばかりです！",
+        "努力の怪物！？",
+      ];
+
       window.onload = function () {
         const savedTotal = localStorage.getItem(localStorageKeyTotal) || "0";
         const savedAchieved =
@@ -121,7 +161,8 @@
 
       function incrementAchieved(amount) {
         const achievedInput = document.getElementById("achieved");
-        achievedInput.value = parseInt(achievedInput.value) + amount;
+        const newAchieved = Math.max(0, parseInt(achievedInput.value) + amount);
+        achievedInput.value = newAchieved;
         updateProgress();
       }
 
@@ -143,23 +184,22 @@
         checkCompletion(percentage);
       }
 
-      function showEncouragement(percentage) {
-        const thresholds = [1, 10, 30, 50, 80, 90, 100];
-        const messages = {
-          1: "良いスタートです！続けましょう！",
-          10: "10%達成！次のステップへ！",
-          30: "進捗順調ですね！30%も達成しました！",
-          50: "半分達成しました！この調子で！",
-          80: "もう少しです！80%も達成しました！",
-          90: "ほぼ完了です！あと少し！",
-          100: "おめでとうございます！完遂です！",
-        };
+      function resetValues() {
+        if (confirm("本当にリセットしてもよろしいですか？")) {
+          document.getElementById("total").value = 0;
+          document.getElementById("achieved").value = 0;
+          updateProgress();
+        }
+      }
 
-        thresholds.forEach((threshold) => {
-          if (percentage >= threshold && percentage < threshold + 10) {
-            notyf.success(messages[threshold]);
-          }
-        });
+      function showEncouragement(percentage) {
+        const randomIndex = Math.floor(
+          Math.random() * encouragementMessages.length
+        );
+        const message = `達成率${percentage.toFixed(2)}%！${
+          encouragementMessages[randomIndex]
+        }`;
+        notyf.success(message);
       }
 
       function triggerConfetti(percentage) {
