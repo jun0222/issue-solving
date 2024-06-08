@@ -61,6 +61,45 @@
       </div>
     </div>
 
+    <!-- Completion Modal -->
+    <div
+      class="modal fade"
+      id="completionModal"
+      tabindex="-1"
+      aria-labelledby="completionModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="completionModalLabel">
+              達成おめでとうございます！
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            100%達成！素晴らしい努力でした！5分間の休憩を取り、次のタスクにも一歩ずつ頑張りましょう！
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              閉じる
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -101,6 +140,7 @@
 
         showEncouragement(percentage);
         triggerConfetti(percentage);
+        checkCompletion(percentage);
       }
 
       function showEncouragement(percentage) {
@@ -130,6 +170,12 @@
           spread: 70,
           origin: { y: 0.6 },
         });
+      }
+
+      function checkCompletion(percentage) {
+        if (percentage >= 100) {
+          $("#completionModal").modal("show");
+        }
       }
     </script>
   </body>
