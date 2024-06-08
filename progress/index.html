@@ -12,6 +12,10 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/canvas-confetti/style.css"
+    />
   </head>
   <body>
     <div class="container mt-5">
@@ -42,6 +46,18 @@
           class="form-control"
           oninput="updateProgress()"
         />
+        <button class="btn btn-primary mt-2" onclick="incrementAchieved(1)">
+          +1
+        </button>
+        <button class="btn btn-secondary mt-2" onclick="incrementAchieved(10)">
+          +10
+        </button>
+        <button class="btn btn-danger mt-2" onclick="incrementAchieved(-1)">
+          -1
+        </button>
+        <button class="btn btn-warning mt-2" onclick="incrementAchieved(-10)">
+          -10
+        </button>
       </div>
     </div>
 
@@ -49,22 +65,26 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti"></script>
     <script>
       const localStorageKeyTotal = "progressAppTotal";
       const localStorageKeyAchieved = "progressAppAchieved";
       const notyf = new Notyf();
 
       window.onload = function () {
-        const savedTotal = localStorage.getItem(localStorageKeyTotal);
-        const savedAchieved = localStorage.getItem(localStorageKeyAchieved);
-        if (savedTotal) {
-          document.getElementById("total").value = savedTotal;
-        }
-        if (savedAchieved) {
-          document.getElementById("achieved").value = savedAchieved;
-        }
+        const savedTotal = localStorage.getItem(localStorageKeyTotal) || "0";
+        const savedAchieved =
+          localStorage.getItem(localStorageKeyAchieved) || "0";
+        document.getElementById("total").value = savedTotal;
+        document.getElementById("achieved").value = savedAchieved;
         updateProgress();
       };
+
+      function incrementAchieved(amount) {
+        const achievedInput = document.getElementById("achieved");
+        achievedInput.value = parseInt(achievedInput.value) + amount;
+        updateProgress();
+      }
 
       function updateProgress() {
         const total = document.getElementById("total").value;
@@ -80,6 +100,7 @@
         localStorage.setItem(localStorageKeyAchieved, achieved);
 
         showEncouragement(percentage);
+        triggerConfetti(percentage);
       }
 
       function showEncouragement(percentage) {
@@ -98,6 +119,16 @@
           if (percentage >= threshold && percentage < threshold + 10) {
             notyf.success(messages[threshold]);
           }
+        });
+      }
+
+      function triggerConfetti(percentage) {
+        const count = Math.min(100, Math.floor(percentage));
+        const multiplier = percentage === 100 ? 3 : 1; // 100%の時は紙吹雪を3倍にする
+        confetti({
+          particleCount: count * multiplier,
+          spread: 70,
+          origin: { y: 0.6 },
         });
       }
     </script>
