@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Git コミットメッセージツール</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto p-5">
+      <div class="max-w-md mx-auto bg-white p-5 rounded shadow">
+        <form>
+          <div class="mb-4">
+            <label
+              for="commitType"
+              class="block text-gray-700 text-sm font-bold mb-2"
+              >コミットタイプ:</label
+            >
+            <select
+              id="commitType"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
+              <option value="build">build</option>
+              <option value="chore">chore</option>
+              <option value="ci">ci</option>
+              <option value="docs">docs</option>
+              <option value="feat">feat</option>
+              <option value="fix">fix</option>
+              <option value="perf">perf</option>
+              <option value="refactor">refactor</option>
+              <option value="revert">revert</option>
+              <option value="style">style</option>
+              <option value="test">test</option>
+            </select>
+          </div>
+          <div class="mb-6">
+            <label
+              for="commitMessage"
+              class="block text-gray-700 text-sm font-bold mb-2"
+              >コミットメッセージ:</label
+            >
+            <textarea
+              id="commitMessage"
+              name="commitMessage"
+              rows="4"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="コミットメッセージを入力してください"
+            ></textarea>
+          </div>
+          <div class="flex items-center justify-between">
+            <button
+              type="button"
+              id="saveButton"
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              保存
+            </button>
+            <button
+              type="button"
+              id="copyButton"
+              class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              コピー
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const commitMessageKey = "gitCommitMessage";
+      const commitTypeKey = "gitCommitType";
+
+      function saveCommitMessage() {
+        const message = document.getElementById("commitMessage").value;
+        const type = document.getElementById("commitType").value;
+        const fullMessage = `${type}: ${message}`;
+        localStorage.setItem(commitMessageKey, fullMessage);
+      }
+
+      function loadCommitMessage() {
+        const savedMessage = localStorage.getItem(commitMessageKey);
+        if (savedMessage) {
+          const [type, ...messageParts] = savedMessage.split(": ");
+          const message = messageParts.join(": ");
+          document.getElementById("commitMessage").value = message;
+          document.getElementById("commitType").value = type;
+        }
+      }
+
+      function copyToClipboard() {
+        const fullMessage = localStorage.getItem(commitMessageKey);
+        navigator.clipboard.writeText(fullMessage).then(() => {
+          alert("コピーしました！");
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadCommitMessage();
+        document
+          .getElementById("saveButton")
+          .addEventListener("click", saveCommitMessage);
+        document
+          .getElementById("copyButton")
+          .addEventListener("click", copyToClipboard);
+      });
+    </script>
+  </body>
+</html>
