@@ -22,6 +22,9 @@
         width: 100%;
         box-sizing: border-box;
       }
+      button {
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
@@ -31,21 +34,13 @@
         <th>B</th>
         <th>C</th>
       </tr>
-      <tr>
-        <td><input type="text" oninput="updateCell(1, 'A', this.value)" /></td>
-        <td><input type="text" oninput="updateCell(1, 'B', this.value)" /></td>
-        <td><input type="text" oninput="updateCell(1, 'C', this.value)" /></td>
-      </tr>
-      <tr>
-        <td><input type="text" oninput="updateCell(2, 'A', this.value)" /></td>
-        <td><input type="text" oninput="updateCell(2, 'B', this.value)" /></td>
-        <td><input type="text" oninput="updateCell(2, 'C', this.value)" /></td>
-      </tr>
-      <!-- 他の行も同様に追加 -->
+      <!-- 行は動的に追加されます -->
     </table>
+    <button onclick="addRow()">行を追加</button>
 
     <script>
       let data = {};
+      let rowCount = 0;
 
       function updateCell(row, column, value) {
         if (!data[row]) {
@@ -53,6 +48,22 @@
         }
         data[row][column] = value;
         console.log(data);
+      }
+
+      function addRow() {
+        rowCount++;
+        const table = document.getElementById("excelTable");
+        const row = table.insertRow(-1);
+        const columns = ["A", "B", "C"];
+        columns.forEach((column, index) => {
+          const cell = row.insertCell(index);
+          const input = document.createElement("input");
+          input.type = "text";
+          input.oninput = function () {
+            updateCell(rowCount, column, this.value);
+          };
+          cell.appendChild(input);
+        });
       }
     </script>
   </body>

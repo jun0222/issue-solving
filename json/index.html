@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>JSONレスポンスデモ</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      #response {
+        white-space: pre-wrap;
+        background-color: #f4f4f4;
+        padding: 10px;
+        border: 1px solid #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="fetchJson()">JSONを取得</button>
+    <div id="response"></div>
+    <script>
+      function fetchJson() {
+        const jsonResponse = {
+          status: "成功",
+          message: "これはテストJSONレスポンスです。",
+          data: {
+            id: 1,
+            name: "テストユーザー",
+            email: "test@example.com",
+          },
+        };
+
+        document.getElementById("response").textContent = JSON.stringify(
+          jsonResponse,
+          null,
+          2
+        );
+      }
+    </script>
+  </body>
+</html>
