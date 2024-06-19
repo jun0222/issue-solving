@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JSONフォーマッター</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      textarea {
+        width: 100%;
+        height: 150px;
+        margin-bottom: 10px;
+      }
+      button {
+        padding: 10px 15px;
+        font-size: 16px;
+      }
+      pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        border: 1px solid #ddd;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+      .error {
+        color: red;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>JSONフォーマッター</h1>
+    <textarea id="jsonInput" placeholder="ここにJSONを貼り付けてください...">
+{"name": "山田太郎", "age": 30, "city": "東京"}</textarea
+    >
+    <button onclick="formatJSON()">JSONをフォーマット</button>
+    <pre id="jsonOutput"></pre>
+    <div id="errorOutput" class="error"></div>
+
+    <script>
+      function formatJSON() {
+        const input = document.getElementById("jsonInput").value;
+        const output = document.getElementById("jsonOutput");
+        const errorOutput = document.getElementById("errorOutput");
+
+        // 以前の出力をクリア
+        output.textContent = "";
+        errorOutput.textContent = "";
+
+        try {
+          const parsedJSON = JSON.parse(input);
+          output.textContent = JSON.stringify(parsedJSON, null, 2);
+        } catch (e) {
+          errorOutput.textContent = "JSONエラー: " + e.message;
+        }
+      }
+    </script>
+  </body>
+</html>
