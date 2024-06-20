@@ -29,18 +29,47 @@
         color: red;
         margin-top: 10px;
       }
+      #charCount {
+        font-size: 12px;
+        margin-top: 5px;
+      }
     </style>
   </head>
   <body>
     <h1>JSONフォーマッター</h1>
-    <textarea id="jsonInput" placeholder="ここにJSONを貼り付けてください...">
-{"name": "山田太郎", "age": 30, "city": "東京"}</textarea
-    >
+    <textarea
+      id="jsonInput"
+      placeholder="ここにJSONを貼り付けてください..."
+      oninput="updateCharCount()"
+      onkeyup="updateCursorPosition()"
+      onclick="updateCursorPosition()"
+    ></textarea>
+    <div id="charCount">カーソルの位置 => 行数: 0, 文字数: 0</div>
     <button onclick="formatJSON()">JSONをフォーマット</button>
     <pre id="jsonOutput"></pre>
     <div id="errorOutput" class="error"></div>
 
     <script>
+      function updateCharCount() {
+        const input = document.getElementById("jsonInput");
+        const count = document.getElementById("charCount");
+        const lines = input.value.split("\n").length;
+        const chars = input.value.length;
+        count.textContent = `行数: ${lines}, 文字数: ${chars}`;
+      }
+
+      function updateCursorPosition() {
+        const input = document.getElementById("jsonInput");
+        const count = document.getElementById("charCount");
+        const cursorPosition = input.selectionStart;
+        const lines = input.value.substr(0, cursorPosition).split("\n").length;
+        const chars =
+          cursorPosition -
+          input.value.lastIndexOf("\n", cursorPosition - 1) -
+          1;
+        count.textContent = `行数: ${lines}, 文字数: ${chars}`;
+      }
+
       function formatJSON() {
         const input = document.getElementById("jsonInput").value;
         const output = document.getElementById("jsonOutput");
