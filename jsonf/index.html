@@ -58,12 +58,13 @@
     <textarea
       id="extraInput"
       placeholder="ここに置いておきたいものを入力してください..."
+      oninput="saveToLocalStorage('extraInput')"
     ></textarea>
     <h1>JSONフォーマッター</h1>
     <textarea
       id="jsonInput"
       placeholder="ここにJSONを貼り付けてください..."
-      oninput="updateCharCount()"
+      oninput="updateCharCount(); saveToLocalStorage('jsonInput')"
       onkeyup="updateCursorPosition()"
       onclick="updateCursorPosition()"
     ></textarea>
@@ -74,7 +75,7 @@
     <pre id="sampleJson" onclick="copySampleJson()">
 {"name": "Tanaka", "age": 28, "city": "Tokyo"}</pre
     >
-    <button onclick="copySampleJson()">サンプルJSONをコピー</button>
+    <!-- <button onclick="copySampleJson()">サンプルJSONをコピー</button> -->
     <div id="toast">コピーされました</div>
 
     <script>
@@ -83,7 +84,7 @@
         const count = document.getElementById("charCount");
         const lines = input.value.split("\n").length;
         const chars = input.value.length;
-        count.textContent = `行数: ${lines}, 文字数: ${chars}`;
+        count.textContent = `カーソルの位置 => 行数: ${lines}, 文字数: ${chars}`;
       }
 
       function updateCursorPosition() {
@@ -95,7 +96,7 @@
           cursorPosition -
           input.value.lastIndexOf("\n", cursorPosition - 1) -
           1;
-        count.textContent = `行数: ${lines}, 文字数: ${chars}`;
+        count.textContent = `カーソルの位置 => 行数: ${lines}, 文字数: ${chars}`;
       }
 
       function formatJSON() {
@@ -158,6 +159,24 @@
           toast.style.visibility = "hidden";
         }, 3000);
       }
+
+      function saveToLocalStorage(id) {
+        const element = document.getElementById(id);
+        localStorage.setItem(id, element.value);
+      }
+
+      function loadFromLocalStorage(id) {
+        const element = document.getElementById(id);
+        const savedValue = localStorage.getItem(id);
+        if (savedValue) {
+          element.value = savedValue;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadFromLocalStorage("extraInput");
+        loadFromLocalStorage("jsonInput");
+      });
     </script>
   </body>
 </html>
