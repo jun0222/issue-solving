@@ -24,6 +24,7 @@
         border: 1px solid #ddd;
         white-space: pre-wrap;
         word-wrap: break-word;
+        cursor: pointer;
       }
       .error {
         color: red;
@@ -35,6 +36,21 @@
       }
       #sampleJson {
         cursor: pointer;
+      }
+      #toast {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+        font-size: 17px;
       }
     </style>
   </head>
@@ -53,12 +69,13 @@
     ></textarea>
     <div id="charCount">カーソルの位置 => 行数: 0, 文字数: 0</div>
     <button onclick="formatJSON()">JSONをフォーマット</button>
-    <pre id="jsonOutput"></pre>
+    <pre id="jsonOutput" onclick="copyFormattedJson()"></pre>
     <div id="errorOutput" class="error"></div>
     <pre id="sampleJson" onclick="copySampleJson()">
 {"name": "Tanaka", "age": 28, "city": "Tokyo"}</pre
     >
     <button onclick="copySampleJson()">サンプルJSONをコピー</button>
+    <div id="toast">コピーされました</div>
 
     <script>
       function updateCharCount() {
@@ -107,16 +124,39 @@
         }
       }
 
+      function copyFormattedJson() {
+        const formattedJson = document.getElementById("jsonOutput");
+        navigator.clipboard.writeText(formattedJson.textContent).then(
+          () => {
+            showToast(
+              "フォーマットされたJSONがクリップボードにコピーされました。"
+            );
+          },
+          (err) => {
+            showToast("コピーに失敗しました: " + err);
+          }
+        );
+      }
+
       function copySampleJson() {
         const sampleJson = document.getElementById("sampleJson");
         navigator.clipboard.writeText(sampleJson.textContent).then(
           () => {
-            alert("サンプルJSONがクリップボードにコピーされました。");
+            showToast("サンプルJSONがクリップボードにコピーされました。");
           },
           (err) => {
-            alert("コピーに失敗しました: " + err);
+            showToast("コピーに失敗しました: " + err);
           }
         );
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.style.visibility = "visible";
+        setTimeout(() => {
+          toast.style.visibility = "hidden";
+        }, 3000);
       }
     </script>
   </body>
