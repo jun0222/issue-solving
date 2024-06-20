@@ -1,0 +1,31 @@
+<button onclick="showCustomToast()">トーストを表示</button>
+<div id="customToast" style="visibility: hidden">
+  カスタムトーストメッセージ
+</div>
+
+<style>
+  #customToast {
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+  }
+</style>
+
+<script>
+  function showCustomToast() {
+    const toast = document.getElementById("customToast");
+    toast.style.visibility = "visible";
+    setTimeout(() => {
+      toast.style.visibility = "hidden";
+    }, 3000);
+  }
+</script>
