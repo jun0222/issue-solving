@@ -33,6 +33,9 @@
         font-size: 12px;
         margin-top: 5px;
       }
+      #sampleJson {
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -52,6 +55,10 @@
     <button onclick="formatJSON()">JSONをフォーマット</button>
     <pre id="jsonOutput"></pre>
     <div id="errorOutput" class="error"></div>
+    <pre id="sampleJson" onclick="copySampleJson()">
+{"name": "Tanaka", "age": 28, "city": "Tokyo"}</pre
+    >
+    <button onclick="copySampleJson()">サンプルJSONをコピー</button>
 
     <script>
       function updateCharCount() {
@@ -98,6 +105,18 @@
             errorOutput.textContent = "予期せぬJSONエラー: " + e.message;
           }
         }
+      }
+
+      function copySampleJson() {
+        const sampleJson = document.getElementById("sampleJson");
+        navigator.clipboard.writeText(sampleJson.textContent).then(
+          () => {
+            alert("サンプルJSONがクリップボードにコピーされました。");
+          },
+          (err) => {
+            alert("コピーに失敗しました: " + err);
+          }
+        );
       }
     </script>
   </body>
