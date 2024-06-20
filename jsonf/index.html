@@ -84,54 +84,12 @@
           output.textContent = JSON.stringify(parsedJSON, null, 2);
         } catch (e) {
           if (e instanceof SyntaxError) {
-            let errorMessage =
-              "JSONエラー: 構文が正しくありません。入力を確認してください。";
-            if (e.message.includes("Unexpected token")) {
-              errorMessage +=
-                " 予期しないトークンが含まれています。JSONの形式が間違っている可能性があります。";
-            } else if (e.message.includes("Unexpected end of JSON input")) {
-              errorMessage +=
-                " JSON入力が途中で終了しています。全てのオブジェクトや配列が正しく閉じられているか確認してください。";
-            } else if (e.message.includes("Unexpected string")) {
-              errorMessage +=
-                " 予期しない文字列が含まれています。文字列はダブルクォーテーションで囲む必要があります。";
-            } else if (e.message.includes("Unexpected number")) {
-              errorMessage +=
-                " 予期しない数値が含まれています。数値の位置が不適切かもしれません。";
-            } else if (e.message.includes("Unexpected boolean")) {
-              errorMessage +=
-                " 予期しないブール値が含まれています。ブール値の使用が適切か確認してください。";
-            } else if (e.message.includes("Unexpected null")) {
-              errorMessage +=
-                " 予期しないnull値が含まれています。nullの使用が適切か確認してください。";
-            } else if (
-              e.message.includes("Unexpected token u in JSON at position 0")
-            ) {
-              errorMessage +=
-                " JSONが未定義のままです。JSON入力が正しく開始されているか確認してください。";
-            }
-            errorOutput.textContent =
-              errorMessage + " エラー詳細: " + e.message;
-          } else if (e instanceof ReferenceError) {
-            errorOutput.textContent =
-              "JSONエラー: 参照エラーが発生しました。存在しない変数が参照されています。エラー詳細: " +
-              e.message;
-          } else if (e instanceof TypeError) {
-            errorOutput.textContent =
-              "JSONエラー: 型エラーが発生しました。期待される型と異なる型が使用されています。エラー詳細: " +
-              e.message;
-          } else if (e instanceof RangeError) {
-            errorOutput.textContent =
-              "JSONエラー: 範囲エラーが発生しました。許容される範囲を超えた値が使用されています。エラー詳細: " +
-              e.message;
-          } else if (e instanceof URIError) {
-            errorOutput.textContent =
-              "JSONエラー: URIエラーが発生しました。不正なURIが使用されています。エラー詳細: " +
-              e.message;
-          } else if (e instanceof EvalError) {
-            errorOutput.textContent =
-              "JSONエラー: Evalエラーが発生しました。eval()関数が不正に使用されました。エラー詳細: " +
-              e.message;
+            const position = e.message.match(/at position (\d+)/);
+            const pos = position ? parseInt(position[1], 10) : 0;
+            const lines = input.substr(0, pos).split("\n");
+            const lineNumber = lines.length;
+            const charNumber = lines[lines.length - 1].length + 1;
+            errorOutput.textContent = `JSONエラー: 構文が正しくありません。行: ${lineNumber}, 文字: ${charNumber}`;
           } else {
             errorOutput.textContent = "予期せぬJSONエラー: " + e.message;
           }
