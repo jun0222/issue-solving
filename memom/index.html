@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>マテリアルデザインmemo</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .app-container {
+        font-family: "Roboto", sans-serif;
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .app-title {
+        color: #333;
+        text-align: center;
+      }
+      .memo-input-container {
+        display: flex;
+        margin-top: 20px;
+      }
+      .memo-input {
+        flex-grow: 1;
+        padding: 10px;
+        font-size: 16px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+      }
+      .add-btn {
+        padding: 10px 20px;
+        margin-left: 10px;
+        background-color: #6200ea;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .memo-list {
+        margin-top: 20px;
+      }
+      .memo-item {
+        background-color: white;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <h1 class="app-title">メモアプリ</h1>
+      <div class="memo-input-container">
+        <textarea
+          id="memoInput"
+          class="memo-input"
+          placeholder="メモを入力してください..."
+        ></textarea>
+        <button onclick="addMemo()" class="add-btn">追加</button>
+      </div>
+      <div id="memoList" class="memo-list"></div>
+    </div>
+
+    <script>
+      function addMemo() {
+        const input = document.getElementById("memoInput");
+        const memoList = document.getElementById("memoList");
+        const memo = input.value.trim();
+        if (memo) {
+          const memoElement = document.createElement("div");
+          memoElement.className = "memo-item";
+          memoElement.textContent = memo;
+          memoList.appendChild(memoElement);
+          input.value = ""; // Clear input after adding
+        }
+      }
+    </script>
+  </body>
+</html>
