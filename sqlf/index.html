@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQLフォーマッタ</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f0f0f0;
+        color: #333;
+      }
+
+      #editor,
+      #output {
+        width: 100%;
+        height: 150px;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        background-color: #fff;
+        font-family: "Courier New", monospace;
+      }
+
+      #output {
+        background-color: #f9f9f9;
+        white-space: pre-wrap; /* 改行と空白を保持 */
+      }
+
+      .keyword {
+        font-weight: bold;
+        color: #1a73e8;
+      }
+
+      .operator {
+        color: #d9534f;
+      }
+
+      .number {
+        color: #5bc0de;
+      }
+
+      .string {
+        color: #f0ad4e;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SQLフォーマッタ</h1>
+    <textarea
+      id="editor"
+      placeholder="SQLコードを入力してください..."
+    ></textarea>
+    <pre id="output"></pre>
+    <script>
+      function formatSQL(sql) {
+        const keywords = [
+          "SELECT",
+          "FROM",
+          "WHERE",
+          "AND",
+          "OR",
+          "GROUP BY",
+          "ORDER BY",
+          "LIMIT",
+          "INSERT INTO",
+          "VALUES",
+          "UPDATE",
+          "SET",
+          "DELETE FROM",
+          "INNER JOIN",
+          "LEFT JOIN",
+          "RIGHT JOIN",
+          "FULL JOIN",
+        ];
+        const operators = ["=", ">", "<", ">=", "<=", "<>"];
+        const formattedSQL = sql
+          .replace(/--.*$/gm, "") // コメントを削除
+          .replace(/\s+/g, " ") // 余分な空白を削除
+          .replace(/,\s*/g, ", ") // カンマの後の空白を整える
+          .replace(/\(\s*/g, "( ") // 括弧の後の空白を整える
+          .replace(/\s*\)/g, " )") // 括弧の前の空白を整える
+          .replace(/;\s*/g, ";\n") // セミコロン後に改行を挿入
+          .replace(
+            new RegExp(`\\b(${keywords.join("|")})\\b`, "gi"),
+            (match) => `\n<span class="keyword">${match.toUpperCase()}</span>`
+          )
+          .replace(
+            new RegExp(`\\b(${operators.join("|")})\\b`, "g"),
+            (match) => `<span class="operator">${match}</span>`
+          )
+          .replace(
+            /\b\d+\b/g,
+            (match) => `<span class="number">${match}</span>`
+          )
+          .replace(
+            /'[^']*'/g,
+            (match) => `<span class="string">${match}</span>`
+          )
+          .trim();
+        return formattedSQL.replace(/^\s+|\s+$/g, "").replace(/\n{2,}/g, "\n");
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const sqlEditor = document.getElementById("editor");
+        const formattedOutput = document.getElementById("output");
+
+        sqlEditor.addEventListener("input", function () {
+          try {
+            const formattedSQL = formatSQL(sqlEditor.value);
+            formattedOutput.innerHTML = formattedSQL;
+          } catch (e) {
+            formattedOutput.textContent = "エラー: " + e.message;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
