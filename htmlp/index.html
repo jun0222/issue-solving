@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTMLプレビューエディター</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>HTMLプレビューエディター</h1>
+      <div class="buttons">
+        <button id="toggle-theme">ダークモード切り替え</button>
+        <button id="save-code">保存</button>
+        <button id="load-code">読み込み</button>
+        <button id="reset-code">リセット</button>
+      </div>
+    </header>
+    <main>
+      <section>
+        <textarea
+          id="editor"
+          placeholder="HTMLコードを入力してください..."
+        ></textarea>
+        <div id="error"></div>
+      </section>
+      <section id="preview">
+        <iframe id="output"></iframe>
+      </section>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+  </body>
+</html>
+
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f0f0f0;
+    color: #333;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  body.dark {
+    background-color: #333;
+    color: #f0f0f0;
+  }
+
+  header {
+    background-color: #444;
+    color: #fff;
+    width: 100%;
+    padding: 20px 0;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  header.dark {
+    background-color: #222;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  button {
+    background-color: #666;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #555;
+  }
+
+  button.dark {
+    background-color: #444;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    margin: 20px 0;
+  }
+
+  section {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  #editor {
+    width: 100%;
+    height: 200px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    font-family: monospace;
+    resize: vertical;
+    background-color: #fff;
+    color: #000;
+  }
+
+  #editor.dark {
+    background-color: #222;
+    color: #fff;
+  }
+
+  #error {
+    color: red;
+    margin-top: 10px;
+  }
+
+  #preview {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ccc;
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const editor = document.getElementById("editor");
+    const output = document.getElementById("output");
+    const error = document.getElementById("error");
+
+    function updatePreview() {
+      const code = editor.value;
+      const doc = output.contentDocument || output.contentWindow.document;
+      doc.open();
+      doc.write("");
+      doc.close();
+      try {
+        doc.open();
+        doc.write(code);
+        doc.close();
+        error.textContent = "";
+      } catch (e) {
+        error.textContent = "エラー: " + e.message;
+      }
+    }
+
+    editor.addEventListener("input", updatePreview);
+
+    document
+      .getElementById("toggle-theme")
+      .addEventListener("click", function () {
+        document.body.classList.toggle("dark");
+        editor.classList.toggle("dark");
+      });
+
+    document.getElementById("save-code").addEventListener("click", function () {
+      const code = editor.value;
+      localStorage.setItem("htmlCode", code);
+      alert("コードが保存されました");
+    });
+
+    document.getElementById("load-code").addEventListener("click", function () {
+      const code = localStorage.getItem("htmlCode");
+      if (code) {
+        editor.value = code;
+        updatePreview();
+        alert("コードが読み込まれました");
+      } else {
+        alert("保存されたコードがありません");
+      }
+    });
+
+    document
+      .getElementById("reset-code")
+      .addEventListener("click", function () {
+        editor.value = "";
+        updatePreview();
+      });
+  });
+</script>
