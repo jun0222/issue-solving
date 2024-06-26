@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>シェルコマンドコピーツール</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f0f0f0;
+        color: #333;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      #search-form,
+      #replace-form {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      #search-form label,
+      #replace-form label {
+        margin-right: 10px;
+      }
+
+      #search-form input,
+      #replace-form input {
+        padding: 10px;
+        width: 300px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+      }
+
+      #command-tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .tab-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        margin: 0 10px;
+        background-color: #007bff;
+        color: white;
+      }
+
+      .tab-button.active {
+        background-color: #0056b3;
+      }
+
+      #command-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .command-item {
+        background-color: #fff;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        width: 80%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .command-item:hover {
+        background-color: #e9ecef;
+        cursor: pointer;
+      }
+
+      .command-description {
+        color: #666;
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>シェルコマンドコピーツール</h1>
+    <div id="search-form">
+      <label for="search">コマンドを検索:</label>
+      <input type="text" id="search" placeholder="コマンドを入力" />
+    </div>
+    <div id="replace-form">
+      <label for="replace">置き換え文字列:</label>
+      <input type="text" id="replace" placeholder="サンプル文字列を置き換え" />
+    </div>
+    <div id="command-tabs">
+      <button class="tab-button active" data-shell="bash">Bash</button>
+      <button class="tab-button" data-shell="zsh">Zsh</button>
+      <button class="tab-button" data-shell="sh">Sh</button>
+    </div>
+    <div id="command-list">
+      <!-- コマンドリストがここに表示される -->
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const commandListElement = document.getElementById("command-list");
+        const searchInput = document.getElementById("search");
+        const replaceInput = document.getElementById("replace");
+        const tabButtons = document.querySelectorAll(".tab-button");
+        let currentShell = "bash";
+
+        const commands = {
+          bash: [
+            {
+              command: "ls -l",
+              description: "ディレクトリの内容をリスト形式で表示します。",
+            },
+            {
+              command: 'grep "pattern" file.txt',
+              description: "ファイルから指定したパターンを検索します。",
+            },
+            {
+              command: "cat file.txt",
+              description: "ファイルの内容を表示します。",
+            },
+            {
+              command: 'echo "Hello, World!"',
+              description: "指定した文字列を表示します。",
+            },
+            {
+              command: "touch newfile.txt",
+              description: "空のファイルを作成します。",
+            },
+            {
+              command: "rm oldfile.txt",
+              description: "指定したファイルを削除します。",
+            },
+            {
+              command: "chmod +x script.sh",
+              description: "スクリプトに実行権限を付与します。",
+            },
+            {
+              command: "cd /path/to/directory",
+              description: "指定したディレクトリに移動します。",
+            },
+            {
+              command: 'for i in {1..5}; do echo "Welcome $i times"; done',
+              description: "forループを実行します。",
+            },
+            {
+              command:
+                'if [ "$1" -gt 100 ]; then echo "大きい"; else echo "小さい"; fi',
+              description: "if文の例です。",
+            },
+          ],
+          zsh: [
+            {
+              command: "ls -G",
+              description: "ディレクトリの内容をカラーで表示します。",
+            },
+            {
+              command: 'grep "pattern" file.txt',
+              description: "ファイルから指定したパターンを検索します。",
+            },
+            {
+              command: "cat file.txt",
+              description: "ファイルの内容を表示します。",
+            },
+            {
+              command: 'echo "Hello, Zsh!"',
+              description: "指定した文字列を表示します。",
+            },
+            {
+              command: "touch newfile.txt",
+              description: "空のファイルを作成します。",
+            },
+            {
+              command: "rm oldfile.txt",
+              description: "指定したファイルを削除します。",
+            },
+            {
+              command: "chmod +x script.sh",
+              description: "スクリプトに実行権限を付与します。",
+            },
+            {
+              command: "cd /path/to/directory",
+              description: "指定したディレクトリに移動します。",
+            },
+            {
+              command: 'for i in {1..5}; do echo "Welcome $i times"; done',
+              description: "forループを実行します。",
+            },
+            {
+              command:
+                'if [ "$1" -gt 100 ]; then echo "大きい"; else echo "小さい"; fi',
+              description: "if文の例です。",
+            },
+          ],
+          sh: [
+            { command: "ls", description: "ディレクトリの内容を表示します。" },
+            {
+              command: 'grep "pattern" file.txt',
+              description: "ファイルから指定したパターンを検索します。",
+            },
+            {
+              command: "cat file.txt",
+              description: "ファイルの内容を表示します。",
+            },
+            {
+              command: 'echo "Hello, Sh!"',
+              description: "指定した文字列を表示します。",
+            },
+            {
+              command: "touch newfile.txt",
+              description: "空のファイルを作成します。",
+            },
+            {
+              command: "rm oldfile.txt",
+              description: "指定したファイルを削除します。",
+            },
+            {
+              command: "chmod +x script.sh",
+              description: "スクリプトに実行権限を付与します。",
+            },
+            {
+              command: "cd /path/to/directory",
+              description: "指定したディレクトリに移動します。",
+            },
+            {
+              command: 'for i in 1 2 3 4 5; do echo "Welcome $i times"; done',
+              description: "forループを実行します。",
+            },
+            {
+              command:
+                'if [ "$1" -gt 100 ]; then echo "大きい"; else echo "小さい"; fi',
+              description: "if文の例です。",
+            },
+          ],
+        };
+
+        function renderCommands() {
+          const searchQuery = searchInput.value.toLowerCase();
+          const replaceText = replaceInput.value.trim();
+          const filteredCommands = commands[currentShell].filter(
+            (cmd) =>
+              cmd.command.toLowerCase().includes(searchQuery) ||
+              cmd.description.toLowerCase().includes(searchQuery)
+          );
+          commandListElement.innerHTML = "";
+
+          filteredCommands.forEach(({ command, description }) => {
+            const commandItem = document.createElement("div");
+            commandItem.className = "command-item";
+            const replacedCommand = replaceText
+              ? command.replace(/sample/g, replaceText)
+              : command;
+            commandItem.innerHTML = `
+                        <span>${replacedCommand}</span>
+                        <span class="command-description">${description}</span>
+                    `;
+            commandItem.addEventListener("click", () => {
+              navigator.clipboard.writeText(replacedCommand).then(() => {
+                alert(`Copied: ${replacedCommand}`);
+              });
+            });
+            commandListElement.appendChild(commandItem);
+          });
+        }
+
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            currentShell = this.getAttribute("data-shell");
+            tabButtons.forEach((btn) => btn.classList.remove("active"));
+            this.classList.add("active");
+            renderCommands();
+          });
+        });
+
+        searchInput.addEventListener("input", renderCommands);
+        replaceInput.addEventListener("input", renderCommands);
+
+        renderCommands(); // 初期表示
+      });
+    </script>
+  </body>
+</html>
