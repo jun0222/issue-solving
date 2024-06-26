@@ -31,5 +31,5 @@ git commit -m "feat: tool update"
 ./generate_links.sh -i ignore_dir1 -i ignore_dir2 -b https://tools.juns-app.com/
 
 # "feat: tool update" というコメントで再度コミット
-git add path.html
+git add .
 git commit -m "feat: tool update"
