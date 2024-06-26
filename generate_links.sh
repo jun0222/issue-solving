@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO: generate_linksでignoreディレクトリはファイル管理にしたい、
+# TODO: 生成したhtmlのリンクテキストはtitleタグとかからとってきたい。ないものはそのままで良いが
+
 # 実行例: ./generate_links.sh -i ignore_dir1 -i ignore_dir2 -b https://tools.juns-app.com/
 # 権限なかったら: chmod +x generate_links.sh
 # スクリプトの使い方を表示する関数
