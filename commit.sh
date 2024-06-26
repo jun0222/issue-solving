@@ -33,3 +33,4 @@ git commit -m "feat: tool update"
 # "feat: tool update" というコメントで再度コミット
 git add .
 git commit -m "feat: tool update"
+git push origin HEAD
