@@ -76,6 +76,10 @@
           "FULL JOIN",
         ];
         const operators = ["=", ">", "<", ">=", "<=", "<>"];
+        let indentLevel = 0;
+        const increaseIndent = ["SELECT", "FROM", "WHERE", "SET", "VALUES"];
+        const decreaseIndent = ["AND", "OR"];
+
         const formattedSQL = sql
           .replace(/--.*$/gm, "") // コメントを削除
           .replace(/\s+/g, " ") // 余分な空白を削除
@@ -83,9 +87,26 @@
           .replace(/\(\s*/g, "( ") // 括弧の後の空白を整える
           .replace(/\s*\)/g, " )") // 括弧の前の空白を整える
           .replace(/;\s*/g, ";\n") // セミコロン後に改行を挿入
+          .split(/\n/)
+          .map((line) => {
+            const trimmedLine = line.trim();
+            if (
+              decreaseIndent.some((keyword) => trimmedLine.startsWith(keyword))
+            ) {
+              indentLevel = Math.max(indentLevel - 1, 0);
+            }
+            const indentedLine = "  ".repeat(indentLevel) + trimmedLine;
+            if (
+              increaseIndent.some((keyword) => trimmedLine.startsWith(keyword))
+            ) {
+              indentLevel++;
+            }
+            return indentedLine;
+          })
+          .join("\n")
           .replace(
             new RegExp(`\\b(${keywords.join("|")})\\b`, "gi"),
-            (match) => `\n<span class="keyword">${match.toUpperCase()}</span>`
+            (match) => `<span class="keyword">${match.toUpperCase()}</span>`
           )
           .replace(
             new RegExp(`\\b(${operators.join("|")})\\b`, "g"),
