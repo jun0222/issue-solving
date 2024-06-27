@@ -13,7 +13,8 @@
       }
 
       #editor,
-      #output {
+      #output,
+      #sqlReference {
         width: 100%;
         height: 150px;
         padding: 10px;
@@ -24,7 +25,8 @@
         font-family: "Courier New", monospace;
       }
 
-      #output {
+      #output,
+      #sqlReference {
         background-color: #f9f9f9;
         white-space: pre-wrap; /* 改行と空白を保持 */
       }
@@ -98,7 +100,11 @@
       placeholder="SQLコードを入力してください..."
     ></textarea>
     <pre id="output"></pre>
-    <button onclick="copyToClipboard()">コピー</button>
+    <pre id="sqlReference">SELECT * FROM テーブル名;</pre>
+    <button onclick="copyToClipboard('output')">コピー</button>
+    <button onclick="copyToClipboard('sqlReference')">
+      リファレンスをコピー
+    </button>
     <div id="toast" class="toast">コピーしました！</div>
     <script>
       function formatSQL(sql) {
@@ -176,8 +182,8 @@
         );
       }
 
-      function copyToClipboard() {
-        const outputText = document.getElementById("output").innerText;
+      function copyToClipboard(elementId) {
+        const outputText = document.getElementById(elementId).innerText;
         navigator.clipboard
           .writeText(outputText)
           .then(() => {
