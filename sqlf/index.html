@@ -45,6 +45,50 @@
       .string {
         color: #f0ad4e;
       }
+
+      .toast {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+        font-size: 17px;
+      }
+
+      .toast.show {
+        visibility: visible;
+        -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      }
+
+      @keyframes fadein {
+        from {
+          bottom: 0;
+          opacity: 0;
+        }
+        to {
+          bottom: 30px;
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeout {
+        from {
+          bottom: 30px;
+          opacity: 1;
+        }
+        to {
+          bottom: 0;
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <body>
@@ -54,6 +98,8 @@
       placeholder="SQLコードを入力してください..."
     ></textarea>
     <pre id="output"></pre>
+    <button onclick="copyToClipboard()">コピー</button>
+    <div id="toast" class="toast">コピーしました！</div>
     <script>
       function formatSQL(sql) {
         const keywords = [
@@ -80,52 +126,67 @@
         const increaseIndent = ["SELECT", "FROM", "WHERE", "SET", "VALUES"];
         const decreaseIndent = ["AND", "OR"];
 
-        const formattedSQL = sql
-          .replace(/--.*$/gm, "") // コメントを削除
-          .replace(/\s+/g, " ") // 余分な空白を削除
-          .replace(/,\s*/g, ", ") // カンマの後の空白を整える
-          .replace(/\(\s*/g, "( ") // 括弧の後の空白を整える
-          .replace(/\s*\)/g, " )") // 括弧の前の空白を整える
-          .replace(/;\s*/g, ";\n") // セミコロン後に改行を挿入
-          .split(/\n/)
-          .map((line) => {
-            const trimmedLine = line.trim();
-            if (
-              decreaseIndent.some((keyword) => trimmedLine.startsWith(keyword))
-            ) {
-              indentLevel = Math.max(indentLevel - 1, 0);
-            }
-            const indentedLine = "  ".repeat(indentLevel) + trimmedLine;
-            if (
-              increaseIndent.some((keyword) => trimmedLine.startsWith(keyword))
-            ) {
-              indentLevel++;
-            }
-            return indentedLine;
+        return (
+          sql
+            .replace(/--.*$/gm, "")
+            .replace(/\s+/g, " ")
+            .replace(/,\s*/g, ", ")
+            .replace(/\(\s*/g, "( ")
+            .replace(/\s*\)/g, " )")
+            .replace(/;\s*/g, ";\n")
+            .split(/\n/)
+            .map((line) => {
+              const trimmedLine = line.trim();
+              if (
+                decreaseIndent.some((keyword) =>
+                  trimmedLine.startsWith(keyword)
+                )
+              ) {
+                indentLevel = Math.max(indentLevel - 1, 0);
+              }
+              const indentedLine = "  ".repeat(indentLevel) + trimmedLine;
+              if (
+                increaseIndent.some((keyword) =>
+                  trimmedLine.startsWith(keyword)
+                )
+              ) {
+                indentLevel++;
+              }
+              return indentedLine;
+            })
+            .join("\n")
+            .replace(
+              new RegExp(`\\b(${keywords.join("|")})\\b`, "gi"),
+              (match) => `<span class="keyword">${match.toUpperCase()}</span>`
+            )
+            .replace(
+              new RegExp(`\\b(${operators.join("|")})\\b`, "g"),
+              (match) => `<span class="operator">${match}</span>`
+            )
+            .replace(
+              /\b\d+\b/g,
+              (match) => `<span class="number">${match}</span>`
+            )
+            .replace(
+              /'[^']*'/g,
+              (match) => `<span class="string">${match}</span>`
+            )
+            .trim() + (sql.trim().endsWith(";") ? "" : ";")
+        );
+      }
+
+      function copyToClipboard() {
+        const outputText = document.getElementById("output").innerText;
+        navigator.clipboard
+          .writeText(outputText)
+          .then(() => {
+            const toast = document.getElementById("toast");
+            toast.className = "toast show";
+            setTimeout(() => {
+              toast.className = toast.className.replace("show", "");
+            }, 3000);
           })
-          .join("\n")
-          .replace(
-            new RegExp(`\\b(${keywords.join("|")})\\b`, "gi"),
-            (match) => `<span class="keyword">${match.toUpperCase()}</span>`
-          )
-          .replace(
-            new RegExp(`\\b(${operators.join("|")})\\b`, "g"),
-            (match) => `<span class="operator">${match}</span>`
-          )
-          .replace(
-            /\b\d+\b/g,
-            (match) => `<span class="number">${match}</span>`
-          )
-          .replace(
-            /'[^']*'/g,
-            (match) => `<span class="string">${match}</span>`
-          )
-          .trim();
-        // 最後にセミコロンを追加する
-        if (!formattedSQL.endsWith(";")) {
-          formattedSQL += ";";
-        }
-        return formattedSQL.replace(/^\s+|\s+$/g, "").replace(/\n{2,}/g, "\n");
+          .catch((err) => console.error("Failed to copy: ", err));
       }
 
       document.addEventListener("DOMContentLoaded", function () {
