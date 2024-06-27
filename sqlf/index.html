@@ -196,9 +196,9 @@
           sql
             .replace(/--.*$/gm, "")
             .replace(/\s+/g, " ")
-            .replace(/,\s*/g, ", ")
-            .replace(/\(\s*/g, "( ")
-            .replace(/\s*\)/g, " )")
+            .replace(/,\s*/g, ",\n  ")
+            .replace(/\(\s*/g, "(\n  ")
+            .replace(/\s*\)/g, "\n)")
             .replace(/;\s*/g, ";\n")
             .split(/\n/)
             .map((line) => {
