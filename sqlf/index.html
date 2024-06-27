@@ -27,6 +27,7 @@
       #output {
         background-color: #f9f9f9;
         white-space: pre-wrap; /* 改行と空白を保持 */
+        cursor: pointer;
       }
 
       .keyword {
@@ -98,6 +99,16 @@
         background-color: #e7e7e7;
         border-radius: 5px;
       }
+
+      #copyButton {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
@@ -106,7 +117,16 @@
       id="editor"
       placeholder="SQLコードを入力してください..."
     ></textarea>
-    <pre id="output"></pre>
+    <pre id="output" onclick="copyToClipboard(this.textContent)">
+ここをクリックして内容をコピー</pre
+    >
+    <button
+      id="copyButton"
+      onclick="copyToClipboard(document.getElementById('output').textContent)"
+      style="display: none"
+    >
+      コピー
+    </button>
     <div id="sqlCommands">
       <div
         class="sql-command"
