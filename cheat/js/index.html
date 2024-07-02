@@ -2,19 +2,29 @@
   <!-- ここにコンテンツが動的に追加されます -->
 </div>
 
+<style>
+  .item {
+    border: 1px solid black;
+    cursor: pointer;
+  }
+  .item:hover {
+    background-color: #f0f0f0;
+  }
+</style>
+
 <script>
   // コピー用のデータを保持する配列
   const cheatSheetData = [
     {
-      label: "HTML ベーシックテンプレート",
       content:
         '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"></head><body></body></html>',
     },
     {
-      label: "CSS リセット",
       content: "* { margin: 0; padding: 0; box-sizing: border-box; }",
     },
-    { label: "JavaScript アラート", content: 'alert("Hello, World!");' },
+    {
+      content: 'alert("Hello, World!");',
+    },
   ];
 
   // データをDOMに追加する関数
@@ -23,7 +33,7 @@
     data.forEach((item) => {
       const element = document.createElement("div");
       element.className = "item";
-      element.textContent = item.label;
+      element.textContent = item.content; // labelをcontentと同じに設定
       element.onclick = () => {
         navigator.clipboard.writeText(item.content).then(() => {
           showToast("コピーしました");
