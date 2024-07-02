@@ -1,71 +1,59 @@
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <title>JavaScript チートシート</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-      }
-      .item {
-        margin: 10px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        cursor: pointer;
-      }
-      #toast {
-        display: none;
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #333;
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>JavaScript チートシート</h1>
-    <div class="item" onclick="copyToClipboard('console.log(`Hello World`);')">
-      console.log('Hello World')
-    </div>
-    <div
-      class="item"
-      onclick="copyToClipboard('for (let i = 0; i < 10; i++) { console.log(i); }')"
-    >
-      for ループ
-    </div>
-    <div
-      class="item"
-      onclick="copyToClipboard('console.log(new Date().toISOString());')"
-    >
-      現在のタイムスタンプ
-    </div>
-    <div
-      class="item"
-      onclick="copyToClipboard('console.log(`Number: ${i}, Timestamp: ${new Date().getTime()}`);')"
-    >
-      数字とタイムスタンプ
-    </div>
+<div id="cheatSheetContainer" class="container">
+  <!-- ここにコンテンツが動的に追加されます -->
+</div>
 
-    <div id="toast">コピーしました！</div>
+<script>
+  // コピー用のデータを保持する配列
+  const cheatSheetData = [
+    {
+      label: "HTML ベーシックテンプレート",
+      content:
+        '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"></head><body></body></html>',
+    },
+    {
+      label: "CSS リセット",
+      content: "* { margin: 0; padding: 0; box-sizing: border-box; }",
+    },
+    { label: "JavaScript アラート", content: 'alert("Hello, World!");' },
+  ];
 
-    <script>
-      function copyToClipboard(text) {
-        navigator.clipboard
-          .writeText(text)
-          .then(() => {
-            const toast = document.getElementById("toast");
-            toast.style.display = "block";
-            setTimeout(() => {
-              toast.style.display = "none";
-            }, 3000);
-          })
-          .catch((err) => console.error("コピーに失敗: ", err));
-      }
-    </script>
-  </body>
-</html>
+  // データをDOMに追加する関数
+  function populateCheatSheet(containerId, data) {
+    const container = document.getElementById(containerId);
+    data.forEach((item) => {
+      const element = document.createElement("div");
+      element.className = "item";
+      element.textContent = item.label;
+      element.onclick = () => {
+        navigator.clipboard.writeText(item.content).then(() => {
+          showToast("コピーしました");
+        });
+      };
+      container.appendChild(element);
+    });
+  }
+
+  // トーストメッセージを表示する関数
+  function showToast(message) {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.backgroundColor = "rgba(0,0,0,0.7)";
+    toast.style.color = "white";
+    toast.style.padding = "10px";
+    toast.style.borderRadius = "5px";
+    toast.style.zIndex = "1000";
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 3000);
+  }
+
+  // ページロード時にチートシートを生成
+  window.onload = () => {
+    populateCheatSheet("cheatSheetContainer", cheatSheetData);
+  };
+</script>
