@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>JavaScript チートシート</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .item {
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+      }
+      #toast {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #333;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>JavaScript チートシート</h1>
+    <div class="item" onclick="copyToClipboard('console.log(`Hello World`);')">
+      console.log('Hello World')
+    </div>
+    <div
+      class="item"
+      onclick="copyToClipboard('for (let i = 0; i < 10; i++) { console.log(i); }')"
+    >
+      for ループ
+    </div>
+    <div
+      class="item"
+      onclick="copyToClipboard('console.log(new Date().toISOString());')"
+    >
+      現在のタイムスタンプ
+    </div>
+    <div
+      class="item"
+      onclick="copyToClipboard('console.log(`Number: ${i}, Timestamp: ${new Date().getTime()}`);')"
+    >
+      数字とタイムスタンプ
+    </div>
+
+    <div id="toast">コピーしました！</div>
+
+    <script>
+      function copyToClipboard(text) {
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            const toast = document.getElementById("toast");
+            toast.style.display = "block";
+            setTimeout(() => {
+              toast.style.display = "none";
+            }, 3000);
+          })
+          .catch((err) => console.error("コピーに失敗: ", err));
+      }
+    </script>
+  </body>
+</html>
