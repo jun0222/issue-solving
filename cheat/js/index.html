@@ -54,6 +54,34 @@
       content:
         'new Promise((resolve, reject) => { setTimeout(() => resolve("Done!"), 1000); }).then(response => console.log(response)); // 非同期処理',
     },
+    {
+      content:
+        "const numbers = [1, 2, 3, 4, 5]; const doubled = numbers.map(n => n * 2); // map関数",
+    },
+    {
+      content:
+        "const numbers = [1, 2, 3, 4, 5]; const even = numbers.filter(n => n % 2 === 0); // filter関数",
+    },
+    {
+      content:
+        "const numbers = [1, 2, 3, 4, 5]; const sum = numbers.reduce((acc, n) => acc + n, 0); // reduce関数",
+    },
+    {
+      content:
+        "const numbers = [1, 2, 3, 4, 5]; const hasNegative = numbers.some(n => n < 0); // some関数",
+    },
+    {
+      content:
+        "const arrays = [[1, 2], [3, 4], [5]]; const flat = arrays.flat(); // flat関数",
+    },
+    {
+      content:
+        "const arrays = [[1, 2], [3, 4], [5]]; const flatMapResult = arrays.flatMap(x => x.map(y => y * 2)); // flatMap関数",
+    },
+    {
+      content:
+        "const numbers = [1, 2, 3, 4, 5]; const allPositive = numbers.every(n => n > 0); // every関数",
+    },
   ];
 
   // データをDOMに追加する関数
