@@ -1400,3 +1400,14 @@ let sedCheatSheetData = [
 ```
 
 これらのチートシートデータは、React、Next.js、React Native、Vue、Nuxt.js、Express、Node.js、AWS CLI、AWK、および SED でよく使われるコマンドやスニペットを含んでいます。各環境でスクリプトやコマンドを簡単に参照できるようになります。
+
+### Excel チートシート
+
+```javascript
+let excelCheatSheetData = [
+  {
+    description: "基本的なExcelコマンド",
+    content: `=SUM(A1:B1)`,
+  },
+];
+```
