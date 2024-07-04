@@ -1,0 +1,19 @@
+<label for="videoURL">ビデオURLを入力してください:</label>
+<input
+  type="text"
+  id="videoURL"
+  name="videoURL"
+  placeholder="ここにURLを入力"
+/>
+<button onclick="loadVideo()">ビデオを読み込む</button>
+<video id="videoPlayer" controls playsinline>
+  お使いのブラウザはビデオタグをサポートしていません。
+</video>
+
+<script>
+  function loadVideo() {
+    var url = document.getElementById("videoURL").value;
+    var videoPlayer = document.getElementById("videoPlayer");
+    videoPlayer.src = url;
+  }
+</script>
