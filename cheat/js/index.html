@@ -313,6 +313,66 @@
       content:
         "const numbers = [1, 2, 3, 4, 5]; const allPositive = numbers.every(n => n > 0);",
     },
+    {
+      description: "デフォルト引数付き関数",
+      content: "function multiply(a, b = 1) { return a * b; }",
+    },
+    {
+      description: "スプレッド演算子 (配列)",
+      content: "const arr1 = [1, 2, 3]; const arr2 = [...arr1, 4, 5];",
+    },
+    {
+      description: "スプレッド演算子 (オブジェクト)",
+      content: "const obj1 = { a: 1, b: 2 }; const obj2 = { ...obj1, c: 3 };",
+    },
+    {
+      description: "分割代入 (配列)",
+      content: "const [a, b] = [1, 2];",
+    },
+    {
+      description: "分割代入 (オブジェクト)",
+      content: "const { a, b } = { a: 1, b: 2 };",
+    },
+    {
+      description: "テンプレートリテラル",
+      content: "const greeting = `Hello, ${name}!`;",
+    },
+    {
+      description: "オプショナルチェイニング",
+      content: "const value = obj?.prop?.subProp;",
+    },
+    {
+      description: "null合体演算子",
+      content: 'const value = someVariable ?? "デフォルト値";',
+    },
+    {
+      description: "Array.find関数",
+      content: "const found = numbers.find(n => n > 3);",
+    },
+    {
+      description: "Array.findIndex関数",
+      content: "const index = numbers.findIndex(n => n > 3);",
+    },
+    {
+      description: "Array.includes関数",
+      content: "const hasThree = numbers.includes(3);",
+    },
+    {
+      description: "文字列のパディング",
+      content: 'const padded = "5".padStart(3, "0");',
+    },
+    {
+      description: "オブジェクト.entries関数",
+      content: "const entries = Object.entries({ a: 1, b: 2 });",
+    },
+    {
+      description: "オブジェクト.values関数",
+      content: "const values = Object.values({ a: 1, b: 2 });",
+    },
+    {
+      description: "オブジェクト.keys関数",
+      content: "const keys = Object.keys({ a: 1, b: 2 });",
+    },
   ];
 
   // データをDOMに追加する関数
