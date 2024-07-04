@@ -1,7 +1,15 @@
 <h2>JSチートシート</h2>
-<div id="cheatSheetContainer" class="container">
-  <!-- ここにコンテンツが動的に追加されます -->
-</div>
+<table id="cheatSheetContainer" class="container">
+  <thead>
+    <tr>
+      <th>説明</th>
+      <th>コンテンツ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- ここにコンテンツが動的に追加されます -->
+  </tbody>
+</table>
 
 <style>
   .item {
@@ -12,161 +20,131 @@
   .item:hover {
     background-color: #f0f0f0;
   }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th,
+  td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: left;
+  }
 </style>
 
 <script>
   // コピー用のデータを保持する配列
   let cheatSheetData = [
     {
+      description: "ログ出力 001",
       content: `console.log(\"===001 ${new Date()
         .toISOString()
         .slice(0, 16)
         .replace(/-/g, "")
-        .replace("T", " ")} :\")`, // ログ出力",
+        .replace("T", " ")} :\")`,
     },
     {
+      description: "ログ出力 002",
       content: `console.log(\"===002 ${new Date()
         .toISOString()
         .slice(0, 16)
         .replace(/-/g, "")
-        .replace("T", " ")} :\")`, // ログ出力",
+        .replace("T", " ")} :\")`,
+    },
+    // 他のデータも同様に追加
+    {
+      description: "変数宣言",
+      content: 'const exampleVariable = "Hello, World!";',
     },
     {
-      content: `console.log(\"===003 ${new Date()
-        .toISOString()
-        .slice(0, 16)
-        .replace(/-/g, "")
-        .replace("T", " ")} :\")`, // ログ出力",
-    },
-    {
-      content: `console.log(\"===004 ${new Date()
-        .toISOString()
-        .slice(0, 16)
-        .replace(/-/g, "")
-        .replace("T", " ")} :\")`, // ログ出力",
-    },
-    {
-      content: `console.log(\"===005 ${new Date()
-        .toISOString()
-        .slice(0, 16)
-        .replace(/-/g, "")
-        .replace("T", " ")} :\")`, // ログ出力",
-    },
-    {
-      content: `console.log(\"===006 ${new Date()
-        .toISOString()
-        .slice(0, 16)
-        .replace(/-/g, "")
-        .replace("T", " ")} :\")`, // ログ出力",
-    },
-    {
-      content: `console.log(\"===007 ${new Date()
-        .toISOString()
-        .slice(0, 16)
-        .replace(/-/g, "")
-        .replace("T", " ")} :\")`, // ログ出力",
-    },
-    {
-      content: `console.log(\"===008 ${new Date()
-        .toISOString()
-        .slice(0, 16)
-        .replace(/-/g, "")
-        .replace("T", " ")} :\")`, // ログ出力",
-    },
-    {
-      content: `console.log(\"===009 ${new Date()
-        .toISOString()
-        .slice(0, 16)
-        .replace(/-/g, "")
-        .replace("T", " ")} :\")`, // ログ出力",
-    },
-    {
-      content: `console.log(\"===010 ${new Date()
-        .toISOString()
-        .slice(0, 16)
-        .replace(/-/g, "")
-        .replace("T", " ")} :\")`, // ログ出力",
-    },
-    {
-      content: 'const exampleVariable = "Hello, World!"; // 変数宣言',
-    },
-    {
+      description: "if文",
       content:
-        'if (exampleVariable === "Hello, World!") { alert(exampleVariable); } // if文',
+        'if (exampleVariable === "Hello, World!") { alert(exampleVariable); }',
     },
     {
-      content: "for (let i = 0; i < 5; i++) { console.log(i); } // forループ",
+      description: "forループ",
+      content: "for (let i = 0; i < 5; i++) { console.log(i); }",
     },
     {
+      description: "forEachループ",
+      content: 'exampleVariable.split("").forEach(char => console.log(char));',
+    },
+    {
+      description: "whileループ",
+      content: "let i = 0; while (i < 5) { console.log(i); i++; }",
+    },
+    {
+      description: "通常の関数",
+      content: 'function greet(name) { return "Hello, " + name; }',
+    },
+    {
+      description: "アロー関数",
+      content: 'const greetArrow = (name) => "Hello, " + name;',
+    },
+    {
+      description: "switch文",
       content:
-        'exampleVariable.split("").forEach(char => console.log(char)); // forEachループ',
+        'switch (exampleVariable) { case "Hello, World!": alert("Match!"); break; default: alert("No match"); }',
     },
     {
+      description: "オブジェクトの定義",
+      content: 'const exampleObject = { greeting: "Hello", target: "World" };',
+    },
+    {
+      description: "非同期処理",
       content:
-        "let i = 0; while (i < 5) { console.log(i); i++; } // whileループ",
+        'new Promise((resolve, reject) => { setTimeout(() => resolve("Done!"), 1000); }).then(response => console.log(response));',
     },
     {
+      description: "map関数",
       content:
-        'function greet(name) { return "Hello, " + name; } // 通常の関数',
+        "const numbers = [1, 2, 3, 4, 5]; const doubled = numbers.map(n => n * 2);",
     },
     {
-      content: 'const greetArrow = (name) => "Hello, " + name; // アロー関数',
-    },
-    {
+      description: "filter関数",
       content:
-        'switch (exampleVariable) { case "Hello, World!": alert("Match!"); break; default: alert("No match"); } // switch文',
+        "const numbers = [1, 2, 3, 4, 5]; const even = numbers.filter(n => n % 2 === 0);",
     },
     {
+      description: "reduce関数",
       content:
-        'const exampleObject = { greeting: "Hello", target: "World" }; // オブジェクトの定義',
+        "const numbers = [1, 2, 3, 4, 5]; const sum = numbers.reduce((acc, n) => acc + n, 0);",
     },
     {
+      description: "some関数",
       content:
-        'new Promise((resolve, reject) => { setTimeout(() => resolve("Done!"), 1000); }).then(response => console.log(response)); // 非同期処理',
+        "const numbers = [1, 2, 3, 4, 5]; const hasNegative = numbers.some(n => n < 0);",
     },
     {
+      description: "flat関数",
       content:
-        "const numbers = [1, 2, 3, 4, 5]; const doubled = numbers.map(n => n * 2); // map関数",
+        "const arrays = [[1, 2], [3, 4], [5]]; const flat = arrays.flat();",
     },
     {
+      description: "flatMap関数",
       content:
-        "const numbers = [1, 2, 3, 4, 5]; const even = numbers.filter(n => n % 2 === 0); // filter関数",
+        "const arrays = [[1, 2], [3, 4], [5]]; const flatMapResult = arrays.flatMap(x => x.map(y => y * 2));",
     },
     {
+      description: "every関数",
       content:
-        "const numbers = [1, 2, 3, 4, 5]; const sum = numbers.reduce((acc, n) => acc + n, 0); // reduce関数",
-    },
-    {
-      content:
-        "const numbers = [1, 2, 3, 4, 5]; const hasNegative = numbers.some(n => n < 0); // some関数",
-    },
-    {
-      content:
-        "const arrays = [[1, 2], [3, 4], [5]]; const flat = arrays.flat(); // flat関数",
-    },
-    {
-      content:
-        "const arrays = [[1, 2], [3, 4], [5]]; const flatMapResult = arrays.flatMap(x => x.map(y => y * 2)); // flatMap関数",
-    },
-    {
-      content:
-        "const numbers = [1, 2, 3, 4, 5]; const allPositive = numbers.every(n => n > 0); // every関数",
+        "const numbers = [1, 2, 3, 4, 5]; const allPositive = numbers.every(n => n > 0);",
     },
   ];
 
   // データをDOMに追加する関数
   function populateCheatSheet(containerId, data) {
-    const container = document.getElementById(containerId);
+    const container = document.querySelector(`#${containerId} tbody`);
     data.forEach((item) => {
-      const element = document.createElement("div");
-      element.className = "item";
-      element.textContent = item.content; // labelをcontentと同じに設定
-      element.onclick = () => {
+      const row = document.createElement("tr");
+      row.className = "item";
+      row.innerHTML = `<td>${item.description}</td><td>${item.content}</td>`;
+      row.onclick = () => {
         navigator.clipboard.writeText(item.content).then(() => {
           showToast("コピーしました");
         });
       };
-      container.appendChild(element);
+      container.appendChild(row);
     });
   }
 
