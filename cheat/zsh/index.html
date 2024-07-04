@@ -1,0 +1,203 @@
+<h2>zshチートシート</h2>
+<table id="cheatSheetContainer" class="container">
+  <thead>
+    <tr>
+      <th>説明</th>
+      <th>コンテンツ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- ここにコンテンツが動的に追加されます -->
+  </tbody>
+</table>
+
+<style>
+  .item {
+    border: 1px solid black;
+    cursor: pointer;
+    padding: 10px;
+  }
+  .item:hover {
+    background-color: #f0f0f0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th,
+  td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: left;
+  }
+</style>
+
+<script>
+  // コピー用のデータを保持する配列
+  let cheatSheetData = [
+    {
+      description: "現在のディレクトリを表示",
+      content: "pwd",
+    },
+    {
+      description: "ディレクトリの内容をリスト表示",
+      content: "ls -al",
+    },
+    {
+      description: "ファイルの内容を表示",
+      content: "cat filename",
+    },
+    {
+      description: "ファイルをコピー",
+      content: "cp source_file target_file",
+    },
+    {
+      description: "ファイルを移動/名前変更",
+      content: "mv old_name new_name",
+    },
+    {
+      description: "ファイルを削除",
+      content: "rm filename",
+    },
+    {
+      description: "ディレクトリを作成",
+      content: "mkdir directory_name",
+    },
+    {
+      description: "ディレクトリを削除",
+      content: "rmdir directory_name",
+    },
+    {
+      description: "ファイルを検索",
+      content: "find /path/to/search -name filename",
+    },
+    {
+      description: "環境変数を設定",
+      content: "export VAR_NAME=value",
+    },
+    {
+      description: "シェルスクリプトを実行",
+      content: "./script.sh",
+    },
+    {
+      description: "ループ (for)",
+      content: "for i in {1..5}; do echo $i; done",
+    },
+    {
+      description: "ループ (while)",
+      content: "while [ condition ]; do commands; done",
+    },
+    {
+      description: "条件分岐 (if)",
+      content: "if [ condition ]; then commands; fi",
+    },
+    {
+      description: "関数の定義",
+      content: "function function_name { commands; }",
+    },
+    {
+      description: "関数の呼び出し",
+      content: "function_name",
+    },
+    {
+      description: "標準出力をファイルにリダイレクト",
+      content: "command > file",
+    },
+    {
+      description: "標準エラー出力をファイルにリダイレクト",
+      content: "command 2> file",
+    },
+    {
+      description: "パイプライン",
+      content: "command1 | command2",
+    },
+    {
+      description: "コマンドの実行時間を測定",
+      content: "time command",
+    },
+    {
+      description: "圧縮 (tar.gz)",
+      content: "tar -czvf archive.tar.gz directory",
+    },
+    {
+      description: "解凍 (tar.gz)",
+      content: "tar -xzvf archive.tar.gz",
+    },
+    {
+      description: "圧縮 (zip)",
+      content: "zip -r archive.zip directory",
+    },
+    {
+      description: "解凍 (zip)",
+      content: "unzip archive.zip",
+    },
+    {
+      description: "ファイルのパーミッションを変更",
+      content: "chmod 755 filename",
+    },
+    {
+      description: "ファイルのオーナーを変更",
+      content: "chown user:group filename",
+    },
+    {
+      description: "プロセスのリストを表示",
+      content: "ps aux",
+    },
+    {
+      description: "プロセスを終了",
+      content: "kill process_id",
+    },
+    {
+      description: "現在のユーザーを表示",
+      content: "whoami",
+    },
+    {
+      description: "システムの再起動",
+      content: "sudo reboot",
+    },
+    {
+      description: "システムのシャットダウン",
+      content: "sudo shutdown now",
+    },
+  ];
+
+  // データをDOMに追加する関数
+  function populateCheatSheet(containerId, data) {
+    const container = document.querySelector(`#${containerId} tbody`);
+    data.forEach((item) => {
+      const row = document.createElement("tr");
+      row.className = "item";
+      row.innerHTML = `<td>${item.description}</td><td>${item.content}</td>`;
+      row.onclick = () => {
+        navigator.clipboard.writeText(item.content).then(() => {
+          showToast("コピーしました");
+        });
+      };
+      container.appendChild(row);
+    });
+  }
+
+  // トーストメッセージを表示する関数
+  function showToast(message) {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.backgroundColor = "rgba(0,0,0,0.7)";
+    toast.style.color = "white";
+    toast.style.padding = "10px";
+    toast.style.borderRadius = "5px";
+    toast.style.zIndex = "1000";
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 3000);
+  }
+
+  // ページロード時にチートシートを生成
+  window.onload = () => {
+    populateCheatSheet("cheatSheetContainer", cheatSheetData);
+  };
+</script>

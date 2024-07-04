@@ -1,0 +1,169 @@
+<h2>sqlチートシート</h2>
+<table id="cheatSheetContainer" class="container">
+  <thead>
+    <tr>
+      <th>説明</th>
+      <th>コンテンツ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- ここにコンテンツが動的に追加されます -->
+  </tbody>
+</table>
+
+<style>
+  .item {
+    border: 1px solid black;
+    cursor: pointer;
+    padding: 10px;
+  }
+  .item:hover {
+    background-color: #f0f0f0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th,
+  td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: left;
+  }
+</style>
+
+<script>
+  // コピー用のデータを保持する配列
+  let cheatSheetData = [
+    {
+      description: "データベースの作成",
+      content: "CREATE DATABASE database_name;",
+    },
+    {
+      description: "データベースの削除",
+      content: "DROP DATABASE database_name;",
+    },
+    {
+      description: "テーブルの作成",
+      content: `CREATE TABLE table_name (
+  column1 datatype PRIMARY KEY,
+  column2 datatype,
+  column3 datatype
+);`,
+    },
+    {
+      description: "テーブルの削除",
+      content: "DROP TABLE table_name;",
+    },
+    {
+      description: "データの挿入",
+      content:
+        "INSERT INTO table_name (column1, column2) VALUES (value1, value2);",
+    },
+    {
+      description: "データの更新",
+      content:
+        "UPDATE table_name SET column1 = value1, column2 = value2 WHERE condition;",
+    },
+    {
+      description: "データの削除",
+      content: "DELETE FROM table_name WHERE condition;",
+    },
+    {
+      description: "データの選択",
+      content: "SELECT column1, column2 FROM table_name WHERE condition;",
+    },
+    {
+      description: "全データの選択",
+      content: "SELECT * FROM table_name;",
+    },
+    {
+      description: "テーブルの結合 (INNER JOIN)",
+      content:
+        "SELECT columns FROM table1 INNER JOIN table2 ON table1.column = table2.column;",
+    },
+    {
+      description: "テーブルの結合 (LEFT JOIN)",
+      content:
+        "SELECT columns FROM table1 LEFT JOIN table2 ON table1.column = table2.column;",
+    },
+    {
+      description: "テーブルの結合 (RIGHT JOIN)",
+      content:
+        "SELECT columns FROM table1 RIGHT JOIN table2 ON table1.column = table2.column;",
+    },
+    {
+      description: "グループ化 (GROUP BY)",
+      content: "SELECT column, COUNT(*) FROM table_name GROUP BY column;",
+    },
+    {
+      description: "並び替え (ORDER BY)",
+      content: "SELECT columns FROM table_name ORDER BY column ASC/DESC;",
+    },
+    {
+      description: "制限 (LIMIT)",
+      content: "SELECT columns FROM table_name LIMIT number;",
+    },
+    {
+      description: "重複排除 (DISTINCT)",
+      content: "SELECT DISTINCT column FROM table_name;",
+    },
+    {
+      description: "インデックスの作成",
+      content: "CREATE INDEX index_name ON table_name (column);",
+    },
+    {
+      description: "インデックスの削除",
+      content: "DROP INDEX index_name;",
+    },
+    {
+      description: "ビューの作成",
+      content:
+        "CREATE VIEW view_name AS SELECT columns FROM table_name WHERE condition;",
+    },
+    {
+      description: "ビューの削除",
+      content: "DROP VIEW view_name;",
+    },
+  ];
+
+  // データをDOMに追加する関数
+  function populateCheatSheet(containerId, data) {
+    const container = document.querySelector(`#${containerId} tbody`);
+    data.forEach((item) => {
+      const row = document.createElement("tr");
+      row.className = "item";
+      row.innerHTML = `<td>${item.description}</td><td>${item.content}</td>`;
+      row.onclick = () => {
+        navigator.clipboard.writeText(item.content).then(() => {
+          showToast("コピーしました");
+        });
+      };
+      container.appendChild(row);
+    });
+  }
+
+  // トーストメッセージを表示する関数
+  function showToast(message) {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.backgroundColor = "rgba(0,0,0,0.7)";
+    toast.style.color = "white";
+    toast.style.padding = "10px";
+    toast.style.borderRadius = "5px";
+    toast.style.zIndex = "1000";
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 3000);
+  }
+
+  // ページロード時にチートシートを生成
+  window.onload = () => {
+    populateCheatSheet("cheatSheetContainer", cheatSheetData);
+  };
+</script>
