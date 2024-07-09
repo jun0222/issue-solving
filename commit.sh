@@ -29,8 +29,9 @@ git commit -m "feat: tool update"
 
 # ./generate_links.sh スクリプトを指定されたオプションで実行
 ./generate_links.sh -i ignore_dir1 -i ignore_dir2 -b https://tools.juns-app.com/
-
+./generate_cheat_links.sh
 # "feat: tool update" というコメントで再度コミット
 git add .
 git commit -m "feat: tool update"
 git push origin HEAD
+
