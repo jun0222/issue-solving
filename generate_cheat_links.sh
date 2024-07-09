@@ -1,4 +1,7 @@
 # cheat/index.htmlファイルとcheat配下のHTMLファイルへのリンクを生成するスクリプト
+# 引数でbase_urlを取得
+base_url=${1:-""}
+
 cheat_output_html="cheat/index.html"
 {
   echo "<!DOCTYPE html>"
@@ -27,9 +30,9 @@ cheat_output_html="cheat/index.html"
     
     # エスケープ処理を追加してHTMLの安全性を確保
     escaped_file=$(echo "$clean_file" | sed 's/&/\&amp;/g; s/"/\&quot;/g; s/'\''/\&#39;/g; s/</\&lt;/g; s/>/\&gt;/g')
-    relative_url="./${escaped_file}"
+    full_url="${base_url}${escaped_file}"
     
-    echo "    <li><a href=\"$relative_url\">$escaped_file</a></li>"
+    echo "    <li><a href=\"$full_url\">$escaped_file</a></li>"
   done <<< "$cheat_html_files"
 
   echo "  </ul>"
