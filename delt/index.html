@@ -48,6 +48,7 @@
       <pre id="resultText" class="mt-3 p-3 border rounded bg-light"></pre>
       <button
         class="btn btn-secondary btn-copy w-100"
+        id="copyButton"
         onclick="copyToClipboard()"
       >
         コピー
@@ -82,13 +83,22 @@
 
       function copyToClipboard() {
         const resultText = document.getElementById("resultText").textContent;
+        const copyButton = document.getElementById("copyButton");
+
         navigator.clipboard
           .writeText(resultText)
           .then(() => {
-            alert("コピーしました！");
+            // ボタンのテキストを一時的に変更
+            copyButton.textContent = "コピーしました！";
+            setTimeout(() => {
+              copyButton.textContent = "コピー";
+            }, 2000); // 2秒後に元のテキストに戻す
           })
           .catch((err) => {
-            alert("コピーに失敗しました: " + err);
+            copyButton.textContent = "コピーに失敗しました";
+            setTimeout(() => {
+              copyButton.textContent = "コピー";
+            }, 2000); // 2秒後に元のテキストに戻す
           });
       }
     </script>
