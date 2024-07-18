@@ -129,6 +129,77 @@
       description: "ビューの削除",
       content: "DROP VIEW view_name;",
     },
+
+    {
+      description: "絞り込み(where)",
+      content: "WHERE column = value",
+    },
+    {
+      description: "部分一致(LIKE)",
+      content: "WHERE column LIKE '%value%'",
+    },
+    {
+      description: "複数条件(IN)",
+      content: "WHERE column IN (value1, value2, value3)",
+    },
+    {
+      description: "範囲指定",
+      content: "WHERE column BETWEEN value1 AND value2",
+    },
+    {
+      description: "存在確認",
+      content: "WHERE EXISTS (SELECT column FROM table_name WHERE condition)",
+    },
+    {
+      description: "存在確認 not",
+      content:
+        "WHERE NOT EXISTS (SELECT column FROM table_name WHERE condition)",
+    },
+
+    {
+      description: "null確認",
+      content: "WHERE column IS NULL",
+    },
+    {
+      description: "null確認 not",
+      content: "WHERE column IS NOT NULL",
+    },
+    {
+      description: "コメント",
+      content: "-- コメント",
+    },
+    {
+      description: "複数行コメント",
+      content: "/* コメント */",
+    },
+    {
+      description: "AND",
+      content: "WHERE column1 = value1 AND column2 = value2",
+    },
+    {
+      description: "OR",
+      content: "WHERE column1 = value1 OR column2 = value2",
+    },
+    {
+      description: "グループ化",
+      content: "GROUP BY column1, column2",
+    },
+    {
+      description: "並び替え",
+      content: "ORDER BY column1 ASC/DESC",
+    },
+    {
+      description: "件数制限",
+      content: "LIMIT number",
+    },
+    {
+      description: "重複排除",
+      content: "SELECT DISTINCT column FROM table_name",
+    },
+    {
+      description: "インデックス",
+      content: "CREATE INDEX index_name ON table_name (column)",
+    },
   ];
 
   // データをDOMに追加する関数
