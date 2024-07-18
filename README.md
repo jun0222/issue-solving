@@ -7,6 +7,7 @@
 - [アイデア](#アイデア)
 - [ツール](#ツール)
   - [よく使う（保守対象）](#よく使う保守対象)
+  - [チートシート](#チートシート)
   - [あまり使わない（保守しない方針）](#あまり使わない保守しない方針)
 - [コードスニペット](#コードスニペット)
 
@@ -35,7 +36,17 @@
 - [Simple Text Editor](https://tools.juns-app.com/editor)
 - [ランダムレシピアプリ](https://tools.juns-app.com/ryouri)
 - [md-editor](https://md.juns-app.com)
-- [IdGenerator](https://id-generator.juns-app.com/)
+
+## チートシート
+
+- [IdGenerator](https://id-generator.juns-app.com/cheat)
+- [SQL チートシート](https://tools.juns-app.com/cheat/sql)
+- [Bash チートシート](https://tools.juns-app.com/cheat/bash)
+- [cmd チートシート](https://tools.juns-app.com/cheat/cmd)
+- [js チートシート](https://tools.juns-app.com/cheat/js)
+- [linux チートシート](https://tools.juns-app.com/cheat/linux)
+- [sql チートシート](https://tools.juns-app.com/cheat/sql)
+- [zsh チートシート](https://tools.juns-app.com/cheat/zsh)
 
 <details><summary>整理予定</summary>
 

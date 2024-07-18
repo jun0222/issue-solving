@@ -1413,3 +1413,8 @@ let excelCheatSheetData = [
 ```
 
 この階層で各チートシートへのリンクの html ほしい。
+
+- [git チートシート](https://tools.juns-app.com/cheat/git)
+- [docker チートシート](https://tools.juns-app.com/cheat/docker)
+- [vscode チートシート](https://tools.juns-app.com/cheat/vscode)
+- [kubernetes チートシート](https://tools.juns-app.com/cheat/kubernetes)
