@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>パーセンテージ計算器</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+      }
+      .container {
+        width: 90%;
+        max-width: 600px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background-color: white;
+        border-radius: 10px;
+      }
+      .error-text {
+        color: red;
+        font-size: 0.8em;
+        height: 20px; /* Keep layout consistent */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h4>パーセンテージ計算器</h4>
+      <div class="input-field">
+        <input
+          id="original_number"
+          type="number"
+          class="validate"
+          placeholder="元の数字を入力"
+        />
+        <label for="original_number">元の数字</label>
+      </div>
+      <div class="input-field">
+        <input
+          id="compare_number"
+          type="number"
+          class="validate"
+          placeholder="比較する数字を入力"
+        />
+        <label for="compare_number">比較する数字</label>
+      </div>
+      <div id="result" tabindex="0"></div>
+      <div id="error_message" class="error-text"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (localStorage.getItem("original_number")) {
+          document.getElementById("original_number").value =
+            localStorage.getItem("original_number");
+        }
+        if (localStorage.getItem("compare_number")) {
+          document.getElementById("compare_number").value =
+            localStorage.getItem("compare_number");
+        }
+        calculatePercentage(); // 初期読み込み時に計算を実行
+      });
+
+      document
+        .getElementById("original_number")
+        .addEventListener("input", function () {
+          localStorage.setItem("original_number", this.value);
+          calculatePercentage();
+        });
+
+      document
+        .getElementById("compare_number")
+        .addEventListener("input", function () {
+          localStorage.setItem("compare_number", this.value);
+          calculatePercentage();
+        });
+
+      function calculatePercentage() {
+        const original = parseFloat(
+          document.getElementById("original_number").value
+        );
+        const compare = parseFloat(
+          document.getElementById("compare_number").value
+        );
+        const resultElement = document.getElementById("result");
+        const errorElement = document.getElementById("error_message");
+
+        if (isNaN(original) || isNaN(compare)) {
+          errorElement.textContent = "有効な数値を入力してください。";
+          resultElement.textContent = "";
+          return;
+        }
+
+        if (original === 0) {
+          errorElement.textContent =
+            "元の数字は0ではない値を入力してください。";
+          resultElement.textContent = "";
+          return;
+        }
+
+        errorElement.textContent = "";
+        const percentage = (compare / original) * 100;
+        resultElement.textContent = `${compare}は${original}の${percentage.toFixed(
+          2
+        )}%です。`;
+      }
+    </script>
+  </body>
+</html>
