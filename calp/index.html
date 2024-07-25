@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>パーセンテージ計算器</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+      }
+      .container {
+        width: 90%;
+        max-width: 600px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background-color: white;
+        border-radius: 10px;
+      }
+      .range-field {
+        margin-top: 30px;
+      }
+      .error-text {
+        color: red;
+        font-size: 0.8em;
+        height: 20px; /* Keep layout consistent */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h4>パーセンテージ計算器</h4>
+      <div class="input-field">
+        <input
+          id="value_x"
+          type="number"
+          class="validate"
+          placeholder="Enter value for x"
+        />
+        <label for="value_x">元の数字</label>
+      </div>
+      <div class="input-field">
+        <input
+          id="value_y"
+          type="number"
+          class="validate"
+          placeholder="Enter percentage"
+        />
+        <label for="value_y">パーセンテージ</label>
+      </div>
+      <div class="range-field">
+        <input type="range" id="range_y" min="0" max="100" value="50" />
+      </div>
+      <div id="result" tabindex="0"></div>
+      <div id="error_message" class="error-text"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+      document.getElementById("range_y").addEventListener("input", function () {
+        document.getElementById("value_y").value = this.value;
+        calculatePercentage();
+      });
+
+      document
+        .getElementById("value_x")
+        .addEventListener("input", calculatePercentage);
+      document.getElementById("value_y").addEventListener("input", function () {
+        document.getElementById("range_y").value = this.value;
+        calculatePercentage();
+      });
+
+      function calculatePercentage() {
+        const x = parseFloat(document.getElementById("value_x").value);
+        const y = parseFloat(document.getElementById("value_y").value);
+        const resultElement = document.getElementById("result");
+        const errorElement = document.getElementById("error_message");
+
+        if (isNaN(x) || isNaN(y)) {
+          errorElement.textContent = "有効な数値を入力してください。";
+          resultElement.textContent = "";
+          return;
+        }
+
+        errorElement.textContent = "";
+        const result = x * (y / 100);
+        resultElement.textContent = `${x}の${y}%は: ${result.toFixed(2)}`;
+      }
+    </script>
+  </body>
+</html>
