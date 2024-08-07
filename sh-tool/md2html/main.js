@@ -1,10 +1,9 @@
 // TODO: コメント入れるのと、変数化してわかりやすくする
-// TODO: ディレクトリもツールごとに必要ディレクトリを整理する
 const fs = require("fs");
 const path = require("path");
 const { marked } = require("marked"); // 関数としてimportする
 
-const inputDir = "./sh-tool/md2html/md/";
+const inputDir = "./sh-tool/md2html/input/";
 const outputFile = "./sh-tool/md2html/dist/index.html";
 
 // 出力ファイルが既に存在する場合は削除
