@@ -32,7 +32,7 @@ git commit -m "feat: tool update"
 ./generate_cheat_links.sh https://tools.juns-app.com/
 
 # sh-toolの中のmd2html変換ツールを動かす
-node sh-tool/md2html.js 
+node ./sh-tool/md2html/main.js
 
 # "feat: tool update" というコメントで再度コミット
 git add .
