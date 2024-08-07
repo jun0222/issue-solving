@@ -30,6 +30,10 @@ git commit -m "feat: tool update"
 # ./generate_links.sh スクリプトを指定されたオプションで実行
 ./generate_links.sh -i ignore_dir1 -i ignore_dir2 -b https://tools.juns-app.com/
 ./generate_cheat_links.sh https://tools.juns-app.com/
+
+# sh-toolの中のmd2html変換ツールを動かす
+node sh-tool/md2html.js 
+
 # "feat: tool update" というコメントで再度コミット
 git add .
 git commit -m "feat: tool update"

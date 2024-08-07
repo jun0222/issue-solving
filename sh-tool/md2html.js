@@ -2,7 +2,7 @@
 // TODO: ディレクトリもツールごとに必要ディレクトリを整理する
 const fs = require("fs");
 const path = require("path");
-const marked = require("marked");
+const { marked } = require("marked"); // 関数としてimportする
 
 const inputDir = "./sh-tool/md/";
 const outputFile = "./sh-tool/dist/index.html";
