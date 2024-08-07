@@ -1,4 +1,5 @@
 // TODO: コメント入れるのと、変数化してわかりやすくする
+// TODO: コードブロックなど対応させる。クリックでコピー
 const fs = require("fs");
 const path = require("path");
 const { marked } = require("marked"); // 関数としてimportする
