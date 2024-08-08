@@ -1,5 +1,6 @@
 // TODO: コメント入れるのと、変数化してわかりやすくする
 // TODO: inputディレクトリにタイムスタンプのファイルを作成するスクリプト
+// TODO: 画像対応しているか確認
 // TODO: python版も作る?
 const fs = require("fs");
 const path = require("path");
@@ -99,7 +100,8 @@ fs.readdir(inputDir, (err, files) => {
           button.className = 'copy-button';
           button.innerText = 'Copy';
           button.addEventListener('click', () => {
-            navigator.clipboard.writeText(pre.innerText).then(() => {
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
               button.innerText = 'Copied';
               setTimeout(() => { button.innerText = 'Copy'; }, 2000);
             });
