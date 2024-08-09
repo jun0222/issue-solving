@@ -45,6 +45,11 @@ fs.readdir(inputDir, (err, files) => {
   let combinedContent = "";
 
   for (const fileName of filesR) {
+    // .mdファイルのみ処理
+    if (path.extname(fileName) !== ".md") {
+      continue;
+    }
+
     const filePath = path.join(inputDir, fileName);
 
     // ファイル読み込み
