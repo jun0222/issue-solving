@@ -1,6 +1,4 @@
 // TODO: コメント入れるのと、変数化してわかりやすくする
-// TODO: inputディレクトリにタイムスタンプのファイルを作成するスクリプト
-// TODO: 画像対応しているか確認
 // TODO: python版も作る?
 const fs = require("fs");
 const path = require("path");
