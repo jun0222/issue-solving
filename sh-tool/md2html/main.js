@@ -16,7 +16,16 @@ marked.setOptions({
     const language = hljs.getLanguage(lang) ? lang : "plaintext";
     return hljs.highlight(code, { language }).value;
   },
+  renderer: new marked.Renderer(),
 });
+
+// Modify the renderer to prepend ../input/ to image paths
+const renderer = new marked.Renderer();
+
+renderer.image = function (imageObj, title, text) {
+  const newHref = path.join("../input/", imageObj.href);
+  return `<img src="${newHref}" alt="${text}" title="${title || ""}" />`;
+};
 
 // 出力ファイルが既に存在する場合は削除
 if (fs.existsSync(outputFile)) {
@@ -42,7 +51,7 @@ fs.readdir(inputDir, (err, files) => {
     const fileContent = fs.readFileSync(filePath, "utf8");
 
     // MarkdownをHTMLに変換
-    const htmlContent = marked(fileContent);
+    const htmlContent = marked(fileContent, { renderer });
 
     // ファイル名をセクションとして追加
     combinedContent += `
