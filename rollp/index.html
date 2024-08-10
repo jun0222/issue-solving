@@ -11,23 +11,91 @@
       body {
         font-family: Arial, sans-serif;
         margin: 20px;
+        background-color: #f5f5f5;
       }
+
+      h1 {
+        color: #333;
+        text-align: center;
+      }
+
+      form {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
       form div {
         margin-bottom: 10px;
       }
+
+      label {
+        display: inline-block;
+        width: 120px;
+        font-weight: bold;
+      }
+
+      input,
+      select,
+      button {
+        width: calc(100% - 130px);
+        padding: 8px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+
       .error {
         color: red;
         font-size: 0.9em;
       }
+
+      .roll-set {
+        position: relative;
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #fafafa;
+      }
+
+      .remove-set {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #ff5c5c;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
       #resultChart {
         margin-top: 20px;
         width: 100%;
         max-width: 600px;
       }
-      input,
-      textarea,
+
       button {
-        touch-action: manipulation;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      button.remove-set:hover {
+        background-color: #e44a4a;
       }
     </style>
   </head>
@@ -38,13 +106,16 @@
       <div>
         <label for="calculationType">計算タイプ:</label>
         <select id="calculationType" onchange="updateForm()">
-          <option value="length">長さで計算</option>
           <option value="sheets">枚数で計算</option>
+          <option value="length">長さで計算</option>
         </select>
       </div>
 
       <div id="inputsContainer">
         <div class="roll-set">
+          <button type="button" class="remove-set" onclick="removeSet(this)">
+            ×
+          </button>
           <h3>ロール紙セット1</h3>
           <label for="length1">長さ（メートル）:</label>
           <input
@@ -81,14 +152,13 @@
           document.getElementById("calculationType").value;
         const lengthLabels = document.querySelectorAll("[for^='length']");
         const lengthInputs = document.querySelectorAll("input[id^='length']");
-        const countLabels = document.querySelectorAll("[for^='count']");
 
         if (calculationType === "sheets") {
           lengthLabels.forEach((label) => {
             label.textContent = "枚数:";
           });
           lengthInputs.forEach((input) => {
-            input.value = ""; // 枚数用の初期値を空にする
+            input.value = "100"; // 枚数用の初期値を設定
           });
         } else {
           lengthLabels.forEach((label) => {
@@ -110,12 +180,13 @@
         const newSet = document.createElement("div");
         newSet.classList.add("roll-set");
         newSet.innerHTML = `
+                <button type="button" class="remove-set" onclick="removeSet(this)">×</button>
                 <h3>ロール紙セット${setCount}</h3>
                 <label for="length${setCount}">${
           isSheetsCalculation ? "枚数" : "長さ（メートル）"
         }:</label>
                 <input type="number" id="length${setCount}" name="length${setCount}" value="${
-          isSheetsCalculation ? "" : "60"
+          isSheetsCalculation ? "100" : "60"
         }" required>
                 <span class="error" id="error-length${setCount}"></span><br>
 
@@ -130,6 +201,11 @@
         container.appendChild(newSet);
       }
 
+      function removeSet(button) {
+        const setElement = button.parentElement;
+        setElement.remove();
+      }
+
       function calculate() {
         const results = [];
         let valid = true;
@@ -137,31 +213,34 @@
           document.getElementById("calculationType").value;
         const isSheetsCalculation = calculationType === "sheets";
 
-        for (let i = 1; i <= setCount; i++) {
+        const sets = document.querySelectorAll(".roll-set");
+        sets.forEach((set, index) => {
           const length = parseFloat(
-            document.getElementById(`length${i}`).value
+            set.querySelector(`input[id^='length']`).value
           );
-          const count = parseInt(document.getElementById(`count${i}`).value);
-          const price = parseFloat(document.getElementById(`price${i}`).value);
+          const count = parseInt(set.querySelector(`input[id^='count']`).value);
+          const price = parseFloat(
+            set.querySelector(`input[id^='price']`).value
+          );
 
-          document.getElementById(`error-length${i}`).innerText = "";
-          document.getElementById(`error-count${i}`).innerText = "";
-          document.getElementById(`error-price${i}`).innerText = "";
+          set.querySelector(`.error[id^='error-length']`).innerText = "";
+          set.querySelector(`.error[id^='error-count']`).innerText = "";
+          set.querySelector(`.error[id^='error-price']`).innerText = "";
 
           if (isNaN(length) || length <= 0) {
-            document.getElementById(`error-length${i}`).innerText =
+            set.querySelector(`.error[id^='error-length']`).innerText =
               "有効な値を入力してください";
             valid = false;
           }
 
           if (isNaN(count) || count <= 0) {
-            document.getElementById(`error-count${i}`).innerText =
+            set.querySelector(`.error[id^='error-count']`).innerText =
               "有効な本数を入力してください";
             valid = false;
           }
 
           if (isNaN(price) || price <= 0) {
-            document.getElementById(`error-price${i}`).innerText =
+            set.querySelector(`.error[id^='error-price']`).innerText =
               "有効な値段を入力してください";
             valid = false;
           }
@@ -175,9 +254,9 @@
               // 60メートルあたりの単価を計算
               unitPrice = (price / (length * count)) * 60;
             }
-            results.push({ set: `セット${i}`, unitPrice });
+            results.push({ set: `セット${index + 1}`, unitPrice });
           }
-        }
+        });
 
         if (valid) {
           displayResults(results, isSheetsCalculation);
