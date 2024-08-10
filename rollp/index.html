@@ -120,12 +120,20 @@
         }
       }
 
+      let chartInstance = null;
+
       function displayResults(results) {
         const labels = results.map((result) => result.set);
         const data = results.map((result) => result.unitPrice);
 
         const ctx = document.getElementById("resultChart").getContext("2d");
-        new Chart(ctx, {
+
+        // 既存のチャートが存在する場合、破棄する
+        if (chartInstance !== null) {
+          chartInstance.destroy();
+        }
+
+        chartInstance = new Chart(ctx, {
           type: "bar",
           data: {
             labels: labels,
