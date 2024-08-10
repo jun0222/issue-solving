@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ロール紙のお得度計算</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      form div {
+        margin-bottom: 10px;
+      }
+      .error {
+        color: red;
+        font-size: 0.9em;
+      }
+      #resultChart {
+        margin-top: 20px;
+        width: 100%;
+        max-width: 600px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ロール紙のお得度計算</h1>
+
+    <form id="rollForm">
+      <div id="inputsContainer">
+        <div class="roll-set">
+          <h3>ロール紙セット1</h3>
+          <label for="length1">長さ（メートル）:</label>
+          <input type="number" id="length1" name="length1" required />
+          <span class="error" id="error-length1"></span><br />
+
+          <label for="count1">本数:</label>
+          <input type="number" id="count1" name="count1" required />
+          <span class="error" id="error-count1"></span><br />
+
+          <label for="price1">値段（円）:</label>
+          <input type="number" id="price1" name="price1" required />
+          <span class="error" id="error-price1"></span><br />
+        </div>
+      </div>
+      <button type="button" onclick="addSet()">セットを追加</button>
+      <button type="button" onclick="calculate()">計算する</button>
+    </form>
+
+    <h2>結果:</h2>
+    <canvas id="resultChart"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      let setCount = 1;
+
+      function addSet() {
+        setCount++;
+        const container = document.getElementById("inputsContainer");
+        const newSet = document.createElement("div");
+        newSet.classList.add("roll-set");
+        newSet.innerHTML = `
+                <h3>ロール紙セット${setCount}</h3>
+                <label for="length${setCount}">長さ（メートル）:</label>
+                <input type="number" id="length${setCount}" name="length${setCount}" required>
+                <span class="error" id="error-length${setCount}"></span><br>
+
+                <label for="count${setCount}">本数:</label>
+                <input type="number" id="count${setCount}" name="count${setCount}" required>
+                <span class="error" id="error-count${setCount}"></span><br>
+
+                <label for="price${setCount}">値段（円）:</label>
+                <input type="number" id="price${setCount}" name="price${setCount}" required>
+                <span class="error" id="error-price${setCount}"></span><br>
+            `;
+        container.appendChild(newSet);
+      }
+
+      function calculate() {
+        const results = [];
+        let valid = true;
+
+        for (let i = 1; i <= setCount; i++) {
+          const length = parseFloat(
+            document.getElementById(`length${i}`).value
+          );
+          const count = parseInt(document.getElementById(`count${i}`).value);
+          const price = parseFloat(document.getElementById(`price${i}`).value);
+
+          document.getElementById(`error-length${i}`).innerText = "";
+          document.getElementById(`error-count${i}`).innerText = "";
+          document.getElementById(`error-price${i}`).innerText = "";
+
+          if (isNaN(length) || length <= 0) {
+            document.getElementById(`error-length${i}`).innerText =
+              "有効な長さを入力してください";
+            valid = false;
+          }
+
+          if (isNaN(count) || count <= 0) {
+            document.getElementById(`error-count${i}`).innerText =
+              "有効な本数を入力してください";
+            valid = false;
+          }
+
+          if (isNaN(price) || price <= 0) {
+            document.getElementById(`error-price${i}`).innerText =
+              "有効な値段を入力してください";
+            valid = false;
+          }
+
+          if (valid) {
+            const unitPrice = price / (length * count);
+            results.push({ set: `セット${i}`, unitPrice });
+          }
+        }
+
+        if (valid) {
+          displayResults(results);
+        }
+      }
+
+      function displayResults(results) {
+        const labels = results.map((result) => result.set);
+        const data = results.map((result) => result.unitPrice);
+
+        const ctx = document.getElementById("resultChart").getContext("2d");
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "1メートルあたりの単価（円）",
+                data: data,
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+    </script>
+  </body>
+</html>
