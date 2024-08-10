@@ -6,7 +6,6 @@
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
     />
-
     <title>ロール紙のお得度計算</title>
     <style>
       body {
@@ -25,12 +24,25 @@
         width: 100%;
         max-width: 600px;
       }
+      input,
+      textarea,
+      button {
+        touch-action: manipulation;
+      }
     </style>
   </head>
   <body>
     <h1>ロール紙のお得度計算</h1>
 
     <form id="rollForm">
+      <div>
+        <label for="calculationType">計算タイプ:</label>
+        <select id="calculationType" onchange="updateForm()">
+          <option value="length">長さで計算</option>
+          <option value="sheets">枚数で計算</option>
+        </select>
+      </div>
+
       <div id="inputsContainer">
         <div class="roll-set">
           <h3>ロール紙セット1</h3>
@@ -64,15 +76,47 @@
     <script>
       let setCount = 1;
 
+      function updateForm() {
+        const calculationType =
+          document.getElementById("calculationType").value;
+        const lengthLabels = document.querySelectorAll("[for^='length']");
+        const lengthInputs = document.querySelectorAll("input[id^='length']");
+        const countLabels = document.querySelectorAll("[for^='count']");
+
+        if (calculationType === "sheets") {
+          lengthLabels.forEach((label) => {
+            label.textContent = "枚数:";
+          });
+          lengthInputs.forEach((input) => {
+            input.value = ""; // 枚数用の初期値を空にする
+          });
+        } else {
+          lengthLabels.forEach((label) => {
+            label.textContent = "長さ（メートル）:";
+          });
+          lengthInputs.forEach((input) => {
+            input.value = "60"; // 長さ用の初期値を設定
+          });
+        }
+      }
+
       function addSet() {
         setCount++;
         const container = document.getElementById("inputsContainer");
+        const calculationType =
+          document.getElementById("calculationType").value;
+        const isSheetsCalculation = calculationType === "sheets";
+
         const newSet = document.createElement("div");
         newSet.classList.add("roll-set");
         newSet.innerHTML = `
                 <h3>ロール紙セット${setCount}</h3>
-                <label for="length${setCount}">長さ（メートル）:</label>
-                <input type="number" id="length${setCount}" name="length${setCount}" value="60" required>
+                <label for="length${setCount}">${
+          isSheetsCalculation ? "枚数" : "長さ（メートル）"
+        }:</label>
+                <input type="number" id="length${setCount}" name="length${setCount}" value="${
+          isSheetsCalculation ? "" : "60"
+        }" required>
                 <span class="error" id="error-length${setCount}"></span><br>
 
                 <label for="count${setCount}">本数:</label>
@@ -89,6 +133,9 @@
       function calculate() {
         const results = [];
         let valid = true;
+        const calculationType =
+          document.getElementById("calculationType").value;
+        const isSheetsCalculation = calculationType === "sheets";
 
         for (let i = 1; i <= setCount; i++) {
           const length = parseFloat(
@@ -103,7 +150,7 @@
 
           if (isNaN(length) || length <= 0) {
             document.getElementById(`error-length${i}`).innerText =
-              "有効な長さを入力してください";
+              "有効な値を入力してください";
             valid = false;
           }
 
@@ -120,19 +167,26 @@
           }
 
           if (valid) {
-            const unitPrice = (price / (length * count)) * 60; // 60メートルあたりの単価
+            let unitPrice;
+            if (isSheetsCalculation) {
+              // 枚数あたりの単価を計算
+              unitPrice = price / length;
+            } else {
+              // 60メートルあたりの単価を計算
+              unitPrice = (price / (length * count)) * 60;
+            }
             results.push({ set: `セット${i}`, unitPrice });
           }
         }
 
         if (valid) {
-          displayResults(results);
+          displayResults(results, isSheetsCalculation);
         }
       }
 
       let chartInstance = null;
 
-      function displayResults(results) {
+      function displayResults(results, isSheetsCalculation) {
         const labels = results.map((result) => result.set);
         const data = results.map((result) => result.unitPrice);
 
@@ -149,7 +203,9 @@
             labels: labels,
             datasets: [
               {
-                label: "60メートルあたりの単価（円）",
+                label: isSheetsCalculation
+                  ? "1枚あたりの単価（円）"
+                  : "60メートルあたりの単価（円）",
                 data: data,
                 backgroundColor: "rgba(75, 192, 192, 0.2)",
                 borderColor: "rgba(75, 192, 192, 1)",
@@ -169,11 +225,3 @@
     </script>
   </body>
 </html>
-
-<style>
-  input,
-  textarea,
-  button {
-    touch-action: manipulation;
-  }
-</style>
