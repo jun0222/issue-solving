@@ -106,7 +106,7 @@
       <div>
         <label for="calculationType">計算タイプ:</label>
         <select id="calculationType" onchange="updateForm()">
-          <option value="sheets">枚数で計算</option>
+          <option value="sheets" selected>枚数で計算</option>
           <option value="length">長さで計算</option>
         </select>
       </div>
@@ -117,12 +117,12 @@
             ×
           </button>
           <h3>ロール紙セット1</h3>
-          <label for="length1">長さ（メートル）:</label>
+          <label for="length1">枚数:</label>
           <input
             type="number"
             id="length1"
             name="length1"
-            value="60"
+            value="100"
             required
           />
           <span class="error" id="error-length1"></span><br />
@@ -146,6 +146,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
       let setCount = 1;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        updateForm(); // 初回レンダリング時にsheetsモードを適用
+      });
 
       function updateForm() {
         const calculationType =
@@ -248,8 +252,8 @@
           if (valid) {
             let unitPrice;
             if (isSheetsCalculation) {
-              // 枚数あたりの単価を計算
-              unitPrice = price / length;
+              // 枚数あたりの単価を計算（本数も考慮）
+              unitPrice = price / (length * count);
             } else {
               // 60メートルあたりの単価を計算
               unitPrice = (price / (length * count)) * 60;
