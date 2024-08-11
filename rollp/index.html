@@ -20,7 +20,7 @@
       }
 
       form {
-        max-width: 600px;
+        max-width: 800px;
         margin: 0 auto;
         padding: 20px;
         background-color: #fff;
@@ -28,56 +28,44 @@
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
 
-      form div {
-        margin-bottom: 10px;
-      }
-
-      label {
-        display: inline-block;
-        width: 120px;
-        font-weight: bold;
-      }
-
-      input,
-      select,
-      button {
-        width: calc(100% - 130px);
-        padding: 8px;
-        margin-bottom: 10px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-      }
-
-      .error {
-        color: red;
-        font-size: 0.9em;
-      }
-
-      .roll-set {
-        position: relative;
+      table {
+        width: 100%;
+        border-collapse: collapse;
         margin-bottom: 20px;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        background-color: #fafafa;
       }
 
-      .remove-set {
-        position: absolute;
-        top: 10px;
-        right: 10px;
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: center;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+
+      .remove-row {
         background-color: #ff5c5c;
         color: white;
         border: none;
-        border-radius: 50%;
-        width: 25px;
-        height: 25px;
+        border-radius: 4px;
+        padding: 5px 10px;
         cursor: pointer;
-        font-weight: bold;
+      }
+
+      .remove-row:hover {
+        background-color: #e44a4a;
       }
 
       #resultChart {
-        margin-top: 20px;
+        display: block;
+        margin: 20px auto;
         width: 100%;
         max-width: 600px;
       }
@@ -86,16 +74,16 @@
         background-color: #4caf50;
         color: white;
         border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
         cursor: pointer;
         transition: background-color 0.3s;
+        display: block;
+        margin: 0 auto;
       }
 
       button:hover {
         background-color: #45a049;
-      }
-
-      button.remove-set:hover {
-        background-color: #e44a4a;
       }
     </style>
   </head>
@@ -111,36 +99,55 @@
         </select>
       </div>
 
-      <div id="inputsContainer">
-        <div class="roll-set">
-          <button type="button" class="remove-set" onclick="removeSet(this)">
-            ×
-          </button>
-          <h3>ロール紙セット1</h3>
-          <label for="length1">枚数:</label>
-          <input
-            type="number"
-            id="length1"
-            name="length1"
-            value="100"
-            required
-          />
-          <span class="error" id="error-length1"></span><br />
+      <table id="rollTable">
+        <thead>
+          <tr>
+            <th>セット番号</th>
+            <th id="lengthLabel">枚数</th>
+            <th>本数</th>
+            <th>値段（円）</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>
+              <input
+                type="number"
+                id="length1"
+                name="length1"
+                value="100"
+                required
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                id="count1"
+                name="count1"
+                value="12"
+                required
+              />
+            </td>
+            <td><input type="number" id="price1" name="price1" required /></td>
+            <td>
+              <button
+                type="button"
+                class="remove-row"
+                onclick="removeRow(this)"
+              >
+                ×
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-          <label for="count1">本数:</label>
-          <input type="number" id="count1" name="count1" value="12" required />
-          <span class="error" id="error-count1"></span><br />
-
-          <label for="price1">値段（円）:</label>
-          <input type="number" id="price1" name="price1" required />
-          <span class="error" id="error-price1"></span><br />
-        </div>
-      </div>
-      <button type="button" onclick="addSet()">セットを追加</button>
+      <button type="button" onclick="addRow()">行を追加</button>
       <button type="button" onclick="calculate()">計算する</button>
     </form>
 
-    <h2>結果:</h2>
     <canvas id="resultChart"></canvas>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -154,60 +161,45 @@
       function updateForm() {
         const calculationType =
           document.getElementById("calculationType").value;
-        const lengthLabels = document.querySelectorAll("[for^='length']");
+        const lengthLabel = document.getElementById("lengthLabel");
         const lengthInputs = document.querySelectorAll("input[id^='length']");
 
         if (calculationType === "sheets") {
-          lengthLabels.forEach((label) => {
-            label.textContent = "枚数:";
-          });
+          lengthLabel.textContent = "枚数";
           lengthInputs.forEach((input) => {
             input.value = "100"; // 枚数用の初期値を設定
           });
         } else {
-          lengthLabels.forEach((label) => {
-            label.textContent = "長さ（メートル）:";
-          });
+          lengthLabel.textContent = "長さ（メートル）";
           lengthInputs.forEach((input) => {
             input.value = "60"; // 長さ用の初期値を設定
           });
         }
       }
 
-      function addSet() {
+      function addRow() {
         setCount++;
-        const container = document.getElementById("inputsContainer");
+        const tableBody = document.querySelector("#rollTable tbody");
         const calculationType =
           document.getElementById("calculationType").value;
         const isSheetsCalculation = calculationType === "sheets";
 
-        const newSet = document.createElement("div");
-        newSet.classList.add("roll-set");
-        newSet.innerHTML = `
-                <button type="button" class="remove-set" onclick="removeSet(this)">×</button>
-                <h3>ロール紙セット${setCount}</h3>
-                <label for="length${setCount}">${
-          isSheetsCalculation ? "枚数" : "長さ（メートル）"
-        }:</label>
-                <input type="number" id="length${setCount}" name="length${setCount}" value="${
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `
+            <td>${setCount}</td>
+            <td><input type="number" id="length${setCount}" name="length${setCount}" value="${
           isSheetsCalculation ? "100" : "60"
-        }" required>
-                <span class="error" id="error-length${setCount}"></span><br>
-
-                <label for="count${setCount}">本数:</label>
-                <input type="number" id="count${setCount}" name="count${setCount}" value="12" required>
-                <span class="error" id="error-count${setCount}"></span><br>
-
-                <label for="price${setCount}">値段（円）:</label>
-                <input type="number" id="price${setCount}" name="price${setCount}" required>
-                <span class="error" id="error-price${setCount}"></span><br>
-            `;
-        container.appendChild(newSet);
+        }" required /></td>
+            <td><input type="number" id="count${setCount}" name="count${setCount}" value="12" required /></td>
+            <td><input type="number" id="price${setCount}" name="price${setCount}" required /></td>
+            <td><button type="button" class="remove-row" onclick="removeRow(this)">×</button></td>
+        `;
+        tableBody.appendChild(newRow);
       }
 
-      function removeSet(button) {
-        const setElement = button.parentElement;
-        setElement.remove();
+      function removeRow(button) {
+        const row = button.parentElement.parentElement;
+        row.remove();
       }
 
       function calculate() {
@@ -217,35 +209,28 @@
           document.getElementById("calculationType").value;
         const isSheetsCalculation = calculationType === "sheets";
 
-        const sets = document.querySelectorAll(".roll-set");
-        sets.forEach((set, index) => {
+        const rows = document.querySelectorAll("#rollTable tbody tr");
+        rows.forEach((row, index) => {
           const length = parseFloat(
-            set.querySelector(`input[id^='length']`).value
+            row.querySelector(`input[id^='length']`).value
           );
-          const count = parseInt(set.querySelector(`input[id^='count']`).value);
+          const count = parseInt(row.querySelector(`input[id^='count']`).value);
           const price = parseFloat(
-            set.querySelector(`input[id^='price']`).value
+            row.querySelector(`input[id^='price']`).value
           );
-
-          set.querySelector(`.error[id^='error-length']`).innerText = "";
-          set.querySelector(`.error[id^='error-count']`).innerText = "";
-          set.querySelector(`.error[id^='error-price']`).innerText = "";
 
           if (isNaN(length) || length <= 0) {
-            set.querySelector(`.error[id^='error-length']`).innerText =
-              "有効な値を入力してください";
+            alert("有効な枚数または長さを入力してください");
             valid = false;
           }
 
           if (isNaN(count) || count <= 0) {
-            set.querySelector(`.error[id^='error-count']`).innerText =
-              "有効な本数を入力してください";
+            alert("有効な本数を入力してください");
             valid = false;
           }
 
           if (isNaN(price) || price <= 0) {
-            set.querySelector(`.error[id^='error-price']`).innerText =
-              "有効な値段を入力してください";
+            alert("有効な値段を入力してください");
             valid = false;
           }
 
