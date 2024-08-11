@@ -165,6 +165,37 @@
               </button>
             </td>
           </tr>
+          <tr>
+            <td>2</td>
+            <td>
+              <input
+                type="number"
+                id="length2"
+                name="length2"
+                value="100"
+                required
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                id="count2"
+                name="count2"
+                value="12"
+                required
+              />
+            </td>
+            <td><input type="number" id="price2" name="price2" required /></td>
+            <td>
+              <button
+                type="button"
+                class="remove-row"
+                onclick="removeRow(this)"
+              >
+                ×
+              </button>
+            </td>
+          </tr>
         </tbody>
       </table>
 
@@ -176,7 +207,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-      let setCount = 1;
+      let setCount = 2;
 
       document.addEventListener("DOMContentLoaded", function () {
         updateForm(); // 初回レンダリング時にsheetsモードを適用
