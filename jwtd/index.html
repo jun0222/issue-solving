@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,6 +25,14 @@
       <button id="copyButton" onclick="copyToClipboard()">
         Copy Decoded Payload
       </button>
+      <h2>Sample JWTs</h2>
+      <div id="sampleJWTs">
+        <pre
+          onclick="copySampleJWT('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c')"
+        >
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</pre
+        >
+      </div>
     </div>
     <script src="script.js"></script>
   </body>
@@ -37,7 +45,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    /* height: 100vh; */
     background-color: #f4f4f9;
     margin: 0;
   }
@@ -88,6 +96,11 @@
     text-align: left;
     font-family: monospace;
     overflow-x: auto;
+    cursor: pointer;
+  }
+
+  pre:hover {
+    background-color: #e0e0e0;
   }
 </style>
 
@@ -160,6 +173,17 @@
       })
       .catch((err) => {
         alert("Failed to copy payload: " + err);
+      });
+  }
+
+  function copySampleJWT(jwt) {
+    navigator.clipboard
+      .writeText(jwt)
+      .then(() => {
+        alert("Sample JWT copied to clipboard");
+      })
+      .catch((err) => {
+        alert("Failed to copy sample JWT: " + err);
       });
   }
 </script>
