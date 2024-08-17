@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <title>VSCode チートシート</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>VSCode チートシート</h1>
+
+    <div id="vscodeCheatSheetContainer"></div>
+
+    <script>
+      const vscodeCheatSheetData = [
+        {
+          description: "新しいタブを開く",
+          content: "Ctrl + N",
+        },
+        {
+          description: "ファイルを開く",
+          content: "Ctrl + O",
+        },
+        {
+          description: "ファイルを保存",
+          content: "Ctrl + S",
+        },
+        {
+          description: "すべて保存",
+          content: "Ctrl + K, S",
+        },
+        {
+          description: "クイックオープン",
+          content: "Ctrl + P",
+        },
+        {
+          description: "設定を開く",
+          content: "Ctrl + ,",
+        },
+        {
+          description: "ファイルを閉じる",
+          content: "Ctrl + W",
+        },
+        {
+          description: "サイドバーを表示/非表示",
+          content: "Ctrl + B",
+        },
+        {
+          description: "ターミナルを表示/非表示",
+          content: "Ctrl + `",
+        },
+        {
+          description: "行のコメントアウト",
+          content: "Ctrl + /",
+        },
+      ];
+
+      PureFrontendKit.createClickableTable(
+        "vscodeCheatSheetContainer",
+        vscodeCheatSheetData
+      );
+    </script>
+  </body>
+</html>

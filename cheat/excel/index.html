@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <title>Excel チートシート</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Excel チートシート</h1>
+
+    <div id="excelCheatSheetContainer"></div>
+
+    <script>
+      const excelCheatSheetData = [
+        {
+          description: "SUM 関数 (合計)",
+          content: "=SUM(A1:B1)",
+        },
+        {
+          description: "AVERAGE 関数 (平均)",
+          content: "=AVERAGE(A1:A10)",
+        },
+        {
+          description: "IF 関数 (条件分岐)",
+          content: '=IF(A1>10, "大", "小")',
+        },
+        {
+          description: "VLOOKUP 関数 (縦検索)",
+          content: "=VLOOKUP(A1, B1:C10, 2, FALSE)",
+        },
+        {
+          description: "COUNT 関数 (セルの数を数える)",
+          content: "=COUNT(A1:A10)",
+        },
+        {
+          description: "MAX 関数 (最大値)",
+          content: "=MAX(A1:A10)",
+        },
+        {
+          description: "MIN 関数 (最小値)",
+          content: "=MIN(A1:A10)",
+        },
+        {
+          description: "CONCATENATE 関数 (文字列の結合)",
+          content: "=CONCATENATE(A1, B1)",
+        },
+        {
+          description: "TRIM 関数 (余分なスペースを削除)",
+          content: "=TRIM(A1)",
+        },
+        {
+          description: "LEN 関数 (文字列の長さ)",
+          content: "=LEN(A1)",
+        },
+      ];
+
+      PureFrontendKit.createClickableTable(
+        "excelCheatSheetContainer",
+        excelCheatSheetData
+      );
+    </script>
+  </body>
+</html>

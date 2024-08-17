@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <title>Git チートシート</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Git チートシート</h1>
+
+    <div id="gitCheatSheetContainer"></div>
+
+    <script>
+      const gitCheatSheetData = [
+        {
+          description: "リポジトリのクローン",
+          content: "git clone https://github.com/user/repo.git",
+        },
+        {
+          description: "変更のステージング",
+          content: "git add .",
+        },
+        {
+          description: "コミットを作成",
+          content: 'git commit -m "コミットメッセージ"',
+        },
+        {
+          description: "変更のプッシュ",
+          content: "git push origin main",
+        },
+        {
+          description: "リモートリポジトリの追加",
+          content: "git remote add origin https://github.com/user/repo.git",
+        },
+        {
+          description: "ブランチを作成",
+          content: "git branch new-branch",
+        },
+        {
+          description: "ブランチの切り替え",
+          content: "git checkout new-branch",
+        },
+        {
+          description: "マージ",
+          content: "git merge new-branch",
+        },
+        {
+          description: "プルリクエスト",
+          content: "git request-pull origin new-branch",
+        },
+        {
+          description: "ログの表示",
+          content: "git log --oneline",
+        },
+      ];
+
+      PureFrontendKit.createClickableTable(
+        "gitCheatSheetContainer",
+        gitCheatSheetData
+      );
+    </script>
+  </body>
+</html>

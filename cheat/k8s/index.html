@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <title>Kubernetes (K8s) チートシート</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Kubernetes (K8s) チートシート</h1>
+
+    <div id="k8sCheatSheetContainer"></div>
+
+    <script>
+      const k8sCheatSheetData = [
+        {
+          description: "クラスターの状態を確認",
+          content: "kubectl cluster-info",
+        },
+        {
+          description: "ノードの一覧を表示",
+          content: "kubectl get nodes",
+        },
+        {
+          description: "デプロイメントを作成",
+          content: "kubectl create deployment nginx --image=nginx",
+        },
+        {
+          description: "ポッドの一覧を表示",
+          content: "kubectl get pods",
+        },
+        {
+          description: "サービスの一覧を表示",
+          content: "kubectl get services",
+        },
+        {
+          description: "ポッドの詳細を表示",
+          content: "kubectl describe pod <pod_name>",
+        },
+        {
+          description: "ポッドのログを表示",
+          content: "kubectl logs <pod_name>",
+        },
+        {
+          description: "ポッドを削除",
+          content: "kubectl delete pod <pod_name>",
+        },
+        {
+          description: "デプロイメントを削除",
+          content: "kubectl delete deployment <deployment_name>",
+        },
+        {
+          description: "コンテキストを切り替え",
+          content: "kubectl config use-context <context_name>",
+        },
+      ];
+
+      PureFrontendKit.createClickableTable(
+        "k8sCheatSheetContainer",
+        k8sCheatSheetData
+      );
+    </script>
+  </body>
+</html>

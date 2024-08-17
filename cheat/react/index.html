@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <title>React チートシート</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>React チートシート</h1>
+
+    <div id="reactCheatSheetContainer"></div>
+
+    <script>
+      const reactCheatSheetData = [
+        {
+          description: "コンポーネントの作成 (クラスコンポーネント)",
+          content: `class MyComponent extends React.Component {
+  render() {
+    return <div>Hello, World!</div>;
+  }
+}`,
+        },
+        {
+          description: "コンポーネントの作成 (関数コンポーネント)",
+          content: `function MyComponent() {
+  return <div>Hello, World!</div>;
+}`,
+        },
+        {
+          description: "状態の使用 (クラスコンポーネント)",
+          content: `class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { count: 0 };
+  }
+
+  render() {
+    return (
+      <div>
+        <p>{this.state.count}</p>
+        <button onClick={() => this.setState({ count: this.state.count + 1 })}>
+          Increment
+        </button>
+      </div>
+    );
+  }
+}`,
+        },
+        {
+          description: "状態の使用 (関数コンポーネント)",
+          content: `function MyComponent() {
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <div>
+      <p>{count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}`,
+        },
+        {
+          description: "エフェクトの使用",
+          content: `function MyComponent() {
+  React.useEffect(() => {
+    document.title = 'Hello, World!';
+  }, []);
+
+  return <div>Hello, World!</div>;
+}`,
+        },
+        {
+          description: "プロパティの使用",
+          content: `function MyComponent(props) {
+  return <div>{props.message}</div>;
+}`,
+        },
+        {
+          description:
+            "コンポーネントのマウント/アンマウント時に実行されるコード",
+          content: `class MyComponent extends React.Component {
+  componentDidMount() {
+    console.log('Component mounted');
+  }
+
+  componentWillUnmount() {
+    console.log('Component will unmount');
+  }
+
+  render() {
+    return <div>Hello, World!</div>;
+  }
+}`,
+        },
+        {
+          description: "条件付きレンダリング",
+          content: `function MyComponent({ isLoggedIn }) {
+  return (
+    <div>
+      {isLoggedIn ? <p>Welcome back!</p> : <p>Please sign in.</p>}
+    </div>
+  );
+}`,
+        },
+        {
+          description: "リストのレンダリング",
+          content: `function MyComponent({ items }) {
+  return (
+    <ul>
+      {items.map(item => (
+        <li key={item.id}>{item.name}</li>
+      ))}
+    </ul>
+  );
+}`,
+        },
+        {
+          description: "フォームのハンドリング",
+          content: `function MyComponent() {
+  const [value, setValue] = React.useState('');
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    alert('Submitted: ' + value);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Name:
+        <input type="text" value={value} onChange={handleChange} />
+      </label>
+      <button type="submit">Submit</button>
+    </form>
+  );
+}`,
+        },
+      ];
+
+      PureFrontendKit.createClickableTable(
+        "reactCheatSheetContainer",
+        reactCheatSheetData
+      );
+    </script>
+  </body>
+</html>

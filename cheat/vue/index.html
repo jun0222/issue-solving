@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <title>Vue チートシート</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Vue チートシート</h1>
+
+<div id="vueCheatSheetContainer"></div>
+
+<script>
+    const vueCheatSheetData = [
+        {
+            description: "基本的なコンポーネントの作成",
+            content: `<template>
+  <div>Hello, World!</div>
+</template>
+
+<script>
+export default {
+  name: 'MyComponent'
+}
+</script>`,
+        },
+        {
+            description: "データの使用",
+            content: `<template>
+  <div>{{ message }}</div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      message: 'Hello, World!'
+    }
+  }
+}
+</script>`,
+        },
+        {
+            description: "メソッドの使用",
+            content: `<template>
+  <div>
+    <button @click="sayHello">Click me</button>
+  </div>
+</template>
+
+<script>
+export default {
+  methods: {
+    sayHello() {
+      alert('Hello!')
+    }
+  }
+}
+</script>`,
+        },
+        {
+            description: "コンポーネントのプロパティの使用",
+            content: `<template>
+  <div>{{ message }}</div>
+</template>
+
+<script>
+export default {
+  props: {
+    message: String
+  }
+}
+</script>`,
+        },
+        {
+            description: "条件付きレンダリング",
+            content: `<template>
+  <div>
+    <p v-if="isLoggedIn">Welcome back!</p>
+    <p v-else>Please sign in.</p>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      isLoggedIn: false
+    }
+  }
+}
+</script>`,
+        }
+    ];
+
+    PureFrontendKit.createClickableTable("vueCheatSheetContainer", vueCheatSheetData);
+</script>
+
+</body>
+</html>

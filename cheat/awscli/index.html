@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <title>AWS CLI チートシート</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AWS CLI チートシート</h1>
+
+    <div id="awscliCheatSheetContainer"></div>
+
+    <script>
+      const awscliCheatSheetData = [
+        {
+          description: "AWS CLI のバージョン確認",
+          content: "aws --version",
+        },
+        {
+          description: "設定の構成",
+          content: "aws configure",
+        },
+        {
+          description: "S3 バケットの作成",
+          content: "aws s3 mb s3://my-bucket",
+        },
+        {
+          description: "S3 バケットにファイルをアップロード",
+          content: "aws s3 cp myfile.txt s3://my-bucket/",
+        },
+        {
+          description: "S3 バケットからファイルをダウンロード",
+          content: "aws s3 cp s3://my-bucket/myfile.txt .",
+        },
+        {
+          description: "S3 バケットの内容を一覧表示",
+          content: "aws s3 ls s3://my-bucket/",
+        },
+        {
+          description: "EC2 インスタンスの開始",
+          content: "aws ec2 start-instances --instance-ids i-1234567890abcdef0",
+        },
+        {
+          description: "EC2 インスタンスの停止",
+          content: "aws ec2 stop-instances --instance-ids i-1234567890abcdef0",
+        },
+        {
+          description: "EC2 インスタンスの状態を表示",
+          content:
+            "aws ec2 describe-instances --instance-ids i-1234567890abcdef0",
+        },
+      ];
+
+      PureFrontendKit.createClickableTable(
+        "awscliCheatSheetContainer",
+        awscliCheatSheetData
+      );
+    </script>
+  </body>
+</html>

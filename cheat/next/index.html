@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <title>Next.js チートシート</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Next.js チートシート</h1>
+
+    <div id="nextjsCheatSheetContainer"></div>
+
+    <script>
+      const nextjsCheatSheetData = [
+        {
+          description: "ページの作成",
+          content: `function HomePage() {
+  return <div>Welcome to Next.js!</div>;
+}
+
+export default HomePage;`,
+        },
+        {
+          description: "リンクの使用",
+          content: `import Link from 'next/link';
+
+function HomePage() {
+  return (
+    <div>
+      <Link href="/about">
+        <a>About</a>
+      </Link>
+    </div>
+  );
+}
+
+export default HomePage;`,
+        },
+        {
+          description: "動的ルーティング",
+          content: `import { useRouter } from 'next/router';
+
+function Post() {
+  const router = useRouter();
+  const { id } = router.query;
+
+  return <div>Post: {id}</div>;
+}
+
+export default Post;`,
+        },
+        {
+          description: "データのフェッチ (getStaticProps)",
+          content: `export async function getStaticProps() {
+  const res = await fetch('https://api.example.com/data');
+  const data = await res.json();
+
+  return {
+    props: {
+      data,
+    },
+  };
+}
+
+function HomePage({ data }) {
+  return <div>{JSON.stringify(data)}</div>;
+}
+
+export default HomePage;`,
+        },
+        {
+          description: "データのフェッチ (getServerSideProps)",
+          content: `export async function getServerSideProps() {
+  const res = await fetch('https://api.example.com/data');
+  const data = await res.json();
+
+  return {
+    props: {
+      data,
+    },
+  };
+}
+
+function HomePage({ data }) {
+  return <div>{JSON.stringify(data)}</div>;
+}
+
+export default HomePage;`,
+        },
+      ];
+
+      PureFrontendKit.createClickableTable(
+        "nextjsCheatSheetContainer",
+        nextjsCheatSheetData
+      );
+    </script>
+  </body>
+</html>

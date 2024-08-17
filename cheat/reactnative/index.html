@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <title>React Native チートシート</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>React Native チートシート</h1>
+
+    <div id="reactNativeCheatSheetContainer"></div>
+
+    <script>
+      const reactNativeCheatSheetData = [
+        {
+          description: "基本的なコンポーネントの作成",
+          content: `import React from 'react';
+import { Text, View } from 'react-native';
+
+function MyComponent() {
+  return (
+    <View>
+      <Text>Hello, World!</Text>
+    </View>
+  );
+}
+
+export default MyComponent;`,
+        },
+        {
+          description: "スタイルの適用",
+          content: `import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
+function MyComponent() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Hello, World!</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: 'blue',
+    fontSize: 20,
+  },
+});
+
+export default MyComponent;`,
+        },
+        {
+          description: "ボタンの使用",
+          content: `import React from 'react';
+import { Button, View } from 'react-native';
+
+function MyComponent() {
+  return (
+    <View>
+      <Button title="Press me" onPress={() => alert('Button pressed')} />
+    </View>
+  );
+}
+
+export default MyComponent;`,
+        },
+        {
+          description: "テキスト入力の使用",
+          content: `import React, { useState } from 'react';
+import { TextInput, View } from 'react-native';
+
+function MyComponent() {
+  const [text, setText] = useState('');
+
+  return (
+    <View>
+      <TextInput
+        placeholder="Type here"
+        value={text}
+        onChangeText={setText}
+      />
+    </View>
+  );
+}
+
+export default MyComponent;`,
+        },
+        {
+          description: "スクロールビューの使用",
+          content: `import React from 'react';
+import { ScrollView, Text, View } from 'react-native';
+
+function MyComponent() {
+  return (
+    <ScrollView>
+      <Text style={{ fontSize: 96 }}>Scroll me</Text>
+      <View style={{ height: 600, backgroundColor: 'blue' }} />
+      <Text style={{ fontSize: 96 }}>More scrolling</Text>
+    </ScrollView>
+  );
+}
+
+export default MyComponent;`,
+        },
+      ];
+
+      PureFrontendKit.createClickableTable(
+        "reactNativeCheatSheetContainer",
+        reactNativeCheatSheetData
+      );
+    </script>
+  </body>
+</html>

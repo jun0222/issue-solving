@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <title>Docker チートシート</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Docker チートシート</h1>
+
+    <div id="dockerCheatSheetContainer"></div>
+
+    <script>
+      const dockerCheatSheetData = [
+        {
+          description: "Docker イメージのビルド",
+          content: "docker build -t my-image .",
+        },
+        {
+          description: "Docker コンテナの起動",
+          content: "docker run -d -p 80:80 my-image",
+        },
+        {
+          description: "実行中のコンテナを表示",
+          content: "docker ps",
+        },
+        {
+          description: "すべてのコンテナを表示",
+          content: "docker ps -a",
+        },
+        {
+          description: "コンテナの停止",
+          content: "docker stop <container_id>",
+        },
+        {
+          description: "コンテナの削除",
+          content: "docker rm <container_id>",
+        },
+        {
+          description: "イメージの削除",
+          content: "docker rmi my-image",
+        },
+        {
+          description: "Docker コンテナのログを表示",
+          content: "docker logs <container_id>",
+        },
+        {
+          description: "Docker イメージをプッシュ",
+          content: "docker push my-image",
+        },
+        {
+          description: "Docker ネットワークの作成",
+          content: "docker network create my-network",
+        },
+      ];
+
+      PureFrontendKit.createClickableTable(
+        "dockerCheatSheetContainer",
+        dockerCheatSheetData
+      );
+    </script>
+  </body>
+</html>
