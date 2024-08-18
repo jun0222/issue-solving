@@ -14,14 +14,14 @@
           v-model="input"
           id="input"
           placeholder="input"
-          rows="15"
+          rows="8"
           cols="75"
         ></textarea>
         <textarea
           v-model="output"
           id="output"
           placeholder="output"
-          rows="15"
+          rows="8"
           cols="75"
         ></textarea>
       </div>
@@ -78,7 +78,8 @@
 
   .textarea-container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 20px;
   }
 
@@ -86,10 +87,11 @@
     padding: 12px;
     border-radius: 8px;
     border: 1px solid #ccc;
-    width: 45%;
+    width: 90%;
     font-size: 16px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s;
+    margin-bottom: 20px;
   }
 
   textarea:focus {
