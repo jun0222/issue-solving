@@ -9,7 +9,7 @@
   <body>
     <div id="app">
       <h1>Base64 Encoder/Decoder</h1>
-      <div>
+      <div class="textarea-container">
         <textarea
           v-model="input"
           id="input"
@@ -25,7 +25,7 @@
           cols="75"
         ></textarea>
       </div>
-      <div>
+      <div class="button-container">
         <button @click="encode">Encode</button>
         <button @click="decode">Decode</button>
       </div>
@@ -58,30 +58,73 @@
 </html>
 
 <style>
-  .container {
+  body {
+    font-family: "Arial", sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
   }
 
+  h1 {
+    text-align: center;
+    color: #4a90e2;
+    margin-bottom: 20px;
+  }
+
+  .textarea-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
   textarea {
-    padding: 8px;
-    border-radius: 4px;
+    padding: 12px;
+    border-radius: 8px;
     border: 1px solid #ccc;
+    width: 45%;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+  }
+
+  textarea:focus {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    outline: none;
+  }
+
+  .button-container {
+    text-align: center;
   }
 
   button {
-    padding: 8px 16px;
-    border-radius: 4px;
+    padding: 12px 24px;
+    border-radius: 8px;
     border: none;
     background-color: #0077cc;
     color: #fff;
     cursor: pointer;
+    font-size: 16px;
+    margin: 0 10px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+
+  button:hover {
+    background-color: #005fa3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
 
   #app {
-    width: 600px;
+    width: 80%;
+    max-width: 800px;
     margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 </style>
