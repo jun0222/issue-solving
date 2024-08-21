@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Snake to Camel Case Converter</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      input,
+      button {
+        padding: 10px;
+        margin: 10px 0;
+      }
+      button {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Snake to Camel Case Converter</h1>
+    <div>
+      <input type="text" id="inputText" placeholder="Enter snake_case text" />
+      <button onclick="convertToCamel()">Convert to Camel Case</button>
+    </div>
+    <div>
+      <p>Converted Text:</p>
+      <p id="outputText"></p>
+    </div>
+    <script>
+      function convertToCamel() {
+        var inputText = document.getElementById("inputText").value;
+        var camelCase = inputText.toLowerCase().replace(/(_\w)/g, function (m) {
+          return m[1].toUpperCase();
+        });
+        document.getElementById("outputText").textContent = camelCase;
+      }
+    </script>
+  </body>
+</html>
