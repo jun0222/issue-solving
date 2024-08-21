@@ -16,6 +16,21 @@
       button {
         cursor: pointer;
       }
+      #toast {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+        font-size: 17px;
+      }
     </style>
   </head>
   <body>
@@ -26,8 +41,9 @@
     </div>
     <div>
       <p>Converted Text:</p>
-      <p id="outputText"></p>
+      <p id="outputText" onclick="copyText()">Click to copy</p>
     </div>
+    <div id="toast"></div>
     <script>
       function convertToCamel() {
         var inputText = document.getElementById("inputText").value;
@@ -35,6 +51,27 @@
           return m[1].toUpperCase();
         });
         document.getElementById("outputText").textContent = camelCase;
+      }
+
+      function copyText() {
+        var text = document.getElementById("outputText").textContent;
+        navigator.clipboard.writeText(text).then(
+          function () {
+            showToast("Copied to clipboard!");
+          },
+          function (err) {
+            showToast("Failed to copy!");
+          }
+        );
+      }
+
+      function showToast(message) {
+        var toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.style.visibility = "visible";
+        setTimeout(function () {
+          toast.style.visibility = "hidden";
+        }, 3000);
       }
     </script>
   </body>
