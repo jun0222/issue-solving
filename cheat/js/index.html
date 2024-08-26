@@ -36,9 +36,20 @@
   }
 </style>
 
+<script src="https://unpkg.com/pure-frontend-kit@1.0.20/dist/pure-frontend-kit.min.js"></script>
 <script>
+  console.log(`#####    #           #####  #####           #    #####  
+#   #    #      #    #      #        #      #        #  
+#   #    #           #####  #####           #    #####  
+#   #    #      #        #      #    #      #        #  
+#####    #           #####  #####           #    #####  `);
+  const asciiArt = PureFrontendKit.generateTimeAsciiArt();
   // コピー用のデータを保持する配列
   let cheatSheetData = [
+    {
+      description: "現在時刻のアスキーアート",
+      content: `console.log(\`${asciiArt}\`)`,
+    },
     {
       description: "ログ出力 001",
       content: `console.log(\`===001==${new Date(
