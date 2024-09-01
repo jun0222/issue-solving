@@ -57,7 +57,7 @@ output_html="path.html"
   echo "  </style>"
   echo "</head>"
   echo "<body>"
-  echo "  <h1>HTML File Links</h1>"
+  echo "  <h1>ツール一覧</h1>"
   echo "  <ul>"
 
   # 各HTMLファイルのリンクを生成
