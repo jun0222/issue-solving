@@ -39,11 +39,13 @@
           const text = document.getElementById("input-text").value; // 入力されたテキストを取得
           if (text) {
             const asciiArt = PureFrontendKit.generateAsciiArt(text);
+            // "undefined "を含む場合は削除
+            const cleanedAsciiArt = asciiArt.replace(/undefined\s+/g, "");
             const container = document.getElementById("ascii-art-container");
-            container.textContent = asciiArt;
+            container.textContent = cleanedAsciiArt;
             container.style.cursor = "pointer";
             container.onclick = () => {
-              navigator.clipboard.writeText(asciiArt).then(() => {
+              navigator.clipboard.writeText(cleanedAsciiArt).then(() => {
                 alert("アスキーアートがコピーされました！");
               });
             };
