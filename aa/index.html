@@ -38,15 +38,24 @@
         .addEventListener("click", function () {
           const text = document.getElementById("input-text").value; // 入力されたテキストを取得
           if (text) {
+            // 半角英数字のみかチェック
+            if (!/^[a-zA-Z0-9]+$/.test(text)) {
+              PureFrontendKit.showCustomToast(
+                "エラー: 半角英数字以外の文字が含まれています"
+              );
+              return; // エラー表示後、処理を終了
+            }
             const asciiArt = PureFrontendKit.generateAsciiArt(text);
-            // "undefined "を含む場合は削除
-            const cleanedAsciiArt = asciiArt.replace(/undefined\s+/g, "");
+            // "undefined"または"undefined "を含む場合は削除
+            const cleanedAsciiArt = asciiArt.replace(/\bundefined\b\s*/g, "");
             const container = document.getElementById("ascii-art-container");
             container.textContent = cleanedAsciiArt;
             container.style.cursor = "pointer";
             container.onclick = () => {
               navigator.clipboard.writeText(cleanedAsciiArt).then(() => {
-                alert("アスキーアートがコピーされました！");
+                PureFrontendKit.showCustomToast(
+                  "アスキーアートがコピーされました！"
+                ); // トーストメッセージを表示
               });
             };
           } else {
