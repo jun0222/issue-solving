@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>asciiArtGenerator</title>
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <style>
+      body {
+        font-family: monospace; /* 等幅フォントを使用 */
+      }
+      #ascii-art-container {
+        white-space: pre; /* 改行やスペースをそのまま表示 */
+        font-family: monospace; /* 等幅フォントを適用 */
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        padding: 10px;
+      }
+      input[type="text"] {
+        width: calc(100% - 22px);
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>asciiArtGenerator</h1>
+    <input
+      type="text"
+      id="input-text"
+      placeholder="ここに文字を入力してください"
+    />
+    <button id="generate-button">ASCIIアートを生成</button>
+    <div id="ascii-art-container"></div>
+
+    <script type="module">
+      document
+        .getElementById("generate-button")
+        .addEventListener("click", function () {
+          const text = document.getElementById("input-text").value; // 入力されたテキストを取得
+          if (text) {
+            const asciiArt = PureFrontendKit.generateAsciiArt(text);
+            const container = document.getElementById("ascii-art-container");
+            container.textContent = asciiArt;
+            container.style.cursor = "pointer";
+            container.onclick = () => {
+              navigator.clipboard.writeText(asciiArt).then(() => {
+                alert("アスキーアートがコピーされました！");
+              });
+            };
+          } else {
+            alert("テキストを入力してください。");
+          }
+        });
+    </script>
+  </body>
+</html>
