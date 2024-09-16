@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# TODO: cheatはcheat/へのリンクにしたい
 # TODO: generate_linksでignoreディレクトリはファイル管理にしたい、
 # TODO: 生成したhtmlのリンクテキストはtitleタグとかからとってきたい。ないものはそのままで良いが
 
