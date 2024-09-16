@@ -25,11 +25,6 @@ cheat_output_html="cheat/index.html"
   # cheatディレクトリ内のHTMLファイルのみを対象にリンクを生成
   cheat_html_files=$(find cheat -name '*.html' -print)
   while IFS= read -r file; do
-    # ./archive/ 配下のファイルはスキップ
-    if [[ "$file" == *"/archive/"* ]]; then
-      continue
-    fi
-
     # "index.html" をパスから除去し、"cheat/"を削除
     clean_file=$(echo "$file" | sed 's|/index\.html$||' | sed 's|cheat/||')
     
