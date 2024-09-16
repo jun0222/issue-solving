@@ -30,6 +30,9 @@ for dir in "${ignore_dirs[@]}"; do
   find_ignore_opts+=" -path ./$dir -prune -o"
 done
 
+# ./archiveディレクトリを手動で追加して無視する
+find_ignore_opts+=" -path ./archive -prune -o"
+
 # ディレクトリ内の全HTMLファイルを再帰的に検索
 html_files=$(eval "find . $find_ignore_opts -name '*.html' -print")
 
