@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>テキスト差分ツール</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      textarea {
+        width: 45%;
+        height: 200px;
+        margin-bottom: 10px;
+        font-family: monospace;
+        font-size: 14px;
+        vertical-align: top;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+      #diffoutput {
+        white-space: pre-wrap;
+        font-family: monospace;
+      }
+      .insert {
+        background-color: #e6ffe6;
+      }
+      .delete {
+        background-color: #ffe6e6;
+      }
+    </style>
+    <!-- jsdiffをCDNから読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/diff@5.0.0/dist/diff.min.js"></script>
+  </head>
+  <body>
+    <h1>テキスト差分ツール</h1>
+    <div>
+      <textarea
+        id="text1"
+        placeholder="元のテキストをここに入力してください"
+      ></textarea>
+      <textarea
+        id="text2"
+        placeholder="変更後のテキストをここに入力してください"
+      ></textarea>
+    </div>
+    <button onclick="showDiff()">差分を表示</button>
+    <h2>差分結果</h2>
+    <div id="diffoutput"></div>
+
+    <script>
+      function showDiff() {
+        var text1 = document.getElementById("text1").value;
+        var text2 = document.getElementById("text2").value;
+
+        var diff = Diff.diffWords(text1, text2);
+        var fragment = document.createDocumentFragment();
+
+        diff.forEach(function (part) {
+          var color = part.added
+            ? "insert"
+            : part.removed
+            ? "delete"
+            : "normal";
+          var span = document.createElement("span");
+          span.className = color;
+          span.appendChild(document.createTextNode(part.value));
+          fragment.appendChild(span);
+        });
+
+        var output = document.getElementById("diffoutput");
+        output.innerHTML = "";
+        output.appendChild(fragment);
+      }
+    </script>
+  </body>
+</html>
