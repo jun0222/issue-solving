@@ -33,9 +33,11 @@ done
 
 # ./archiveディレクトリを手動で追加して無視する
 find_ignore_opts+=" -path ./archive -prune -o"
+find_ignore_opts+=" -path ./cheat -prune -o"
 
 # ディレクトリ内の全HTMLファイルを再帰的に検索
 html_files=$(eval "find . $find_ignore_opts -name '*.html' -print")
+html_files=$(echo -e "$html_files\n./cheat/index.html")
 
 # HTMLファイルの取得に失敗した場合のエラーハンドリング
 if [ -z "$html_files" ]; then
