@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>HTML Beautifier</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      textarea {
+        width: 100%;
+        height: 200px;
+        margin-bottom: 10px;
+        font-family: monospace;
+        font-size: 14px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+      }
+      pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        overflow: auto;
+      }
+    </style>
+    <!-- js-beautifyをCDNから読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify-html.js"></script>
+  </head>
+  <body>
+    <h1>HTML Beautifier</h1>
+    <textarea
+      id="input"
+      placeholder="ここにHTMLコードを貼り付けてください"
+    ></textarea>
+    <br />
+    <button onclick="beautify()">Beautify</button>
+    <h2>整形されたHTMLコード</h2>
+    <pre id="output"></pre>
+
+    <script>
+      function beautify() {
+        var source = document.getElementById("input").value;
+        var result = html_beautify(source, {
+          indent_size: 4,
+          indent_char: " ",
+          max_preserve_newlines: -1,
+          preserve_newlines: true,
+          indent_inner_html: false,
+          brace_style: "collapse",
+          indent_scripts: "normal",
+          wrap_line_length: 0,
+          wrap_attributes: "auto",
+          wrap_attributes_indent_size: 4,
+          unformatted: [],
+          content_unformatted: [],
+          end_with_newline: false,
+          extra_liners: [],
+        });
+        document.getElementById("output").textContent = result;
+      }
+    </script>
+  </body>
+</html>
