@@ -24,12 +24,27 @@
       #diffoutput {
         white-space: pre-wrap;
         font-family: monospace;
+        border: 1px solid #ccc;
+        padding: 10px;
+        background-color: #f9f9f9;
       }
       .insert {
         background-color: #e6ffe6;
+        color: #008000;
       }
       .delete {
         background-color: #ffe6e6;
+        color: #ff0000;
+      }
+      .normal {
+        background-color: #ffffff;
+      }
+      .line-number {
+        display: inline-block;
+        width: 30px;
+        text-align: right;
+        margin-right: 10px;
+        color: #999;
       }
     </style>
     <!-- jsdiffをCDNから読み込み -->
@@ -58,6 +73,7 @@
 
         var diff = Diff.diffLines(text1, text2);
         var fragment = document.createDocumentFragment();
+        var lineNumber = 1;
 
         diff.forEach(function (part) {
           var color = part.added
@@ -65,10 +81,19 @@
             : part.removed
             ? "delete"
             : "normal";
-          var span = document.createElement("span");
-          span.className = color;
-          span.appendChild(document.createTextNode(part.value));
-          fragment.appendChild(span);
+          var lines = part.value.split("\n");
+          lines.forEach(function (line, index) {
+            if (line !== "" || index < lines.length - 1) {
+              var div = document.createElement("div");
+              div.className = color;
+              var lineNumberSpan = document.createElement("span");
+              lineNumberSpan.className = "line-number";
+              lineNumberSpan.textContent = lineNumber++;
+              div.appendChild(lineNumberSpan);
+              div.appendChild(document.createTextNode(line));
+              fragment.appendChild(div);
+            }
+          });
         });
 
         var output = document.getElementById("diffoutput");
