@@ -2,7 +2,7 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <title>テキスト差分ツール</title>
+    <title>diff tool</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -56,7 +56,7 @@
         var text1 = document.getElementById("text1").value;
         var text2 = document.getElementById("text2").value;
 
-        var diff = Diff.diffWords(text1, text2);
+        var diff = Diff.diffLines(text1, text2);
         var fragment = document.createDocumentFragment();
 
         diff.forEach(function (part) {
