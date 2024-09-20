@@ -2,7 +2,7 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <title>diff tool</title>
+    <title>テキスト差分ツール</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -22,11 +22,18 @@
         margin-bottom: 20px;
       }
       #diffoutput {
-        white-space: pre-wrap;
         font-family: monospace;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: monospace;
+      }
+      td {
         border: 1px solid #ccc;
-        padding: 10px;
-        background-color: #f9f9f9;
+        padding: 4px;
+        vertical-align: top;
+        width: 50%;
       }
       .insert {
         background-color: #e6ffe6;
@@ -36,15 +43,11 @@
         background-color: #ffe6e6;
         color: #ff0000;
       }
+      .change {
+        background-color: #fff0e6;
+      }
       .normal {
         background-color: #ffffff;
-      }
-      .line-number {
-        display: inline-block;
-        width: 30px;
-        text-align: right;
-        margin-right: 10px;
-        color: #999;
       }
     </style>
     <!-- jsdiffをCDNから読み込み -->
@@ -72,33 +75,71 @@
         var text2 = document.getElementById("text2").value;
 
         var diff = Diff.diffLines(text1, text2);
-        var fragment = document.createDocumentFragment();
-        var lineNumber = 1;
+        var rows = [];
+        var i = 0;
 
-        diff.forEach(function (part) {
-          var color = part.added
-            ? "insert"
-            : part.removed
-            ? "delete"
-            : "normal";
-          var lines = part.value.split("\n");
-          lines.forEach(function (line, index) {
-            if (line !== "" || index < lines.length - 1) {
-              var div = document.createElement("div");
-              div.className = color;
-              var lineNumberSpan = document.createElement("span");
-              lineNumberSpan.className = "line-number";
-              lineNumberSpan.textContent = lineNumber++;
-              div.appendChild(lineNumberSpan);
-              div.appendChild(document.createTextNode(line));
-              fragment.appendChild(div);
+        while (i < diff.length) {
+          var part = diff[i];
+          if (!part.added && !part.removed) {
+            var lines = part.value.split("\n");
+            if (lines[lines.length - 1] === "") lines.pop();
+            lines.forEach(function (line) {
+              rows.push({ left: line, right: line, class: "normal" });
+            });
+          } else if (part.removed) {
+            if (i + 1 < diff.length && diff[i + 1].added) {
+              // 削除と追加が連続している場合
+              var leftLines = part.value.split("\n");
+              var rightLines = diff[i + 1].value.split("\n");
+              if (leftLines[leftLines.length - 1] === "") leftLines.pop();
+              if (rightLines[rightLines.length - 1] === "") rightLines.pop();
+              var maxLines = Math.max(leftLines.length, rightLines.length);
+              for (var k = 0; k < maxLines; k++) {
+                var leftLine = leftLines[k] || "";
+                var rightLine = rightLines[k] || "";
+                rows.push({
+                  left: leftLine,
+                  right: rightLine,
+                  class: "change",
+                });
+              }
+              i++; // 次の要素をスキップ
+            } else {
+              // 削除のみ
+              var lines = part.value.split("\n");
+              if (lines[lines.length - 1] === "") lines.pop();
+              lines.forEach(function (line) {
+                rows.push({ left: line, right: "", class: "delete" });
+              });
             }
-          });
-        });
+          } else if (part.added) {
+            // 追加のみ
+            var lines = part.value.split("\n");
+            if (lines[lines.length - 1] === "") lines.pop();
+            lines.forEach(function (line) {
+              rows.push({ left: "", right: line, class: "insert" });
+            });
+          }
+          i++;
+        }
 
+        // テーブルを作成して表示
         var output = document.getElementById("diffoutput");
         output.innerHTML = "";
-        output.appendChild(fragment);
+        var table = document.createElement("table");
+
+        rows.forEach(function (row) {
+          var tr = document.createElement("tr");
+          tr.className = row.class;
+          var tdLeft = document.createElement("td");
+          tdLeft.textContent = row.left;
+          var tdRight = document.createElement("td");
+          tdRight.textContent = row.right;
+          tr.appendChild(tdLeft);
+          tr.appendChild(tdRight);
+          table.appendChild(tr);
+        });
+        output.appendChild(table);
       }
     </script>
   </body>
