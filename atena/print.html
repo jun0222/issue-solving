@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>印刷ページ</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="print-container">
+      <div class="label">
+        <div class="recipient">
+          <p style="font-weight: bold">宛先</p>
+          <p>〒 <span id="recipientPostalCode"></span></p>
+          <p><span id="recipientAddress"></span></p>
+          <p>
+            <span id="recipientName"></span>
+            <span style="font-weight: bold">様</span>
+          </p>
+          <!-- <p>TEL: ( )</p> -->
+        </div>
+
+        <div class="sender">
+          <p style="font-weight: bold">差出人</p>
+          <p>〒 <span id="senderPostalCode"></span></p>
+          <p><span id="senderAddress"></span></p>
+          <p><span id="senderName"></span></p>
+          <!-- <p>TEL: ( )</p> -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // URLパラメータからデータを取得して印刷エリアに反映
+      const urlParams = new URLSearchParams(window.location.search);
+      document.getElementById("recipientName").textContent =
+        urlParams.get("recipientName");
+      document.getElementById("recipientPostalCode").textContent =
+        urlParams.get("recipientPostalCode");
+      document.getElementById("recipientAddress").textContent =
+        urlParams.get("recipientAddress");
+
+      document.getElementById("senderName").textContent =
+        urlParams.get("senderName");
+      document.getElementById("senderPostalCode").textContent =
+        urlParams.get("senderPostalCode");
+      document.getElementById("senderAddress").textContent =
+        urlParams.get("senderAddress");
+
+      // ページが読み込まれたら自動で印刷ダイアログを表示
+      window.onload = function () {
+        window.print();
+      };
+    </script>
+  </body>
+</html>
