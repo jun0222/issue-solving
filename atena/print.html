@@ -20,11 +20,25 @@
           <!-- <p>TEL: ( )</p> -->
         </div>
 
-        <div class="sender">
-          <p style="font-weight: bold">差出人</p>
-          <p>〒 <span id="senderPostalCode"></span></p>
-          <p><span id="senderAddress"></span></p>
-          <p><span id="senderName"></span></p>
+        <div
+          class="sender"
+          style="display: flex; flex-direction: row; align-items: center"
+        >
+          <div style="margin-right: 1rem">
+            <div>
+              <span style="font-weight: bold">差出人</span>
+            </div>
+          </div>
+          <div>
+            <div>
+              〒
+              <span id="senderPostalCode"></span>
+              <span id="senderAddress"></span>
+            </div>
+            <div>
+              <span id="senderName"></span>
+            </div>
+          </div>
           <!-- <p>TEL: ( )</p> -->
         </div>
       </div>
@@ -48,9 +62,9 @@
         urlParams.get("senderAddress");
 
       // ページが読み込まれたら自動で印刷ダイアログを表示
-      window.onload = function () {
-        window.print();
-      };
+      // window.onload = function () {
+      //   window.print();
+      // };
     </script>
   </body>
 </html>
