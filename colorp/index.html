@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTMLとCSSとJavaScriptで描く人の絵</title>
+    <style>
+      .person {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 50px;
+      }
+
+      .head {
+        width: 100px;
+        height: 100px;
+        background-color: #f0c987;
+        border-radius: 50%;
+      }
+
+      .outer {
+        width: 140px;
+        height: 100px;
+        background-color: #2e86c1;
+        border-radius: 10px;
+      }
+
+      .top {
+        width: 120px;
+        height: 100px;
+        background-color: #f39c12;
+        margin-top: -80px;
+        border-radius: 10px;
+        z-index: -1;
+      }
+
+      .pants {
+        width: 80px;
+        height: 120px;
+        background-color: #34495e;
+      }
+
+      .shoes {
+        display: flex;
+        justify-content: space-between;
+        width: 90px;
+      }
+
+      .shoe {
+        width: 40px;
+        height: 20px;
+        background-color: #2d3436;
+        border-radius: 5px;
+      }
+
+      .color-picker-container {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .color-picker {
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="person">
+      <div class="head" id="head"></div>
+      <div class="outer" id="outer"></div>
+      <div class="top" id="top"></div>
+      <div class="pants" id="pants"></div>
+      <div class="shoes">
+        <div class="shoe" id="shoe-left"></div>
+        <div class="shoe" id="shoe-right"></div>
+      </div>
+    </div>
+
+    <div class="color-picker-container">
+      <label class="color-picker"
+        >顔の色: <input type="color" id="headColor" value="#f0c987"
+      /></label>
+      <label class="color-picker"
+        >アウターの色: <input type="color" id="outerColor" value="#2e86c1"
+      /></label>
+      <label class="color-picker"
+        >トップスの色: <input type="color" id="topColor" value="#f39c12"
+      /></label>
+      <label class="color-picker"
+        >パンツの色: <input type="color" id="pantsColor" value="#34495e"
+      /></label>
+      <label class="color-picker"
+        >シューズの色: <input type="color" id="shoesColor" value="#2d3436"
+      /></label>
+    </div>
+
+    <script>
+      document
+        .getElementById("headColor")
+        .addEventListener("input", function () {
+          document.getElementById("head").style.backgroundColor = this.value;
+        });
+
+      document
+        .getElementById("outerColor")
+        .addEventListener("input", function () {
+          document.getElementById("outer").style.backgroundColor = this.value;
+        });
+
+      document
+        .getElementById("topColor")
+        .addEventListener("input", function () {
+          document.getElementById("top").style.backgroundColor = this.value;
+        });
+
+      document
+        .getElementById("pantsColor")
+        .addEventListener("input", function () {
+          document.getElementById("pants").style.backgroundColor = this.value;
+        });
+
+      document
+        .getElementById("shoesColor")
+        .addEventListener("input", function () {
+          document.getElementById("shoe-left").style.backgroundColor =
+            this.value;
+          document.getElementById("shoe-right").style.backgroundColor =
+            this.value;
+        });
+    </script>
+  </body>
+</html>
