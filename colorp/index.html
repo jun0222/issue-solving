@@ -24,15 +24,18 @@
         height: 100px;
         background-color: #2e86c1;
         border-radius: 10px;
+        position: relative;
       }
 
       .top {
-        width: 120px;
+        width: 80px;
         height: 100px;
         background-color: #f39c12;
-        margin-top: -80px;
+        position: absolute;
+        top: 0;
+        left: 30px;
         border-radius: 10px;
-        z-index: -1;
+        z-index: 1;
       }
 
       .pants {
@@ -69,8 +72,9 @@
   <body>
     <div class="person">
       <div class="head" id="head"></div>
-      <div class="outer" id="outer"></div>
-      <div class="top" id="top"></div>
+      <div class="outer" id="outer">
+        <div class="top" id="top"></div>
+      </div>
       <div class="pants" id="pants"></div>
       <div class="shoes">
         <div class="shoe" id="shoe-left"></div>
