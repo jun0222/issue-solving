@@ -72,6 +72,26 @@
       .color-picker {
         margin: 10px 0;
       }
+
+      .download-btn-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      #downloadBtn {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      #downloadBtn:hover {
+        background-color: #2980b9;
+      }
     </style>
   </head>
   <body>
@@ -105,7 +125,9 @@
       /></label>
     </div>
 
-    <button id="downloadBtn">画像をダウンロード</button>
+    <div class="download-btn-container">
+      <button id="downloadBtn">画像をダウンロード</button>
+    </div>
 
     <script>
       function saveColorToLocalStorage(id, color) {
