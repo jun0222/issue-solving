@@ -118,33 +118,47 @@
     <div class="color-picker-container">
       <label class="color-picker"
         >アウターの色:
-        <input type="color" id="outerColor" value="#2e86c1" /><span
+        <input type="color" id="outerColor" value="#2e86c1" /><input
+          type="text"
           class="color-code"
           id="outerColorCode"
-          >#2e86c1</span
-        ></label
+          value="#2e86c1"
+        /><button onclick="copyToClipboard('outerColorCode')">
+          コピー
+        </button></label
       >
       <label class="color-picker"
-        >トップスの色: <input type="color" id="topColor" value="#f39c12" /><span
+        >トップスの色:
+        <input type="color" id="topColor" value="#f39c12" /><input
+          type="text"
           class="color-code"
           id="topColorCode"
-          >#f39c12</span
-        ></label
+          value="#f39c12"
+        /><button onclick="copyToClipboard('topColorCode')">
+          コピー
+        </button></label
       >
       <label class="color-picker"
-        >パンツの色: <input type="color" id="pantsColor" value="#34495e" /><span
+        >パンツの色:
+        <input type="color" id="pantsColor" value="#34495e" /><input
+          type="text"
           class="color-code"
           id="pantsColorCode"
-          >#34495e</span
-        ></label
+          value="#34495e"
+        /><button onclick="copyToClipboard('pantsColorCode')">
+          コピー
+        </button></label
       >
       <label class="color-picker"
         >シューズの色:
-        <input type="color" id="shoesColor" value="#2d3436" /><span
+        <input type="color" id="shoesColor" value="#2d3436" /><input
+          type="text"
           class="color-code"
           id="shoesColorCode"
-          >#2d3436</span
-        ></label
+          value="#2d3436"
+        /><button onclick="copyToClipboard('shoesColorCode')">
+          コピー
+        </button></label
       >
     </div>
 
@@ -162,11 +176,12 @@
         if (color) {
           document.getElementById(elementId).style.backgroundColor = color;
           document.getElementById(id).value = color;
-          document.getElementById(id + "Code").textContent = color;
+          document.getElementById(id + "Code").value = color;
         }
       }
 
-      function copyToClipboard(text) {
+      function copyToClipboard(elementId) {
+        const text = document.getElementById(elementId).value;
         const textarea = document.createElement("textarea");
         textarea.value = text;
         document.body.appendChild(textarea);
@@ -180,7 +195,7 @@
         .getElementById("outerColor")
         .addEventListener("input", function () {
           document.getElementById("outer").style.backgroundColor = this.value;
-          document.getElementById("outerColorCode").textContent = this.value;
+          document.getElementById("outerColorCode").value = this.value;
           saveColorToLocalStorage("outerColor", this.value);
         });
 
@@ -188,7 +203,7 @@
         .getElementById("topColor")
         .addEventListener("input", function () {
           document.getElementById("top").style.backgroundColor = this.value;
-          document.getElementById("topColorCode").textContent = this.value;
+          document.getElementById("topColorCode").value = this.value;
           saveColorToLocalStorage("topColor", this.value);
         });
 
@@ -199,7 +214,7 @@
             this.value;
           document.getElementById("pant-right").style.backgroundColor =
             this.value;
-          document.getElementById("pantsColorCode").textContent = this.value;
+          document.getElementById("pantsColorCode").value = this.value;
           saveColorToLocalStorage("pantsColor", this.value);
         });
 
@@ -210,32 +225,46 @@
             this.value;
           document.getElementById("shoe-right").style.backgroundColor =
             this.value;
-          document.getElementById("shoesColorCode").textContent = this.value;
+          document.getElementById("shoesColorCode").value = this.value;
           saveColorToLocalStorage("shoesColor", this.value);
         });
 
       document
         .getElementById("outerColorCode")
-        .addEventListener("click", function () {
-          copyToClipboard(this.textContent);
+        .addEventListener("input", function () {
+          document.getElementById("outer").style.backgroundColor = this.value;
+          document.getElementById("outerColor").value = this.value;
+          saveColorToLocalStorage("outerColor", this.value);
         });
 
       document
         .getElementById("topColorCode")
-        .addEventListener("click", function () {
-          copyToClipboard(this.textContent);
+        .addEventListener("input", function () {
+          document.getElementById("top").style.backgroundColor = this.value;
+          document.getElementById("topColor").value = this.value;
+          saveColorToLocalStorage("topColor", this.value);
         });
 
       document
         .getElementById("pantsColorCode")
-        .addEventListener("click", function () {
-          copyToClipboard(this.textContent);
+        .addEventListener("input", function () {
+          document.getElementById("pant-left").style.backgroundColor =
+            this.value;
+          document.getElementById("pant-right").style.backgroundColor =
+            this.value;
+          document.getElementById("pantsColor").value = this.value;
+          saveColorToLocalStorage("pantsColor", this.value);
         });
 
       document
         .getElementById("shoesColorCode")
-        .addEventListener("click", function () {
-          copyToClipboard(this.textContent);
+        .addEventListener("input", function () {
+          document.getElementById("shoe-left").style.backgroundColor =
+            this.value;
+          document.getElementById("shoe-right").style.backgroundColor =
+            this.value;
+          document.getElementById("shoesColor").value = this.value;
+          saveColorToLocalStorage("shoesColor", this.value);
         });
 
       window.addEventListener("load", function () {
