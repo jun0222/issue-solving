@@ -98,22 +98,37 @@
     </div>
 
     <script>
+      function saveColorToLocalStorage(id, color) {
+        localStorage.setItem(id, color);
+      }
+
+      function loadColorFromLocalStorage(id, elementId) {
+        const color = localStorage.getItem(id);
+        if (color) {
+          document.getElementById(elementId).style.backgroundColor = color;
+          document.getElementById(id).value = color;
+        }
+      }
+
       document
         .getElementById("outerColor")
         .addEventListener("input", function () {
           document.getElementById("outer").style.backgroundColor = this.value;
+          saveColorToLocalStorage("outerColor", this.value);
         });
 
       document
         .getElementById("topColor")
         .addEventListener("input", function () {
           document.getElementById("top").style.backgroundColor = this.value;
+          saveColorToLocalStorage("topColor", this.value);
         });
 
       document
         .getElementById("pantsColor")
         .addEventListener("input", function () {
           document.getElementById("pants").style.backgroundColor = this.value;
+          saveColorToLocalStorage("pantsColor", this.value);
         });
 
       document
@@ -123,7 +138,16 @@
             this.value;
           document.getElementById("shoe-right").style.backgroundColor =
             this.value;
+          saveColorToLocalStorage("shoesColor", this.value);
         });
+
+      window.addEventListener("load", function () {
+        loadColorFromLocalStorage("outerColor", "outer");
+        loadColorFromLocalStorage("topColor", "top");
+        loadColorFromLocalStorage("pantsColor", "pants");
+        loadColorFromLocalStorage("shoesColor", "shoe-left");
+        loadColorFromLocalStorage("shoesColor", "shoe-right");
+      });
     </script>
   </body>
 </html>
