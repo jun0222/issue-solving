@@ -84,9 +84,6 @@
 
     <div class="color-picker-container">
       <label class="color-picker"
-        >顔の色: <input type="color" id="headColor" value="#f0c987"
-      /></label>
-      <label class="color-picker"
         >アウターの色: <input type="color" id="outerColor" value="#2e86c1"
       /></label>
       <label class="color-picker"
@@ -101,12 +98,6 @@
     </div>
 
     <script>
-      document
-        .getElementById("headColor")
-        .addEventListener("input", function () {
-          document.getElementById("head").style.backgroundColor = this.value;
-        });
-
       document
         .getElementById("outerColor")
         .addEventListener("input", function () {
