@@ -92,6 +92,11 @@
       #downloadBtn:hover {
         background-color: #2980b9;
       }
+
+      .color-code {
+        margin-left: 10px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -112,17 +117,35 @@
 
     <div class="color-picker-container">
       <label class="color-picker"
-        >アウターの色: <input type="color" id="outerColor" value="#2e86c1"
-      /></label>
+        >アウターの色:
+        <input type="color" id="outerColor" value="#2e86c1" /><span
+          class="color-code"
+          id="outerColorCode"
+          >#2e86c1</span
+        ></label
+      >
       <label class="color-picker"
-        >トップスの色: <input type="color" id="topColor" value="#f39c12"
-      /></label>
+        >トップスの色: <input type="color" id="topColor" value="#f39c12" /><span
+          class="color-code"
+          id="topColorCode"
+          >#f39c12</span
+        ></label
+      >
       <label class="color-picker"
-        >パンツの色: <input type="color" id="pantsColor" value="#34495e"
-      /></label>
+        >パンツの色: <input type="color" id="pantsColor" value="#34495e" /><span
+          class="color-code"
+          id="pantsColorCode"
+          >#34495e</span
+        ></label
+      >
       <label class="color-picker"
-        >シューズの色: <input type="color" id="shoesColor" value="#2d3436"
-      /></label>
+        >シューズの色:
+        <input type="color" id="shoesColor" value="#2d3436" /><span
+          class="color-code"
+          id="shoesColorCode"
+          >#2d3436</span
+        ></label
+      >
     </div>
 
     <div class="download-btn-container">
@@ -139,13 +162,25 @@
         if (color) {
           document.getElementById(elementId).style.backgroundColor = color;
           document.getElementById(id).value = color;
+          document.getElementById(id + "Code").textContent = color;
         }
+      }
+
+      function copyToClipboard(text) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("カラーコードがコピーされました: " + text);
       }
 
       document
         .getElementById("outerColor")
         .addEventListener("input", function () {
           document.getElementById("outer").style.backgroundColor = this.value;
+          document.getElementById("outerColorCode").textContent = this.value;
           saveColorToLocalStorage("outerColor", this.value);
         });
 
@@ -153,6 +188,7 @@
         .getElementById("topColor")
         .addEventListener("input", function () {
           document.getElementById("top").style.backgroundColor = this.value;
+          document.getElementById("topColorCode").textContent = this.value;
           saveColorToLocalStorage("topColor", this.value);
         });
 
@@ -163,6 +199,7 @@
             this.value;
           document.getElementById("pant-right").style.backgroundColor =
             this.value;
+          document.getElementById("pantsColorCode").textContent = this.value;
           saveColorToLocalStorage("pantsColor", this.value);
         });
 
@@ -173,7 +210,32 @@
             this.value;
           document.getElementById("shoe-right").style.backgroundColor =
             this.value;
+          document.getElementById("shoesColorCode").textContent = this.value;
           saveColorToLocalStorage("shoesColor", this.value);
+        });
+
+      document
+        .getElementById("outerColorCode")
+        .addEventListener("click", function () {
+          copyToClipboard(this.textContent);
+        });
+
+      document
+        .getElementById("topColorCode")
+        .addEventListener("click", function () {
+          copyToClipboard(this.textContent);
+        });
+
+      document
+        .getElementById("pantsColorCode")
+        .addEventListener("click", function () {
+          copyToClipboard(this.textContent);
+        });
+
+      document
+        .getElementById("shoesColorCode")
+        .addEventListener("click", function () {
+          copyToClipboard(this.textContent);
         });
 
       window.addEventListener("load", function () {
