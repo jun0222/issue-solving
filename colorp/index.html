@@ -28,17 +28,23 @@
       }
 
       .top {
-        width: 80px;
+        width: 86px;
         height: 100px;
         background-color: #f39c12;
         position: absolute;
         top: 0;
-        left: 30px;
+        left: 27px;
         z-index: 1;
       }
 
       .pants {
-        width: 80px;
+        display: flex;
+        justify-content: space-between;
+        width: 85px;
+      }
+
+      .pant {
+        width: 40px;
         height: 120px;
         background-color: #34495e;
       }
@@ -74,7 +80,10 @@
       <div class="outer" id="outer">
         <div class="top" id="top"></div>
       </div>
-      <div class="pants" id="pants"></div>
+      <div class="pants">
+        <div class="pant" id="pant-left"></div>
+        <div class="pant" id="pant-right"></div>
+      </div>
       <div class="shoes">
         <div class="shoe" id="shoe-left"></div>
         <div class="shoe" id="shoe-right"></div>
@@ -126,7 +135,10 @@
       document
         .getElementById("pantsColor")
         .addEventListener("input", function () {
-          document.getElementById("pants").style.backgroundColor = this.value;
+          document.getElementById("pant-left").style.backgroundColor =
+            this.value;
+          document.getElementById("pant-right").style.backgroundColor =
+            this.value;
           saveColorToLocalStorage("pantsColor", this.value);
         });
 
@@ -143,7 +155,8 @@
       window.addEventListener("load", function () {
         loadColorFromLocalStorage("outerColor", "outer");
         loadColorFromLocalStorage("topColor", "top");
-        loadColorFromLocalStorage("pantsColor", "pants");
+        loadColorFromLocalStorage("pantsColor", "pant-left");
+        loadColorFromLocalStorage("pantsColor", "pant-right");
         loadColorFromLocalStorage("shoesColor", "shoe-left");
         loadColorFromLocalStorage("shoesColor", "shoe-right");
       });
