@@ -75,7 +75,7 @@
     </style>
   </head>
   <body>
-    <div class="person">
+    <div class="person" id="person">
       <div class="head" id="head"></div>
       <div class="outer" id="outer">
         <div class="top" id="top"></div>
@@ -104,6 +104,8 @@
         >シューズの色: <input type="color" id="shoesColor" value="#2d3436"
       /></label>
     </div>
+
+    <button id="downloadBtn">画像をダウンロード</button>
 
     <script>
       function saveColorToLocalStorage(id, color) {
@@ -160,6 +162,20 @@
         loadColorFromLocalStorage("shoesColor", "shoe-left");
         loadColorFromLocalStorage("shoesColor", "shoe-right");
       });
+
+      document
+        .getElementById("downloadBtn")
+        .addEventListener("click", function () {
+          html2canvas(document.getElementById("person"), {
+            onrendered: function (canvas) {
+              const link = document.createElement("a");
+              link.download = "person.png";
+              link.href = canvas.toDataURL();
+              link.click();
+            },
+          });
+        });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
   </body>
 </html>
