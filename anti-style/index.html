@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clipboard Text to Textarea</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+      }
+
+      textarea {
+        width: 300px;
+        height: 100px;
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+      }
+
+      button:disabled {
+        background-color: #6c757d;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Clipboard Text to Textarea</h2>
+
+    <button id="pasteButton">Paste from Clipboard</button>
+    <textarea
+      id="clipboardTextarea"
+      placeholder="Pasted text will appear here..."
+    ></textarea>
+    <button id="cutButton" disabled>Cut Text</button>
+
+    <script>
+      const pasteButton = document.getElementById("pasteButton");
+      const cutButton = document.getElementById("cutButton");
+      const textarea = document.getElementById("clipboardTextarea");
+
+      // クリップボードからテキストをtextareaに貼り付ける
+      pasteButton.addEventListener("click", async () => {
+        try {
+          const text = await navigator.clipboard.readText();
+          textarea.value = text;
+          cutButton.disabled = false; // テキストがある場合はカットボタンを有効に
+        } catch (err) {
+          alert("Failed to read clipboard contents: " + err);
+        }
+      });
+
+      // テキストエリアの内容をカット（クリア）
+      cutButton.addEventListener("click", () => {
+        textarea.value = ""; // テキストエリアを空にする
+        cutButton.disabled = true; // カットボタンを再び無効化
+      });
+    </script>
+  </body>
+</html>
