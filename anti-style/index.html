@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -45,16 +45,14 @@
   <body>
     <h2>Clipboard Text to Textarea</h2>
 
-    <script>
-      PureFrontendKit.addNoZoomMetaTag();
-    </script>
-
-    <button id="pasteButton">Paste from Clipboard</button>
-    <textarea
-      id="clipboardTextarea"
-      placeholder="Pasted text will appear here..."
-    ></textarea>
-    <button id="cutButton" disabled>Cut and Copy Text</button>
+    <form id="clipboardForm">
+      <button id="pasteButton" type="button">Paste from Clipboard</button>
+      <textarea
+        id="clipboardTextarea"
+        placeholder="Pasted text will appear here..."
+      ></textarea>
+      <button id="cutButton" type="button" disabled>Cut and Copy Text</button>
+    </form>
 
     <script>
       const pasteButton = document.getElementById("pasteButton");
@@ -62,43 +60,35 @@
       const textarea = document.getElementById("clipboardTextarea");
 
       // クリップボードからテキストをtextareaに貼り付ける
-      pasteButton.addEventListener("click", async () => {
-        try {
-          if (navigator.clipboard && navigator.clipboard.readText) {
-            const text = await navigator.clipboard.readText();
+      function pasteFromClipboard() {
+        navigator.clipboard
+          .readText()
+          .then((text) => {
             textarea.value = text;
-          } else {
-            // フォールバックとしてexecCommandを使用
-            textarea.select();
-            document.execCommand("paste");
-          }
-          cutButton.disabled = false; // テキストがある場合はカットボタンを有効に
-        } catch (err) {
-          alert("Failed to read clipboard contents: " + err);
-        }
-      });
+            cutButton.disabled = false; // テキストがある場合はカットボタンを有効に
+          })
+          .catch((err) => {
+            alert("クリップボードの読み込みに失敗しました: " + err);
+          });
+      }
 
       // テキストをクリップボードにコピーしてからテキストエリアをクリア
-      const handleCutAndCopy = async () => {
-        try {
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            await navigator.clipboard.writeText(textarea.value); // テキストをクリップボードにコピー
-          } else {
-            // フォールバックとしてexecCommandを使用
-            textarea.select();
-            document.execCommand("copy");
-          }
-          textarea.value = ""; // テキストエリアを空にする
-          cutButton.disabled = true; // カットボタンを再び無効化
-          alert("Text copied to clipboard and cleared!");
-        } catch (err) {
-          alert("Failed to copy text: " + err);
-        }
-      };
+      function cutAndCopyToClipboard() {
+        navigator.clipboard
+          .writeText(textarea.value)
+          .then(() => {
+            textarea.value = ""; // テキストエリアを空にする
+            cutButton.disabled = true; // カットボタンを無効にする
+            alert("クリップボードにコピーし、テキストをクリアしました！");
+          })
+          .catch((err) => {
+            alert("クリップボードへのコピーに失敗しました: " + err);
+          });
+      }
 
-      // クリックイベントとタッチイベントをサポート
-      cutButton.addEventListener("click", handleCutAndCopy);
-      cutButton.addEventListener("touchstart", handleCutAndCopy); // スマホ対応のためにtouchstartを追加
+      // ボタンにクリックイベントを追加
+      pasteButton.addEventListener("click", pasteFromClipboard);
+      cutButton.addEventListener("click", cutAndCopyToClipboard);
     </script>
   </body>
 </html>
