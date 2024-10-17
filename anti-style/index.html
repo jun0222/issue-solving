@@ -4,91 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
-    <title>Clipboard Text to Textarea</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        background-color: #f4f4f4;
-      }
-
-      textarea {
-        width: 300px;
-        height: 100px;
-        margin-top: 20px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-      }
-
-      button {
-        margin-top: 10px;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        background-color: #28a745;
-        color: white;
-        border: none;
-        border-radius: 5px;
-      }
-
-      button:disabled {
-        background-color: #6c757d;
-      }
-    </style>
+    <title>Clipboard Copy</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <h2>Clipboard Text to Textarea</h2>
-
-    <form id="clipboardForm">
-      <button id="pasteButton" type="button">Paste from Clipboard</button>
-      <textarea
-        id="clipboardTextarea"
-        placeholder="Pasted text will appear here..."
-      ></textarea>
-      <button id="cutButton" type="button" disabled>Cut and Copy Text</button>
-    </form>
-
     <script>
-      const pasteButton = document.getElementById("pasteButton");
-      const cutButton = document.getElementById("cutButton");
-      const textarea = document.getElementById("clipboardTextarea");
-
-      // クリップボードからテキストをtextareaに貼り付ける
-      function pasteFromClipboard() {
-        navigator.clipboard
-          .readText()
-          .then((text) => {
-            textarea.value = text;
-            cutButton.disabled = false; // テキストがある場合はカットボタンを有効に
-          })
-          .catch((err) => {
-            alert("クリップボードの読み込みに失敗しました: " + err);
-          });
-      }
-
-      // テキストをクリップボードにコピーしてからテキストエリアをクリア
-      function cutAndCopyToClipboard() {
-        navigator.clipboard
-          .writeText(textarea.value)
-          .then(() => {
-            textarea.value = ""; // テキストエリアを空にする
-            cutButton.disabled = true; // カットボタンを無効にする
-            alert("クリップボードにコピーし、テキストをクリアしました！");
-          })
-          .catch((err) => {
-            alert("クリップボードへのコピーに失敗しました: " + err);
-          });
-      }
-
-      // ボタンにクリックイベントを追加
-      pasteButton.addEventListener("click", pasteFromClipboard);
-      cutButton.addEventListener("click", cutAndCopyToClipboard);
+      PureFrontendKit.addNoZoomMetaTag();
     </script>
+    <div class="container">
+      <h1>テキストをクリップボードにコピー</h1>
+      <textarea
+        id="textArea"
+        rows="5"
+        placeholder="ここにテキストを入力してください"
+      ></textarea>
+      <button id="copyButton">コピーする</button>
+      <p id="statusMessage"></p>
+    </div>
+    <script src="script.js"></script>
   </body>
 </html>
