@@ -34,6 +34,9 @@ git commit -m "feat: tool update"
 # sh-toolの中のmd2html変換ツールを動かす
 node ./sh-tool/md2html/main.js
 
+# snipetのビルド
+node ./snipet/main.js
+
 # "feat: tool update" というコメントで再度コミット
 git add .
 git commit -m "feat: tool update"
