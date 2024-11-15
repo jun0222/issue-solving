@@ -13,12 +13,17 @@ class RandomStringGenerator {
       hiragana: this.generateHiragana(),
       katakana: this.generateKatakana(),
       customPattern: this.generateCustomPattern(),
+      uuid: this.generateUUID(),
     };
 
     let result = "";
     const characters = charSet[this.characterSet];
     const charactersLength = characters.length;
-    if (this.characterSet === "customPattern") {
+    if (
+      // 文字数指定を無視する文字種
+      this.characterSet === "customPattern" ||
+      this.characterSet === "uuid"
+    ) {
       result = characters;
     } else {
       for (let i = 0; i < length; i++) {
@@ -78,6 +83,23 @@ class RandomStringGenerator {
       katakana += String.fromCharCode(i);
     }
     return katakana;
+  }
+
+  generateUUID() {
+    const uuids = [
+      "feb444aa-3998-4692-9667-d6ddf11ef382",
+      "3c1425b1-35d4-447a-a8aa-3c00e1b64dbb",
+      "c7f0b593-f7cc-42e9-b907-459dc9caa7ce",
+      "b7e5a251-1f80-476d-8e07-ad803e5e7314",
+      "11e7939e-bfe2-41c0-9401-1c672752c0ac",
+      "c1b32b2e-040d-407a-93b3-eb18715bdf7d",
+      "f092b5a7-70a2-4473-a85b-3b8aff27a9a6",
+      "68f017e9-7d64-49f6-9fe2-65b4c977e055",
+      "a01dbc8f-748d-4d48-b5ce-1a52c0937d64",
+      "1861fca2-4b41-4a06-8ab4-63d23ee42ff0",
+    ];
+
+    return uuids[Math.floor(Math.random() * uuids.length)];
   }
 }
 
