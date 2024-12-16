@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ポケモンタイプ相性計算ツール</title>
+  <title>ポケモンタイプ相性ツール</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,48 +12,58 @@
       background-color: #f9f9f9;
     }
     h1 { color: #333; }
-    select, button {
+    select {
       padding: 5px 10px;
       margin: 10px;
       font-size: 16px;
     }
-    .result {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #333;
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 80%;
     }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .strong { color: red; font-weight: bold; }
+    .weak { color: blue; }
+    .no-effect { color: gray; }
   </style>
 </head>
 <body>
-  <h1>ポケモンタイプ相性計算ツール</h1>
+  <h1>ポケモンタイプ相性ツール</h1>
 
-  <!-- 攻撃技のタイプ -->
-  <label for="attack-type">使用する技のタイプ:</label>
-  <select id="attack-type"></select>
+  <!-- 防御側のタイプ -->
+  <label for="defense-type">防御側のタイプ:</label>
+  <select id="defense-type" onchange="updateDamageTable()"></select>
 
-  <!-- 防御側のタイプ1 -->
-  <label for="defense-type1">防御側のタイプ1:</label>
-  <select id="defense-type1"></select>
-
-  <!-- 防御側のタイプ2 -->
-  <label for="defense-type2">防御側のタイプ2:</label>
-  <select id="defense-type2">
-    <option value="">なし</option>
-  </select>
-
-  <div class="result" id="result">ダメージ倍率: 1倍</div>
+  <table>
+    <thead>
+      <tr>
+        <th>攻撃側のタイプ</th>
+        <th>ダメージ倍率</th>
+      </tr>
+    </thead>
+    <tbody id="damage-table">
+      <!-- ダメージ倍率がここに表示される -->
+    </tbody>
+  </table>
 
   <script>
     const apiUrl = "https://pokeapi.co/api/v2/type/";
-    const types = [];
+    const japaneseTypes = {
+      normal: "ノーマル", fire: "ほのお", water: "みず", electric: "でんき",
+      grass: "くさ", ice: "こおり", fighting: "かくとう", poison: "どく",
+      ground: "じめん", flying: "ひこう", psychic: "エスパー", bug: "むし",
+      rock: "いわ", ghost: "ゴースト", dragon: "ドラゴン", dark: "あく",
+      steel: "はがね", fairy: "フェアリー"
+    };
     let typeData = {};
-
-    async function fetchTypes() {
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-      return data.results.map(type => type.name);
-    }
 
     async function fetchTypeDetails(type) {
       const response = await fetch(`${apiUrl}${type}`);
@@ -61,53 +71,50 @@
     }
 
     async function loadTypeData() {
-      const typeNames = await fetchTypes();
-      typeNames.forEach(type => {
-        addOptionToSelect("attack-type", type);
-        addOptionToSelect("defense-type1", type);
-        addOptionToSelect("defense-type2", type);
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      const typeList = data.results.map(t => t.name);
+
+      const select = document.getElementById("defense-type");
+      typeList.forEach(type => {
+        if (japaneseTypes[type]) {
+          const option = document.createElement("option");
+          option.value = type;
+          option.textContent = japaneseTypes[type];
+          select.appendChild(option);
+        }
       });
 
-      // 全タイプの詳細データを取得
-      for (const type of typeNames) {
+      for (const type of typeList) {
         typeData[type] = await fetchTypeDetails(type);
       }
     }
 
-    function addOptionToSelect(selectId, value) {
-      const select = document.getElementById(selectId);
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = value;
-      select.appendChild(option);
+    function updateDamageTable() {
+      const defenseType = document.getElementById("defense-type").value;
+      const tableBody = document.getElementById("damage-table");
+      tableBody.innerHTML = "";
+
+      Object.keys(japaneseTypes).forEach(attackType => {
+        const relations = typeData[attackType]?.damage_relations;
+        let multiplier = 1;
+
+        // 防御側タイプに対する倍率計算
+        if (relations) {
+          if (relations.double_damage_to.some(t => t.name === defenseType)) multiplier *= 2;
+          if (relations.half_damage_to.some(t => t.name === defenseType)) multiplier *= 0.5;
+          if (relations.no_damage_to.some(t => t.name === defenseType)) multiplier *= 0;
+        }
+
+        if (multiplier !== 1) {
+          const row = `<tr>
+            <td>${japaneseTypes[attackType]}</td>
+            <td class="${multiplier === 2 ? 'strong' : multiplier === 0.5 ? 'weak' : 'no-effect'}">${multiplier}倍</td>
+          </tr>`;
+          tableBody.innerHTML += row;
+        }
+      });
     }
-
-    function calculateDamage() {
-      const attackType = document.getElementById("attack-type").value;
-      const defenseType1 = document.getElementById("defense-type1").value;
-      const defenseType2 = document.getElementById("defense-type2").value;
-
-      let multiplier = 1.0;
-
-      // 攻撃タイプのダメージ相性データ
-      const attackRelations = typeData[attackType]?.damage_relations;
-
-      function applyMultiplier(defenseType) {
-        if (!defenseType) return;
-        if (attackRelations.double_damage_to.some(t => t.name === defenseType)) multiplier *= 2;
-        if (attackRelations.half_damage_to.some(t => t.name === defenseType)) multiplier *= 0.5;
-        if (attackRelations.no_damage_to.some(t => t.name === defenseType)) multiplier *= 0;
-      }
-
-      applyMultiplier(defenseType1);
-      applyMultiplier(defenseType2);
-
-      document.getElementById("result").textContent = `ダメージ倍率: ${multiplier}倍`;
-    }
-
-    document.querySelectorAll("select").forEach(select => {
-      select.addEventListener("change", calculateDamage);
-    });
 
     // 初期データ読み込み
     loadTypeData();
