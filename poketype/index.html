@@ -38,9 +38,15 @@
 <body>
   <h1>ポケモンタイプ相性ツール</h1>
 
-  <!-- 防御側のタイプ -->
-  <label for="defense-type">防御側のタイプ:</label>
-  <select id="defense-type" onchange="updateDamageTable()"></select>
+  <!-- 防御側のタイプ1 -->
+  <label for="defense-type1">防御側のタイプ1:</label>
+  <select id="defense-type1"></select>
+
+  <!-- 防御側のタイプ2 -->
+  <label for="defense-type2">防御側のタイプ2:</label>
+  <select id="defense-type2">
+    <option value="">なし</option>
+  </select>
 
   <table>
     <thead>
@@ -75,13 +81,13 @@
       const data = await response.json();
       const typeList = data.results.map(t => t.name);
 
-      const select = document.getElementById("defense-type");
+      const select1 = document.getElementById("defense-type1");
+      const select2 = document.getElementById("defense-type2");
+
       typeList.forEach(type => {
         if (japaneseTypes[type]) {
-          const option = document.createElement("option");
-          option.value = type;
-          option.textContent = japaneseTypes[type];
-          select.appendChild(option);
+          addOptionToSelect(select1, type);
+          addOptionToSelect(select2, type);
         }
       });
 
@@ -90,8 +96,16 @@
       }
     }
 
+    function addOptionToSelect(select, value) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = japaneseTypes[value];
+      select.appendChild(option);
+    }
+
     function updateDamageTable() {
-      const defenseType = document.getElementById("defense-type").value;
+      const defenseType1 = document.getElementById("defense-type1").value;
+      const defenseType2 = document.getElementById("defense-type2").value;
       const tableBody = document.getElementById("damage-table");
       tableBody.innerHTML = "";
 
@@ -99,22 +113,35 @@
         const relations = typeData[attackType]?.damage_relations;
         let multiplier = 1;
 
-        // 防御側タイプに対する倍率計算
+        // 防御タイプ1に対する倍率
         if (relations) {
-          if (relations.double_damage_to.some(t => t.name === defenseType)) multiplier *= 2;
-          if (relations.half_damage_to.some(t => t.name === defenseType)) multiplier *= 0.5;
-          if (relations.no_damage_to.some(t => t.name === defenseType)) multiplier *= 0;
+          multiplier *= calculateMultiplier(relations, defenseType1);
+          if (defenseType2) {
+            // 防御タイプ2に対する倍率
+            multiplier *= calculateMultiplier(relations, defenseType2);
+          }
         }
 
         if (multiplier !== 1) {
           const row = `<tr>
             <td>${japaneseTypes[attackType]}</td>
-            <td class="${multiplier === 2 ? 'strong' : multiplier === 0.5 ? 'weak' : 'no-effect'}">${multiplier}倍</td>
+            <td class="${multiplier > 1 ? 'strong' : multiplier < 1 ? 'weak' : 'no-effect'}">${multiplier}倍</td>
           </tr>`;
           tableBody.innerHTML += row;
         }
       });
     }
+
+    function calculateMultiplier(relations, defenseType) {
+      if (relations.double_damage_to.some(t => t.name === defenseType)) return 2;
+      if (relations.half_damage_to.some(t => t.name === defenseType)) return 0.5;
+      if (relations.no_damage_to.some(t => t.name === defenseType)) return 0;
+      return 1;
+    }
+
+    document.querySelectorAll("select").forEach(select => {
+      select.addEventListener("change", updateDamageTable);
+    });
 
     // 初期データ読み込み
     loadTypeData();
