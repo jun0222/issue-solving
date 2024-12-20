@@ -92,6 +92,12 @@
     <textarea></textarea>
 
     <script>
+      document
+        .getElementById("generateButton")
+        .addEventListener("click", generateUUID);
+
+      document.getElementById("copyButton").addEventListener("click", copyUUID);
+
       function generateUUID() {
         const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
           /[xy]/g,
