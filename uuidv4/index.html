@@ -86,8 +86,8 @@
   </head>
   <body>
     <div id="uuid">UUID will be generated here</div>
-    <button onclick="generateUUID()">Generate UUID</button>
-    <button onclick="copyUUID()">Copy to Clipboard</button>
+    <button id="generateButton">Generate UUID</button>
+    <button id="copyButton">Copy to Clipboard</button>
     <div id="toast">UUID copied to clipboard!</div>
 
     <script>
@@ -122,6 +122,9 @@
           toast.className = toast.className.replace("show", "");
         }, 3000);
       }
+
+      // Generate UUID on page load
+      window.onload = generateUUID;
     </script>
   </body>
 </html>
