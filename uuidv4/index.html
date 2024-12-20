@@ -96,7 +96,14 @@
         .getElementById("generateButton")
         .addEventListener("click", generateUUID);
 
+      document
+        .getElementById("generateButton")
+        .addEventListener("mouseover", generateUUID);
+
       document.getElementById("copyButton").addEventListener("click", copyUUID);
+      // document
+      //   .getElementById("copyButton")
+      //   .addEventListener("mouseover", copyUUID);
 
       function generateUUID() {
         const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
