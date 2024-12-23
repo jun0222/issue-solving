@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ポケモンタイプ相性ツール</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 20px;
+        background-color: #f9f9f9;
+      }
+      h1 {
+        color: #333;
+      }
+      select {
+        padding: 5px 10px;
+        margin: 10px;
+        font-size: 16px;
+      }
+      table {
+        margin: 20px auto;
+        border-collapse: collapse;
+        width: 80%;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .strong {
+        color: red;
+        font-weight: bold;
+      }
+      .weak {
+        color: blue;
+      }
+      .no-effect {
+        color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ポケモンタイプ相性ツール</h1>
+
+    <!-- 攻撃技のタイプ -->
+    <label for="attack-type">使用する技のタイプ:</label>
+    <select id="attack-type" onchange="updateTypeEffectiveness()"></select>
+
+    <table>
+      <thead>
+        <tr>
+          <th>効果の種類</th>
+          <th>対象タイプ</th>
+        </tr>
+      </thead>
+      <tbody id="effectiveness-table">
+        <!-- 効果のデータがここに表示される -->
+      </tbody>
+    </table>
+
+    <script>
+      const apiUrl = "https://pokeapi.co/api/v2/type/";
+      const japaneseTypes = {
+        normal: "ノーマル",
+        fire: "ほのお",
+        water: "みず",
+        electric: "でんき",
+        grass: "くさ",
+        ice: "こおり",
+        fighting: "かくとう",
+        poison: "どく",
+        ground: "じめん",
+        flying: "ひこう",
+        psychic: "エスパー",
+        bug: "むし",
+        rock: "いわ",
+        ghost: "ゴースト",
+        dragon: "ドラゴン",
+        dark: "あく",
+        steel: "はがね",
+        fairy: "フェアリー",
+      };
+
+      let typeData = {};
+
+      async function fetchTypeDetails(type) {
+        const response = await fetch(`${apiUrl}${type}`);
+        return await response.json();
+      }
+
+      async function loadTypes() {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        const typeList = data.results.map((t) => t.name);
+
+        const select = document.getElementById("attack-type");
+        typeList.forEach((type) => {
+          if (japaneseTypes[type]) {
+            const option = document.createElement("option");
+            option.value = type;
+            option.textContent = japaneseTypes[type];
+            select.appendChild(option);
+          }
+        });
+
+        // 全タイプの詳細データを取得
+        for (const type of typeList) {
+          typeData[type] = await fetchTypeDetails(type);
+        }
+      }
+
+      function updateTypeEffectiveness() {
+        const attackType = document.getElementById("attack-type").value;
+        const tableBody = document.getElementById("effectiveness-table");
+        tableBody.innerHTML = "";
+
+        const relations = typeData[attackType]?.damage_relations;
+        if (!relations) return;
+
+        addEffectivenessRow("効果抜群 (2倍)", relations.double_damage_to);
+        addEffectivenessRow("効果が薄い (0.5倍)", relations.half_damage_to);
+        addEffectivenessRow("効果なし (0倍)", relations.no_damage_to);
+      }
+
+      function addEffectivenessRow(effect, types) {
+        if (!types || types.length === 0) return;
+
+        const row = `<tr>
+        <td>${effect}</td>
+        <td>${types.map((t) => japaneseTypes[t.name]).join(", ")}</td>
+      </tr>`;
+        document.getElementById("effectiveness-table").innerHTML += row;
+      }
+
+      // 初期データ読み込み
+      loadTypes();
+    </script>
+  </body>
+</html>
