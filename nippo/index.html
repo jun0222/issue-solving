@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>日報</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 20px;
+        background-color: #f4f4f9;
+      }
+      textarea,
+      select,
+      button {
+        margin: 10px 0;
+        padding: 10px;
+        font-size: 16px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .input-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      textarea {
+        flex: 1;
+        resize: vertical;
+      }
+      .copy-button {
+        width: 10vw;
+        padding: 10px;
+        font-size: 14px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      .copy-button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>日報自動化ツール</h1>
+
+    <label for="date-format">日付形式:</label>
+    <select id="date-format">
+      <option value="short">12/25</option>
+      <option value="long">12月25日(水)</option>
+    </select>
+
+    <p>メッセージを入力してください:</p>
+
+    <div class="input-container">
+      <label for="message1">メッセージ1</label>
+      <textarea
+        id="message1"
+        rows="4"
+        placeholder="メッセージ1を入力"
+      ></textarea>
+      <button class="copy-button" id="copy-message1">コピー</button>
+    </div>
+
+    <div class="input-container">
+      <label for="message2">メッセージ2</label>
+      <textarea
+        id="message2"
+        rows="4"
+        placeholder="メッセージ2を入力"
+      ></textarea>
+      <button class="copy-button" id="copy-message2">コピー</button>
+    </div>
+
+    <button id="save">保存</button>
+
+    <script>
+      const message1Input = document.getElementById("message1");
+      const message2Input = document.getElementById("message2");
+      const saveButton = document.getElementById("save");
+      const copyMessage1Button = document.getElementById("copy-message1");
+      const copyMessage2Button = document.getElementById("copy-message2");
+      const dateFormatSelect = document.getElementById("date-format");
+
+      // 今日の日付を取得
+      const getFormattedDate = (format) => {
+        const today = new Date();
+        const optionsShort = { month: "2-digit", day: "2-digit" };
+        const optionsLong = {
+          month: "numeric",
+          day: "numeric",
+          weekday: "short",
+        };
+        return format === "short"
+          ? today.toLocaleDateString("ja-JP", optionsShort).replace(/\//g, "/")
+          : today.toLocaleDateString("ja-JP", optionsLong);
+      };
+
+      // ローカルストレージからメッセージをロード
+      const loadMessages = () => {
+        const storedData =
+          JSON.parse(localStorage.getItem("latestReport")) || {};
+        message1Input.value = storedData.message1 || "";
+        message2Input.value = storedData.message2 || "";
+      };
+
+      // 保存ボタンのクリックイベント
+      saveButton.onclick = () => {
+        const date = getFormattedDate(dateFormatSelect.value);
+        const message1 = message1Input.value;
+        const message2 = message2Input.value;
+
+        if (!message1 || !message2) {
+          alert("全てのフィールドを入力してください。");
+          return;
+        }
+
+        const newReport = { date, message1, message2 };
+        localStorage.setItem("latestReport", JSON.stringify(newReport));
+
+        alert("最新のメッセージを保存しました。");
+      };
+
+      // コピー機能
+      copyMessage1Button.onclick = () => {
+        const date = getFormattedDate(dateFormatSelect.value);
+        const textToCopy = `${date}: ${message1Input.value}`;
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          alert("メッセージ1をコピーしました。");
+        });
+      };
+
+      copyMessage2Button.onclick = () => {
+        const date = getFormattedDate(dateFormatSelect.value);
+        const textToCopy = `${date}: ${message2Input.value}`;
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          alert("メッセージ2をコピーしました。");
+        });
+      };
+
+      // 初期ロード
+      loadMessages();
+    </script>
+  </body>
+</html>
