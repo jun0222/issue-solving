@@ -119,7 +119,7 @@
       // コピー機能
       copyMessage1Button.onclick = () => {
         const date = getFormattedDate(dateFormatSelect.value);
-        const textToCopy = `${date}: ${message1Input.value}`;
+        const textToCopy = `${date} ${message1Input.value}`;
         navigator.clipboard.writeText(textToCopy).then(() => {
           alert("始業メッセージをコピーしました。");
         });
@@ -127,7 +127,7 @@
 
       copyMessage2Button.onclick = () => {
         const date = getFormattedDate(dateFormatSelect.value);
-        const textToCopy = `${date}: ${message2Input.value}`;
+        const textToCopy = `${date} ${message2Input.value}`;
         navigator.clipboard.writeText(textToCopy).then(() => {
           alert("終業メッセージをコピーしました。");
         });
