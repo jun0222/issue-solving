@@ -121,7 +121,7 @@
         const date = getFormattedDate(dateFormatSelect.value);
         const textToCopy = `${date}: ${message1Input.value}`;
         navigator.clipboard.writeText(textToCopy).then(() => {
-          alert("メッセージ1をコピーしました。");
+          alert("始業メッセージをコピーしました。");
         });
       };
 
@@ -129,7 +129,7 @@
         const date = getFormattedDate(dateFormatSelect.value);
         const textToCopy = `${date}: ${message2Input.value}`;
         navigator.clipboard.writeText(textToCopy).then(() => {
-          alert("メッセージ2をコピーしました。");
+          alert("終業メッセージをコピーしました。");
         });
       };
 
