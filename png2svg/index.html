@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PNGをSVGに変換</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+      }
+      #svgOutput {
+        border: 1px solid #ddd;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>PNGをSVGに変換するツール</h1>
+    <input type="file" id="pngInput" accept="image/png" />
+    <div id="svgContainer">
+      <h2>変換後のSVG</h2>
+      <svg
+        id="svgOutput"
+        xmlns="http://www.w3.org/2000/svg"
+        width="300"
+        height="300"
+      ></svg>
+      <button id="downloadBtn" style="margin-top: 20px" disabled>
+        SVGをダウンロード
+      </button>
+    </div>
+    <script>
+      const pngInput = document.getElementById("pngInput");
+      const svgOutput = document.getElementById("svgOutput");
+      const downloadBtn = document.getElementById("downloadBtn");
+
+      let svgContent = ""; // SVGの内容を保持する変数
+
+      pngInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+
+            // Canvasのサイズを設定
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // 画像をCanvasに描画
+            ctx.drawImage(img, 0, 0);
+
+            // ピクセルデータを取得
+            const imageData = ctx.getImageData(0, 0, img.width, img.height);
+            const data = imageData.data;
+
+            // SVGデータを構築
+            const svgWidth = img.width;
+            const svgHeight = img.height;
+            svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${svgWidth} ${svgHeight}" width="${svgWidth}" height="${svgHeight}">`;
+
+            for (let y = 0; y < svgHeight; y++) {
+              for (let x = 0; x < svgWidth; x++) {
+                const index = (y * svgWidth + x) * 4;
+                const r = data[index];
+                const g = data[index + 1];
+                const b = data[index + 2];
+                const a = data[index + 3];
+
+                if (a > 0) {
+                  // アルファ値が0でないピクセルをSVGの四角形として追加
+                  const hexColor = `#${((1 << 24) + (r << 16) + (g << 8) + b)
+                    .toString(16)
+                    .slice(1)}`;
+                  svgContent += `<rect x="${x}" y="${y}" width="1" height="1" fill="${hexColor}" />`;
+                }
+              }
+            }
+
+            svgContent += `</svg>`;
+
+            // SVGを表示
+            svgOutput.innerHTML = svgContent;
+
+            // ダウンロードボタンを有効化
+            downloadBtn.disabled = false;
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      downloadBtn.addEventListener("click", () => {
+        const blob = new Blob([svgContent], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "converted-image.svg";
+        a.click();
+
+        // URLオブジェクトを解放
+        URL.revokeObjectURL(url);
+      });
+    </script>
+  </body>
+</html>
