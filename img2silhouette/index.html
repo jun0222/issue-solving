@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>画像変換ツール</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+      }
+      canvas {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>画像の白を透明にし、それ以外を黒に変換</h1>
+    <input type="file" id="imageInput" accept="image/png, image/jpeg" />
+    <canvas id="canvas"></canvas>
+    <script>
+      const imageInput = document.getElementById("imageInput");
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      imageInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            // Canvasのサイズを画像サイズに設定
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // 画像を描画
+            ctx.drawImage(img, 0, 0);
+
+            // ピクセルデータを取得
+            const imageData = ctx.getImageData(0, 0, img.width, img.height);
+            const data = imageData.data;
+
+            // ピクセルデータを操作
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i]; // 赤
+              const g = data[i + 1]; // 緑
+              const b = data[i + 2]; // 青
+              const a = data[i + 3]; // アルファ（透明度）
+
+              // 白色判定 (RGBすべてが255に近い)
+              if (r > 240 && g > 240 && b > 240) {
+                data[i + 3] = 0; // アルファを0（透明）に設定
+              } else {
+                data[i] = 0; // 赤を0
+                data[i + 1] = 0; // 緑を0
+                data[i + 2] = 0; // 青を0
+                data[i + 3] = 255; // アルファを255（不透明）に設定
+              }
+            }
+
+            // 操作したデータをCanvasに描画
+            ctx.putImageData(imageData, 0, 0);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    </script>
+  </body>
+</html>
