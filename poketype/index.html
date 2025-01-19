@@ -1,150 +1,210 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ポケモンタイプ相性ツール</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 20px;
-      background-color: #f9f9f9;
-    }
-    h1 { color: #333; }
-    select {
-      padding: 5px 10px;
-      margin: 10px;
-      font-size: 16px;
-    }
-    table {
-      margin: 20px auto;
-      border-collapse: collapse;
-      width: 80%;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-    .strong { color: red; font-weight: bold; }
-    .weak { color: blue; }
-    .no-effect { color: gray; }
-  </style>
-</head>
-<body>
-  <h1>ポケモンタイプ相性ツール</h1>
-
-  <!-- 防御側のタイプ1 -->
-  <label for="defense-type1">防御側のタイプ1:</label>
-  <select id="defense-type1"></select>
-
-  <!-- 防御側のタイプ2 -->
-  <label for="defense-type2">防御側のタイプ2:</label>
-  <select id="defense-type2">
-    <option value="">なし</option>
-  </select>
-
-  <table>
-    <thead>
-      <tr>
-        <th>攻撃側のタイプ</th>
-        <th>ダメージ倍率</th>
-      </tr>
-    </thead>
-    <tbody id="damage-table">
-      <!-- ダメージ倍率がここに表示される -->
-    </tbody>
-  </table>
-
-  <script>
-    const apiUrl = "https://pokeapi.co/api/v2/type/";
-    const japaneseTypes = {
-      normal: "ノーマル", fire: "ほのお", water: "みず", electric: "でんき",
-      grass: "くさ", ice: "こおり", fighting: "かくとう", poison: "どく",
-      ground: "じめん", flying: "ひこう", psychic: "エスパー", bug: "むし",
-      rock: "いわ", ghost: "ゴースト", dragon: "ドラゴン", dark: "あく",
-      steel: "はがね", fairy: "フェアリー"
-    };
-    let typeData = {};
-
-    async function fetchTypeDetails(type) {
-      const response = await fetch(`${apiUrl}${type}`);
-      return await response.json();
-    }
-
-    async function loadTypeData() {
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-      const typeList = data.results.map(t => t.name);
-
-      const select1 = document.getElementById("defense-type1");
-      const select2 = document.getElementById("defense-type2");
-
-      typeList.forEach(type => {
-        if (japaneseTypes[type]) {
-          addOptionToSelect(select1, type);
-          addOptionToSelect(select2, type);
-        }
-      });
-
-      for (const type of typeList) {
-        typeData[type] = await fetchTypeDetails(type);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ポケモンタイプ相性ツール</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 20px;
+        background-color: #f9f9f9;
       }
-    }
+      h1 {
+        color: #333;
+      }
+      select {
+        padding: 5px 10px;
+        margin: 10px;
+        font-size: 16px;
+      }
+      table {
+        margin: 20px auto;
+        border-collapse: collapse;
+        width: 80%;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .strong {
+        color: red;
+        font-weight: bold;
+      }
+      .weak {
+        color: blue;
+      }
+      .no-effect {
+        color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ポケモンタイプ相性ツール</h1>
 
-    function addOptionToSelect(select, value) {
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = japaneseTypes[value];
-      select.appendChild(option);
-    }
+    <!-- 防御側のタイプ1 -->
+    <label for="defense-type1">防御側のタイプ1:</label>
+    <select id="defense-type1"></select>
 
-    function updateDamageTable() {
-      const defenseType1 = document.getElementById("defense-type1").value;
-      const defenseType2 = document.getElementById("defense-type2").value;
-      const tableBody = document.getElementById("damage-table");
-      tableBody.innerHTML = "";
+    <!-- 防御側のタイプ2 -->
+    <label for="defense-type2">防御側のタイプ2:</label>
+    <select id="defense-type2">
+      <option value="">なし</option>
+    </select>
 
-      Object.keys(japaneseTypes).forEach(attackType => {
-        const relations = typeData[attackType]?.damage_relations;
-        let multiplier = 1;
+    <table>
+      <thead>
+        <tr>
+          <th>攻撃側のタイプ</th>
+          <th>ダメージ倍率</th>
+        </tr>
+      </thead>
+      <tbody id="damage-table">
+        <!-- ダメージ倍率がここに表示される -->
+      </tbody>
+    </table>
 
-        // 防御タイプ1に対する倍率
-        if (relations) {
-          multiplier *= calculateMultiplier(relations, defenseType1);
-          if (defenseType2) {
-            // 防御タイプ2に対する倍率
-            multiplier *= calculateMultiplier(relations, defenseType2);
+    <h1>オマケ</h1>
+    <h2>栄養ドリンク対応表</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>マックスアップ</th>
+          <th>HP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>タウリン</td>
+          <td>こうげき</td>
+        </tr>
+        <tr>
+          <td>ブロムヘキシン</td>
+          <td>ぼうぎょ</td>
+        </tr>
+        <tr>
+          <td>インドメタシン</td>
+          <td>すばやさ</td>
+        </tr>
+        <tr>
+          <td>リゾチウム</td>
+          <td>とくこう</td>
+        </tr>
+        <tr>
+          <td>キトサン</td>
+          <td>とくぼう</td>
+        </tr>
+      </tbody>
+
+    <script>
+      const apiUrl = "https://pokeapi.co/api/v2/type/";
+      const japaneseTypes = {
+        normal: "ノーマル",
+        fire: "ほのお",
+        water: "みず",
+        electric: "でんき",
+        grass: "くさ",
+        ice: "こおり",
+        fighting: "かくとう",
+        poison: "どく",
+        ground: "じめん",
+        flying: "ひこう",
+        psychic: "エスパー",
+        bug: "むし",
+        rock: "いわ",
+        ghost: "ゴースト",
+        dragon: "ドラゴン",
+        dark: "あく",
+        steel: "はがね",
+        fairy: "フェアリー",
+      };
+      let typeData = {};
+
+      async function fetchTypeDetails(type) {
+        const response = await fetch(`${apiUrl}${type}`);
+        return await response.json();
+      }
+
+      async function loadTypeData() {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        const typeList = data.results.map((t) => t.name);
+
+        const select1 = document.getElementById("defense-type1");
+        const select2 = document.getElementById("defense-type2");
+
+        typeList.forEach((type) => {
+          if (japaneseTypes[type]) {
+            addOptionToSelect(select1, type);
+            addOptionToSelect(select2, type);
           }
-        }
+        });
 
-        if (multiplier !== 1) {
-          const row = `<tr>
+        for (const type of typeList) {
+          typeData[type] = await fetchTypeDetails(type);
+        }
+      }
+
+      function addOptionToSelect(select, value) {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = japaneseTypes[value];
+        select.appendChild(option);
+      }
+
+      function updateDamageTable() {
+        const defenseType1 = document.getElementById("defense-type1").value;
+        const defenseType2 = document.getElementById("defense-type2").value;
+        const tableBody = document.getElementById("damage-table");
+        tableBody.innerHTML = "";
+
+        Object.keys(japaneseTypes).forEach((attackType) => {
+          const relations = typeData[attackType]?.damage_relations;
+          let multiplier = 1;
+
+          // 防御タイプ1に対する倍率
+          if (relations) {
+            multiplier *= calculateMultiplier(relations, defenseType1);
+            if (defenseType2) {
+              // 防御タイプ2に対する倍率
+              multiplier *= calculateMultiplier(relations, defenseType2);
+            }
+          }
+
+          if (multiplier !== 1) {
+            const row = `<tr>
             <td>${japaneseTypes[attackType]}</td>
-            <td class="${multiplier > 1 ? 'strong' : multiplier < 1 ? 'weak' : 'no-effect'}">${multiplier}倍</td>
+            <td class="${
+              multiplier > 1 ? "strong" : multiplier < 1 ? "weak" : "no-effect"
+            }">${multiplier}倍</td>
           </tr>`;
-          tableBody.innerHTML += row;
-        }
+            tableBody.innerHTML += row;
+          }
+        });
+      }
+
+      function calculateMultiplier(relations, defenseType) {
+        if (relations.double_damage_to.some((t) => t.name === defenseType))
+          return 2;
+        if (relations.half_damage_to.some((t) => t.name === defenseType))
+          return 0.5;
+        if (relations.no_damage_to.some((t) => t.name === defenseType))
+          return 0;
+        return 1;
+      }
+
+      document.querySelectorAll("select").forEach((select) => {
+        select.addEventListener("change", updateDamageTable);
       });
-    }
 
-    function calculateMultiplier(relations, defenseType) {
-      if (relations.double_damage_to.some(t => t.name === defenseType)) return 2;
-      if (relations.half_damage_to.some(t => t.name === defenseType)) return 0.5;
-      if (relations.no_damage_to.some(t => t.name === defenseType)) return 0;
-      return 1;
-    }
-
-    document.querySelectorAll("select").forEach(select => {
-      select.addEventListener("change", updateDamageTable);
-    });
-
-    // 初期データ読み込み
-    loadTypeData();
-  </script>
-</body>
+      // 初期データ読み込み
+      loadTypeData();
+    </script>
+  </body>
 </html>
