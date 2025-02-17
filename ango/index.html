@@ -1,0 +1,147 @@
+<!-- TODO: このツールをrails backendにも入れたい -->
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>日本語暗号化ツール</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        line-height: 1.6;
+      }
+      textarea {
+        width: 100%;
+        height: 150px;
+        margin-bottom: 10px;
+        font-size: 1em;
+      }
+      input[type="password"] {
+        width: 100%;
+        padding: 5px;
+        font-size: 1em;
+        margin-bottom: 10px;
+      }
+      button {
+        padding: 10px 20px;
+        margin-right: 10px;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>日本語暗号化ツール</h1>
+
+    <label for="text">文章:</label>
+    <textarea id="text" placeholder="ここに文章を入力してください"></textarea>
+
+    <label for="password">パスワード:</label>
+    <input
+      type="password"
+      id="password"
+      placeholder="パスワードを入力してください"
+    />
+
+    <div>
+      <button id="encryptButton">暗号化</button>
+      <button id="decryptButton">復号化（DL）</button>
+      <!-- <button id="exportButton">TXTエクスポート</button> -->
+    </div>
+
+    <script>
+      // パスワードからシフト値を計算（各文字のコードの合計をmodで調整）
+      function calculateShift(password) {
+        let shift = 0;
+        for (let i = 0; i < password.length; i++) {
+          shift += password.charCodeAt(i);
+        }
+        // 値が大きくなりすぎないようにmodで調整（例：1000で割った余り）
+        return shift % 1000;
+      }
+
+      // 暗号化：各文字コードにシフト値を加算
+      function encrypt(text, password) {
+        const shift = calculateShift(password);
+        let result = "";
+        for (let i = 0; i < text.length; i++) {
+          let code = text.charCodeAt(i);
+          let newCode = code + shift;
+          result += String.fromCharCode(newCode);
+        }
+        return result;
+      }
+
+      // 復号化：各文字コードからシフト値を減算
+      function decrypt(text, password) {
+        const shift = calculateShift(password);
+        let result = "";
+        for (let i = 0; i < text.length; i++) {
+          let code = text.charCodeAt(i);
+          let originalCode = code - shift;
+          result += String.fromCharCode(originalCode);
+        }
+        return result;
+      }
+
+      // ローカルストレージへの保存
+      function saveToLocalStorage(text) {
+        localStorage.setItem("encryptedText", text);
+      }
+
+      // ローカルストレージからの読み込み（必要に応じて利用）
+      function loadFromLocalStorage() {
+        return localStorage.getItem("encryptedText");
+      }
+
+      // テキストをTXTファイルとしてエクスポート
+      function exportTextAsFile(text, filename) {
+        const blob = new Blob([text], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      // 暗号化ボタンのクリックイベント設定
+      document
+        .getElementById("encryptButton")
+        .addEventListener("click", function () {
+          const text = document.getElementById("text").value;
+          const password = document.getElementById("password").value;
+          if (password === "") {
+            alert("パスワードを入力してください。");
+            return;
+          }
+          const encrypted = encrypt(text, password);
+          document.getElementById("text").value = encrypted;
+          saveToLocalStorage(encrypted);
+          alert("暗号化しました。");
+        });
+
+      // 復号化ボタンのクリックイベント設定（復号化した文字列を直接ダウンロード）
+      document
+        .getElementById("decryptButton")
+        .addEventListener("click", function () {
+          const text = document.getElementById("text").value;
+          const password = document.getElementById("password").value;
+          if (password === "") {
+            alert("パスワードを入力してください。");
+            return;
+          }
+          const decrypted = decrypt(text, password);
+          exportTextAsFile(decrypted, "decrypted.txt");
+          alert("複合化したファイルをダウンロードしました。");
+        });
+
+      // TXTエクスポートボタンのクリックイベント設定
+      document
+        .getElementById("exportButton")
+        .addEventListener("click", function () {
+          const text = document.getElementById("text").value;
+          exportTextAsFile(text, "encrypted.txt");
+        });
+    </script>
+  </body>
+</html>
