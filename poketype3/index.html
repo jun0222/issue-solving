@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ポケモンタイプカバレッジチェッカー</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    select, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    .covered {
+      background-color: #c8e6c9;
+    }
+    .not-covered {
+      background-color: #ffcdd2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ポケモンタイプカバレッジチェッカー</h1>
+    <p>自分のポケモンが持つ技タイプ（最大4つ）を選択してください。</p>
+    
+    <!-- 各ドロップダウン -->
+    <select id="move1">
+      <option value="">選択してください</option>
+      <option value="normal">ノーマル</option>
+      <option value="fire">ほのお</option>
+      <option value="water">みず</option>
+      <option value="electric">でんき</option>
+      <option value="grass">くさ</option>
+      <option value="ice">こおり</option>
+      <option value="fighting">かくとう</option>
+      <option value="poison">どく</option>
+      <option value="ground">じめん</option>
+      <option value="flying">ひこう</option>
+      <option value="psychic">エスパー</option>
+      <option value="bug">むし</option>
+      <option value="rock">いわ</option>
+      <option value="ghost">ゴースト</option>
+      <option value="dragon">ドラゴン</option>
+      <option value="dark">あく</option>
+      <option value="steel">はがね</option>
+      <option value="fairy">フェアリー</option>
+    </select>
+    
+    <select id="move2">
+      <option value="">選択してください</option>
+      <option value="normal">ノーマル</option>
+      <option value="fire">ほのお</option>
+      <option value="water">みず</option>
+      <option value="electric">でんき</option>
+      <option value="grass">くさ</option>
+      <option value="ice">こおり</option>
+      <option value="fighting">かくとう</option>
+      <option value="poison">どく</option>
+      <option value="ground">じめん</option>
+      <option value="flying">ひこう</option>
+      <option value="psychic">エスパー</option>
+      <option value="bug">むし</option>
+      <option value="rock">いわ</option>
+      <option value="ghost">ゴースト</option>
+      <option value="dragon">ドラゴン</option>
+      <option value="dark">あく</option>
+      <option value="steel">はがね</option>
+      <option value="fairy">フェアリー</option>
+    </select>
+    
+    <select id="move3">
+      <option value="">選択してください</option>
+      <option value="normal">ノーマル</option>
+      <option value="fire">ほのお</option>
+      <option value="water">みず</option>
+      <option value="electric">でんき</option>
+      <option value="grass">くさ</option>
+      <option value="ice">こおり</option>
+      <option value="fighting">かくとう</option>
+      <option value="poison">どく</option>
+      <option value="ground">じめん</option>
+      <option value="flying">ひこう</option>
+      <option value="psychic">エスパー</option>
+      <option value="bug">むし</option>
+      <option value="rock">いわ</option>
+      <option value="ghost">ゴースト</option>
+      <option value="dragon">ドラゴン</option>
+      <option value="dark">あく</option>
+      <option value="steel">はがね</option>
+      <option value="fairy">フェアリー</option>
+    </select>
+    
+    <select id="move4">
+      <option value="">選択してください</option>
+      <option value="normal">ノーマル</option>
+      <option value="fire">ほのお</option>
+      <option value="water">みず</option>
+      <option value="electric">でんき</option>
+      <option value="grass">くさ</option>
+      <option value="ice">こおり</option>
+      <option value="fighting">かくとう</option>
+      <option value="poison">どく</option>
+      <option value="ground">じめん</option>
+      <option value="flying">ひこう</option>
+      <option value="psychic">エスパー</option>
+      <option value="bug">むし</option>
+      <option value="rock">いわ</option>
+      <option value="ghost">ゴースト</option>
+      <option value="dragon">ドラゴン</option>
+      <option value="dark">あく</option>
+      <option value="steel">はがね</option>
+      <option value="fairy">フェアリー</option>
+    </select>
+    
+    <button onclick="checkCoverage()">カバー状態を確認</button>
+    
+    <div id="result"></div>
+  </div>
+  
+  <script>
+    // 各技タイプが効果抜群となる相手タイプの一覧
+    const effectiveness = {
+      normal: [],
+      fire: ['grass', 'ice', 'bug', 'steel'],
+      water: ['fire', 'ground', 'rock'],
+      electric: ['water', 'flying'],
+      grass: ['water', 'ground', 'rock'],
+      ice: ['grass', 'ground', 'flying', 'dragon'],
+      fighting: ['normal', 'ice', 'rock', 'dark', 'steel'],
+      poison: ['grass', 'fairy'],
+      ground: ['fire', 'electric', 'poison', 'rock', 'steel'],
+      flying: ['grass', 'fighting', 'bug'],
+      psychic: ['fighting', 'poison'],
+      bug: ['grass', 'psychic', 'dark'],
+      rock: ['fire', 'ice', 'flying', 'bug'],
+      ghost: ['psychic', 'ghost'],
+      dragon: ['dragon'],
+      dark: ['psychic', 'ghost'],
+      steel: ['ice', 'rock', 'fairy'],
+      fairy: ['fighting', 'dragon', 'dark']
+    };
+
+    // 対象となる全相手タイプ
+    const allTypes = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'];
+
+    function checkCoverage() {
+      // ドロップダウンから選択された技タイプを取得（重複は除く）
+      const moves = [];
+      for (let i = 1; i <= 4; i++) {
+        const move = document.getElementById('move' + i).value;
+        if (move && !moves.includes(move)) {
+          moves.push(move);
+        }
+      }
+      
+      // 選択した各技タイプがカバーする相手タイプを集計
+      const coveredTypes = new Set();
+      moves.forEach(move => {
+        if (effectiveness[move]) {
+          effectiveness[move].forEach(type => {
+            coveredTypes.add(type);
+          });
+        }
+      });
+      
+      // 結果テーブルを生成
+      let html = '<table><tr><th>相手タイプ</th><th>カバー状態</th></tr>';
+      allTypes.forEach(type => {
+        if (coveredTypes.has(type)) {
+          html += `<tr class="covered"><td>${type}</td><td>カバー済み</td></tr>`;
+        } else {
+          html += `<tr class="not-covered"><td>${type}</td><td>未カバー</td></tr>`;
+        }
+      });
+      html += '</table>';
+      
+      document.getElementById('result').innerHTML = html;
+    }
+  </script>
+</body>
+</html>
