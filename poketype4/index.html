@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ポケモンチーム タイプカバレッジ コンビネーション</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-family: 'Helvetica Neue', sans-serif;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    h1 {
+      text-align: center;
+      color: #444;
+    }
+    p, label {
+      text-align: center;
+      margin: 10px 0;
+    }
+    select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #667eea;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #5a67d8;
+    }
+    .result-section {
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+    }
+    .combination {
+      padding: 5px;
+      border-bottom: 1px dashed #ccc;
+    }
+    .notice {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ポケモンチームタイプカバレッジ</h1>
+    <p>チームのポケモン数を選び、全18タイプへ効果抜群となる<br>有効なタイプ組み合わせを算出します。（各ポケモンは自分のタイプに対応した技を持つと仮定）</p>
+    
+    <label for="teamSize">チームのポケモン数を選択：</label>
+    <select id="teamSize">
+      <option value="3">3匹</option>
+      <option value="4">4匹</option>
+      <option value="6">6匹</option>
+    </select>
+    
+    <button onclick="calculateCombinations()">組み合わせを計算</button>
+    
+    <div id="result" class="result-section"></div>
+  </div>
+  
+  <script>
+    // 各タイプが効果抜群となる相手タイプ（※前回と同じ定義）
+    const effectiveness = {
+      normal: [],
+      fire: ['grass', 'ice', 'bug', 'steel'],
+      water: ['fire', 'ground', 'rock'],
+      electric: ['water', 'flying'],
+      grass: ['water', 'ground', 'rock'],
+      ice: ['grass', 'ground', 'flying', 'dragon'],
+      fighting: ['normal', 'ice', 'rock', 'dark', 'steel'],
+      poison: ['grass', 'fairy'],
+      ground: ['fire', 'electric', 'poison', 'rock', 'steel'],
+      flying: ['grass', 'fighting', 'bug'],
+      psychic: ['fighting', 'poison'],
+      bug: ['grass', 'psychic', 'dark'],
+      rock: ['fire', 'ice', 'flying', 'bug'],
+      ghost: ['psychic', 'ghost'],
+      dragon: ['dragon'],
+      dark: ['psychic', 'ghost'],
+      steel: ['ice', 'rock', 'fairy'],
+      fairy: ['fighting', 'dragon', 'dark']
+    };
+
+    // 相手（対象）となる全18タイプ（※日本語表示用のマッピングも）
+    const allTypes = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'];
+    const typeNames = {
+      normal: "ノーマル",
+      fire: "ほのお",
+      water: "みず",
+      electric: "でんき",
+      grass: "くさ",
+      ice: "こおり",
+      fighting: "かくとう",
+      poison: "どく",
+      ground: "じめん",
+      flying: "ひこう",
+      psychic: "エスパー",
+      bug: "むし",
+      rock: "いわ",
+      ghost: "ゴースト",
+      dragon: "ドラゴン",
+      dark: "あく",
+      steel: "はがね",
+      fairy: "フェアリー"
+    };
+
+    // 候補となるタイプ：効果がないnormalは除外
+    const candidates = Object.keys(effectiveness).filter(type => effectiveness[type].length > 0);
+
+    // 組み合わせを生成する再帰関数
+    function combinations(array, k) {
+      const result = [];
+      function helper(start, combo) {
+        if (combo.length === k) {
+          result.push(combo);
+          return;
+        }
+        for (let i = start; i < array.length; i++) {
+          helper(i + 1, combo.concat(array[i]));
+        }
+      }
+      helper(0, []);
+      return result;
+    }
+
+    // 与えられた組み合わせ（配列）で、unionが全タイプをカバーしているか判定
+    function coversAll(combo) {
+      const union = new Set();
+      combo.forEach(type => {
+        effectiveness[type].forEach(t => union.add(t));
+      });
+      // 全ての対象タイプ（allTypes）について、unionに含まれているかチェック
+      return allTypes.every(t => union.has(t));
+    }
+
+    function calculateCombinations() {
+      const teamSize = parseInt(document.getElementById('teamSize').value, 10);
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '<p class="notice">計算中・・・しばらくお待ちください。</p>';
+      
+      // 少し時間をおいて重い計算が終わるまでUIを更新
+      setTimeout(() => {
+        let validCombos = [];
+        // 候補の中からチームサイズ分の組み合わせを生成
+        const allCombos = combinations(candidates, teamSize);
+        allCombos.forEach(combo => {
+          if (coversAll(combo)) {
+            validCombos.push(combo);
+          }
+        });
+        
+        let html = '';
+        html += `<p class="notice">有効な組み合わせは <strong>${validCombos.length}</strong> 件見つかりました。</p>`;
+        
+        if (validCombos.length === 0) {
+          html += '<p class="notice">該当する組み合わせは見つかりませんでした。</p>';
+        } else {
+          // 件数が多い場合は上位50件のみ表示
+          const displayLimit = 50;
+          if (validCombos.length > displayLimit) {
+            html += `<p class="notice">※上位 ${displayLimit} 件を表示しています。</p>`;
+          }
+          validCombos.slice(0, displayLimit).forEach((combo, index) => {
+            const names = combo.map(t => typeNames[t]).join('、');
+            html += `<div class="combination">${index + 1}. ${names}</div>`;
+          });
+        }
+        resultDiv.innerHTML = html;
+      }, 10);
+    }
+  </script>
+</body>
+</html>
