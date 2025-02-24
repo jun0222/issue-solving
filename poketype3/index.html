@@ -2,46 +2,77 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ポケモンタイプカバレッジチェッカー</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      margin: 20px;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-family: 'Helvetica Neue', sans-serif;
+      color: #333;
     }
     .container {
       max-width: 600px;
-      margin: auto;
+      margin: 20px auto;
       background: #fff;
+      border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
     h1 {
       text-align: center;
+      color: #444;
+    }
+    p {
+      text-align: center;
     }
     select, button {
-      padding: 10px;
-      margin: 10px 0;
       width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
       font-size: 16px;
+    }
+    button {
+      background-color: #667eea;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #5a67d8;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
     }
-    table, th, td {
-      border: 1px solid #ddd;
-    }
     th, td {
       padding: 10px;
+      border: 1px solid #ddd;
       text-align: center;
+    }
+    th {
+      background-color: #f7f7f7;
     }
     .covered {
       background-color: #c8e6c9;
     }
     .not-covered {
       background-color: #ffcdd2;
+    }
+    .result-section {
+      margin-top: 20px;
+    }
+    .recommendation {
+      margin-top: 10px;
+      padding: 10px;
+      background: #e3f2fd;
+      border-radius: 5px;
+      text-align: center;
     }
   </style>
 </head>
@@ -50,7 +81,7 @@
     <h1>ポケモンタイプカバレッジチェッカー</h1>
     <p>自分のポケモンが持つ技タイプ（最大4つ）を選択してください。</p>
     
-    <!-- 各ドロップダウン -->
+    <!-- 各ドロップダウン（選択肢はvalueは英語、表示は日本語） -->
     <select id="move1">
       <option value="">選択してください</option>
       <option value="normal">ノーマル</option>
@@ -141,7 +172,7 @@
     
     <button onclick="checkCoverage()">カバー状態を確認</button>
     
-    <div id="result"></div>
+    <div id="result" class="result-section"></div>
   </div>
   
   <script>
@@ -167,11 +198,73 @@
       fairy: ['fighting', 'dragon', 'dark']
     };
 
-    // 対象となる全相手タイプ
+    // 対象となる全相手タイプ（英語キー）
     const allTypes = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'];
+    
+    // 日本語のタイプ名マッピング
+    const typeNames = {
+      normal: "ノーマル",
+      fire: "ほのお",
+      water: "みず",
+      electric: "でんき",
+      grass: "くさ",
+      ice: "こおり",
+      fighting: "かくとう",
+      poison: "どく",
+      ground: "じめん",
+      flying: "ひこう",
+      psychic: "エスパー",
+      bug: "むし",
+      rock: "いわ",
+      ghost: "ゴースト",
+      dragon: "ドラゴン",
+      dark: "あく",
+      steel: "はがね",
+      fairy: "フェアリー"
+    };
+
+    // ヘルパー：配列の組み合わせを生成する関数
+    function combinations(array, k) {
+      const result = [];
+      function helper(start, combo) {
+        if (combo.length === k) {
+          result.push(combo);
+          return;
+        }
+        for (let i = start; i < array.length; i++) {
+          helper(i + 1, combo.concat(array[i]));
+        }
+      }
+      helper(0, []);
+      return result;
+    }
+
+    // 最小追加カバー（未カバータイプをすべて補える追加技の最小組み合わせ）を探す関数
+    function findMinCover(missingSet, candidates) {
+      const missingCount = missingSet.size;
+      for (let k = 1; k <= candidates.length; k++) {
+        const combis = combinations(candidates, k);
+        for (let combo of combis) {
+          let unionSet = new Set();
+          combo.forEach(move => {
+            if (effectiveness[move]) {
+              effectiveness[move].forEach(t => {
+                if (missingSet.has(t)) {
+                  unionSet.add(t);
+                }
+              });
+            }
+          });
+          if (unionSet.size === missingCount) {
+            return combo;
+          }
+        }
+      }
+      return null;
+    }
 
     function checkCoverage() {
-      // ドロップダウンから選択された技タイプを取得（重複は除く）
+      // 選択された技タイプを取得（重複は除く）
       const moves = [];
       for (let i = 1; i <= 4; i++) {
         const move = document.getElementById('move' + i).value;
@@ -180,26 +273,44 @@
         }
       }
       
-      // 選択した各技タイプがカバーする相手タイプを集計
+      // 選択された各技タイプがカバーする相手タイプを集計
       const coveredTypes = new Set();
       moves.forEach(move => {
         if (effectiveness[move]) {
-          effectiveness[move].forEach(type => {
-            coveredTypes.add(type);
+          effectiveness[move].forEach(t => {
+            coveredTypes.add(t);
           });
         }
       });
       
-      // 結果テーブルを生成
-      let html = '<table><tr><th>相手タイプ</th><th>カバー状態</th></tr>';
+      // 結果テーブル生成（タイプ名は日本語表示）
+      let html = '<table>';
+      html += '<tr><th>相手タイプ</th><th>カバー状態</th></tr>';
       allTypes.forEach(type => {
         if (coveredTypes.has(type)) {
-          html += `<tr class="covered"><td>${type}</td><td>カバー済み</td></tr>`;
+          html += `<tr class="covered"><td>${typeNames[type]}</td><td>カバー済み</td></tr>`;
         } else {
-          html += `<tr class="not-covered"><td>${type}</td><td>未カバー</td></tr>`;
+          html += `<tr class="not-covered"><td>${typeNames[type]}</td><td>未カバー</td></tr>`;
         }
       });
       html += '</table>';
+      
+      // 不足している相手タイプ（未カバータイプ）の抽出
+      const missingTypes = new Set(allTypes.filter(type => !coveredTypes.has(type)));
+      
+      if (missingTypes.size === 0) {
+        html += '<div class="recommendation">すべてのタイプをカバーしています！</div>';
+      } else {
+        // 既に選択されていない候補技（追加可能な技）
+        const candidates = allTypes.filter(type => !moves.includes(type));
+        const additional = findMinCover(missingTypes, candidates);
+        if (additional) {
+          const additionalNames = additional.map(type => typeNames[type]).join('、');
+          html += `<div class="recommendation">不足しているタイプをカバーするために、あと <strong>${additional.length}</strong> タイプの技が必要です。<br>おすすめの追加技：${additionalNames}</div>`;
+        } else {
+          html += `<div class="recommendation">不足しているタイプをカバーするための追加技が見つかりませんでした。</div>`;
+        }
+      }
       
       document.getElementById('result').innerHTML = html;
     }
