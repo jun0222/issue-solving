@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ポケモンチーム タイプカバレッジ コンビネーション</title>
+  <title>ポケモンチーム タイプカバレッジ（最大カバー）</title>
   <style>
     body {
       margin: 0;
@@ -66,8 +66,10 @@
 </head>
 <body>
   <div class="container">
-    <h1>ポケモンチームタイプカバレッジ</h1>
-    <p>チームのポケモン数を選び、全18タイプへ効果抜群となる<br>有効なタイプ組み合わせを算出します。（各ポケモンは自分のタイプに対応した技を持つと仮定）</p>
+    <h1>ポケモンチーム タイプカバレッジ</h1>
+    <p>各ポケモンが1つの技（効果抜群となるタイプ）を持つと仮定して、  
+    チーム全体でどれだけ相手の弱点（全18タイプ）をカバーできるかを算出します。  
+    ※完全カバーが不可能な場合は、最大でカバーできるタイプ数と不足タイプを表示します。</p>
     
     <label for="teamSize">チームのポケモン数を選択：</label>
     <select id="teamSize">
@@ -76,13 +78,13 @@
       <option value="6">6匹</option>
     </select>
     
-    <button onclick="calculateCombinations()">組み合わせを計算</button>
+    <button onclick="calculateBestCombinations()">組み合わせを計算</button>
     
     <div id="result" class="result-section"></div>
   </div>
   
   <script>
-    // 各タイプが効果抜群となる相手タイプ（※前回と同じ定義）
+    // 各技タイプが効果抜群となる相手タイプ
     const effectiveness = {
       normal: [],
       fire: ['grass', 'ice', 'bug', 'steel'],
@@ -104,7 +106,7 @@
       fairy: ['fighting', 'dragon', 'dark']
     };
 
-    // 相手（対象）となる全18タイプ（※日本語表示用のマッピングも）
+    // 対象となる全18タイプ（日本語表示用マッピング付き）
     const allTypes = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'];
     const typeNames = {
       normal: "ノーマル",
@@ -127,10 +129,10 @@
       fairy: "フェアリー"
     };
 
-    // 候補となるタイプ：効果がないnormalは除外
+    // 効果が設定されている候補（normalは除外）
     const candidates = Object.keys(effectiveness).filter(type => effectiveness[type].length > 0);
 
-    // 組み合わせを生成する再帰関数
+    // 再帰で組み合わせを生成する関数
     function combinations(array, k) {
       const result = [];
       function helper(start, combo) {
@@ -146,45 +148,58 @@
       return result;
     }
 
-    // 与えられた組み合わせ（配列）で、unionが全タイプをカバーしているか判定
-    function coversAll(combo) {
+    // 与えられた組み合わせでカバーしている相手タイプの集合を返す
+    function getCoverage(combo) {
       const union = new Set();
-      combo.forEach(type => {
-        effectiveness[type].forEach(t => union.add(t));
+      combo.forEach(move => {
+        effectiveness[move].forEach(t => union.add(t));
       });
-      // 全ての対象タイプ（allTypes）について、unionに含まれているかチェック
-      return allTypes.every(t => union.has(t));
+      return union;
     }
 
-    function calculateCombinations() {
+    // 組み合わせを計算して、最大カバー数の組み合わせ（複数ある場合は上位50件）を表示する関数
+    function calculateBestCombinations() {
       const teamSize = parseInt(document.getElementById('teamSize').value, 10);
       const resultDiv = document.getElementById('result');
       resultDiv.innerHTML = '<p class="notice">計算中・・・しばらくお待ちください。</p>';
       
-      // 少し時間をおいて重い計算が終わるまでUIを更新
       setTimeout(() => {
-        let validCombos = [];
-        // 候補の中からチームサイズ分の組み合わせを生成
+        let bestCoverage = 0;
+        let bestCombos = [];
         const allCombos = combinations(candidates, teamSize);
         allCombos.forEach(combo => {
-          if (coversAll(combo)) {
-            validCombos.push(combo);
+          const union = getCoverage(combo);
+          const coverageCount = union.size;
+          if (coverageCount > bestCoverage) {
+            bestCoverage = coverageCount;
+            bestCombos = [{ combo, union }];
+          } else if (coverageCount === bestCoverage) {
+            bestCombos.push({ combo, union });
           }
         });
         
         let html = '';
-        html += `<p class="notice">有効な組み合わせは <strong>${validCombos.length}</strong> 件見つかりました。</p>`;
+        html += `<p class="notice">最大で <strong>${bestCoverage}</strong> タイプをカバーできます。（全18タイプ中）</p>`;
+        // どのタイプが漏れているか（代表例として1組みの場合の不足タイプを表示）
+        if (bestCombos.length > 0) {
+          const sampleUnion = bestCombos[0].union;
+          const missing = allTypes.filter(t => !sampleUnion.has(t)).map(t => typeNames[t]);
+          if (missing.length > 0) {
+            html += `<p class="notice">不足しているタイプ：${missing.join('、')}</p>`;
+          } else {
+            html += `<p class="notice">すべてのタイプをカバーしています！</p>`;
+          }
+        }
         
-        if (validCombos.length === 0) {
+        if (bestCombos.length === 0) {
           html += '<p class="notice">該当する組み合わせは見つかりませんでした。</p>';
         } else {
-          // 件数が多い場合は上位50件のみ表示
           const displayLimit = 50;
-          if (validCombos.length > displayLimit) {
+          if (bestCombos.length > displayLimit) {
             html += `<p class="notice">※上位 ${displayLimit} 件を表示しています。</p>`;
           }
-          validCombos.slice(0, displayLimit).forEach((combo, index) => {
-            const names = combo.map(t => typeNames[t]).join('、');
+          bestCombos.slice(0, displayLimit).forEach((item, index) => {
+            const names = item.combo.map(t => typeNames[t]).join('、');
             html += `<div class="combination">${index + 1}. ${names}</div>`;
           });
         }
