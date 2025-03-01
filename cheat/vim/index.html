@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/pure-frontend-kit@latest/dist/pure-frontend-kit.min.js"></script>
+    <title>Vim チートシート</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>vim チートシート</h1>
+
+    <div id="vimCheatSheetContainer"></div>
+
+    <script>
+      const vimCheatSheetData = [
+        {
+          description: "↑",
+          content: "k",
+        },
+        {
+            description: "↓",
+            content: "j",
+        },
+        {
+            description: "←",
+            content: "h",
+        }, 
+        {  
+            description: "→",
+            content: "l",
+        },
+        {
+            description: "ノーマルモード",
+            content: "Esc",
+        },
+        {
+            description: "挿入モード",
+            content: "i",
+        },
+        {
+            description: "次の文字から挿入",
+            content: "a",
+        }
+      ];
+
+      PureFrontendKit.createClickableTable(
+        "vimCheatSheetContainer",
+        vimCheatSheetData
+      );
+    </script>
+  </body>
+</html>
