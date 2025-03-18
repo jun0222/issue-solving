@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rich editor</title>
+    <style>
+        :root {
+            --bg-color: #282c34;
+            --text-color: #abb2bf;
+            --accent-color: #61afef;
+            --highlight-color: #e5c07b;
+            --success-color: #98c379;
+            --danger-color: #e06c75;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background-color: #21252b;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--highlight-color);
+        }
+        
+        .toolbar {
+            background-color: #2c313a;
+            padding: 5px 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .btn {
+            background-color: #3e4451;
+            border: none;
+            color: var(--text-color);
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background-color: #4b5363;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #4d9fe0;
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #3e4451;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            border-radius: 4px;
+        }
+        
+        .dropdown-content a {
+            color: var(--text-color);
+            padding: 8px 12px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #4b5363;
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .editor-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 200px;
+            background-color: #21252b;
+            overflow-y: auto;
+            border-right: 1px solid #181a1f;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .files-header {
+            padding: 10px;
+            font-weight: 600;
+            border-bottom: 1px solid #181a1f;
+        }
+        
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .file-item {
+            padding: 8px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #181a1f;
+            transition: background-color 0.2s;
+        }
+        
+        .file-item:hover {
+            background-color: #2c313a;
+        }
+        
+        .file-item.active {
+            background-color: #3e4451;
+            color: var(--highlight-color);
+        }
+        
+        .editor-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .editor {
+            flex: 1;
+            padding: 10px 15px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            background-color: #282c34;
+            color: var(--text-color);
+            border: none;
+            resize: none;
+            outline: none;
+            tab-size: 4;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .status-bar {
+            background-color: #21252b;
+            padding: 5px 15px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .status-item {
+            margin-right: 15px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #282c34;
+            padding: 20px;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 500px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--highlight-color);
+        }
+        
+        .close-modal {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--danger-color);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .text-input {
+            width: 100%;
+            padding: 8px;
+            background-color: #3e4451;
+            border: 1px solid #181a1f;
+            border-radius: 4px;
+            color: var(--text-color);
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: var(--success-color);
+            color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+            z-index: 200;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 折りたたみ可能なサイドバー */
+        .toggle-sidebar {
+            background-color: #21252b;
+            border: none;
+            color: var(--text-color);
+            padding: 5px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar.collapsed {
+            width: 40px;
+        }
+        
+        .sidebar.collapsed .files-header, 
+        .sidebar.collapsed .file-item {
+            text-align: center;
+            padding: 8px 5px;
+        }
+        
+        .sidebar.collapsed .file-name {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">rich editor</div>
+        <div class="actions">
+            <button id="theme-toggle" class="btn">ダークモード切替</button>
+        </div>
+    </div>
+    
+    <div class="toolbar">
+        <button id="new-file" class="btn">新規</button>
+        <button id="open-file" class="btn">開く</button>
+        <button id="save-file" class="btn btn-primary">保存</button>
+        <div class="dropdown">
+            <button class="btn">編集</button>
+            <div class="dropdown-content">
+                <a id="cut-text">切り取り</a>
+                <a id="copy-text">コピー</a>
+                <a id="paste-text">貼り付け</a>
+                <a id="select-all">すべて選択</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="btn">検索</button>
+            <div class="dropdown-content">
+                <a id="find-text">検索</a>
+                <a id="replace-text">置換</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="btn">表示</button>
+            <div class="dropdown-content">
+                <a id="toggle-line-numbers">行番号表示</a>
+                <a id="toggle-word-wrap">ワードラップ</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="editor-container">
+        <div class="sidebar">
+            <div class="files-header">ファイル一覧</div>
+            <div class="file-list" id="file-list">
+                <div class="file-item active">
+                    <span class="file-name">無題.txt</span>
+                </div>
+            </div>
+            <button class="toggle-sidebar" id="toggle-sidebar">≪</button>
+        </div>
+        
+        <div class="editor-wrapper">
+            <textarea id="editor" class="editor" spellcheck="false" placeholder="ここに入力してください..."></textarea>
+            
+            <div class="status-bar">
+                <div class="status-left">
+                    <span class="status-item" id="cursor-position">行: 1, 列: 1</span>
+                    <span class="status-item" id="characters-count">文字数: 0</span>
+                </div>
+                <div class="status-right">
+                    <span class="status-item" id="current-file">無題.txt</span>
+                    <span class="status-item" id="file-type">プレーンテキスト</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 名前を付けて保存モーダル -->
+    <div class="modal" id="save-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">名前を付けて保存</div>
+                <span class="close-modal" id="close-save-modal">&times;</span>
+            </div>
+            <div class="input-group">
+                <label class="input-label" for="file-name">ファイル名:</label>
+                <input type="text" id="file-name" class="text-input" value="無題.txt">
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancel-save">キャンセル</button>
+                <button class="btn btn-primary" id="confirm-save">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 検索モーダル -->
+    <div class="modal" id="find-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">テキスト検索</div>
+                <span class="close-modal" id="close-find-modal">&times;</span>
+            </div>
+            <div class="input-group">
+                <label class="input-label" for="search-text">検索テキスト:</label>
+                <input type="text" id="search-text" class="text-input">
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancel-find">キャンセル</button>
+                <button class="btn btn-primary" id="confirm-find">検索</button>
+                <button class="btn" id="find-next">次を検索</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 置換モーダル -->
+    <div class="modal" id="replace-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">テキスト置換</div>
+                <span class="close-modal" id="close-replace-modal">&times;</span>
+            </div>
+            <div class="input-group">
+                <label class="input-label" for="search-text-replace">検索テキスト:</label>
+                <input type="text" id="search-text-replace" class="text-input">
+            </div>
+            <div class="input-group">
+                <label class="input-label" for="replace-text-input">置換テキスト:</label>
+                <input type="text" id="replace-text-input" class="text-input">
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancel-replace">キャンセル</button>
+                <button class="btn" id="replace-one">置換</button>
+                <button class="btn btn-primary" id="replace-all">すべて置換</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM要素
+            const editor = document.getElementById('editor');
+            const cursorPosition = document.getElementById('cursor-position');
+            const charactersCount = document.getElementById('characters-count');
+            const currentFile = document.getElementById('current-file');
+            const fileList = document.getElementById('file-list');
+            const themeToggle = document.getElementById('theme-toggle');
+            const saveModal = document.getElementById('save-modal');
+            const findModal = document.getElementById('find-modal');
+            const replaceModal = document.getElementById('replace-modal');
+            const fileNameInput = document.getElementById('file-name');
+            const notification = document.getElementById('notification');
+            const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+            const sidebar = document.querySelector('.sidebar');
+            
+            // 現在の状態
+            let files = [{
+                name: '無題.txt',
+                content: '',
+                active: true
+            }];
+            let lastSearchText = '';
+            let lastSearchPosition = 0;
+            let wordWrap = true;
+            let showLineNumbers = false;
+            
+            // エディタの初期設定
+            updateCharCount();
+            
+            // テーマ切り替え
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('light-theme');
+                if (document.body.classList.contains('light-theme')) {
+                    document.documentElement.style.setProperty('--bg-color', '#f5f5f5');
+                    document.documentElement.style.setProperty('--text-color', '#333');
+                    themeToggle.textContent = 'ダークモード';
+                } else {
+                    document.documentElement.style.setProperty('--bg-color', '#282c34');
+                    document.documentElement.style.setProperty('--text-color', '#abb2bf');
+                    themeToggle.textContent = 'ライトモード';
+                }
+            });
+            
+            // カーソル位置の追跡
+            editor.addEventListener('click', updateCursorPosition);
+            editor.addEventListener('keyup', function(e) {
+                updateCursorPosition();
+                updateCharCount();
+                
+                // 自動保存
+                const activeFile = getActiveFile();
+                if (activeFile) {
+                    activeFile.content = editor.value;
+                }
+            });
+            
+            // 新規ファイル
+            document.getElementById('new-file').addEventListener('click', function() {
+                createNewFile();
+            });
+            
+            // ファイルを開く（ブラウザでは制限があるため、シミュレーション）
+            document.getElementById('open-file').addEventListener('click', function() {
+                // デモ用に仮のファイルを追加
+                createNewFile('サンプルファイル.txt', 'これはサンプルファイルの内容です。\n自由に編集できます。');
+                showNotification('ファイルを開きました');
+            });
+            
+            // 保存ボタン
+            document.getElementById('save-file').addEventListener('click', function() {
+                showSaveModal();
+            });
+            
+            // 保存モーダルの制御
+            document.getElementById('close-save-modal').addEventListener('click', function() {
+                saveModal.style.display = 'none';
+            });
+            
+            document.getElementById('cancel-save').addEventListener('click', function() {
+                saveModal.style.display = 'none';
+            });
+            
+            document.getElementById('confirm-save').addEventListener('click', function() {
+                const activeFile = getActiveFile();
+                if (activeFile) {
+                    const newName = fileNameInput.value || '無題.txt';
+                    activeFile.name = newName;
+                    currentFile.textContent = newName;
+                    updateFileList();
+                    
+                    // 実際のブラウザ環境では、ここでファイルのダウンロード処理を行う
+                    const blob = new Blob([editor.value], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = newName;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    showNotification('ファイルを保存しました');
+                }
+                saveModal.style.display = 'none';
+            });
+            
+            // 編集メニュー
+            document.getElementById('cut-text').addEventListener('click', function() {
+                document.execCommand('cut');
+            });
+            
+            document.getElementById('copy-text').addEventListener('click', function() {
+                document.execCommand('copy');
+            });
+            
+            document.getElementById('paste-text').addEventListener('click', function() {
+                document.execCommand('paste');
+            });
+            
+            document.getElementById('select-all').addEventListener('click', function() {
+                editor.select();
+            });
+            
+            // 検索機能
+            document.getElementById('find-text').addEventListener('click', function() {
+                showFindModal();
+            });
+            
+            document.getElementById('close-find-modal').addEventListener('click', function() {
+                findModal.style.display = 'none';
+            });
+            
+            document.getElementById('cancel-find').addEventListener('click', function() {
+                findModal.style.display = 'none';
+            });
+            
+            document.getElementById('confirm-find').addEventListener('click', function() {
+                const searchText = document.getElementById('search-text').value;
+                if (searchText) {
+                    lastSearchText = searchText;
+                    lastSearchPosition = 0;
+                    findNext();
+                }
+            });
+            
+            document.getElementById('find-next').addEventListener('click', function() {
+                findNext();
+            });
+            
+            // 置換機能
+            document.getElementById('replace-text').addEventListener('click', function() {
+                showReplaceModal();
+            });
+            
+            document.getElementById('close-replace-modal').addEventListener('click', function() {
+                replaceModal.style.display = 'none';
+            });
+            
+            document.getElementById('cancel-replace').addEventListener('click', function() {
+                replaceModal.style.display = 'none';
+            });
+            
+            document.getElementById('replace-one').addEventListener('click', function() {
+                const searchText = document.getElementById('search-text-replace').value;
+                const replaceText = document.getElementById('replace-text-input').value;
+                
+                if (searchText) {
+                    const start = editor.selectionStart;
+                    const end = editor.selectionEnd;
+                    const selectedText = editor.value.substring(start, end);
+                    
+                    if (selectedText === searchText) {
+                        editor.setRangeText(replaceText, start, end, 'end');
+                        updateActiveFileContent();
+                        showNotification('テキストを置換しました');
+                    } else {
+                        // 選択範囲が検索テキストと一致しない場合、検索して置換
+                        lastSearchText = searchText;
+                        lastSearchPosition = 0;
+                        if (findNext()) {
+                            const newStart = editor.selectionStart;
+                            const newEnd = editor.selectionEnd;
+                            editor.setRangeText(replaceText, newStart, newEnd, 'end');
+                            updateActiveFileContent();
+                            showNotification('テキストを置換しました');
+                        }
+                    }
+                }
+            });
+            
+            document.getElementById('replace-all').addEventListener('click', function() {
+                const searchText = document.getElementById('search-text-replace').value;
+                const replaceText = document.getElementById('replace-text-input').value;
+                
+                if (searchText) {
+                    const content = editor.value;
+                    const newContent = content.split(searchText).join(replaceText);
+                    editor.value = newContent;
+                    updateActiveFileContent();
+                    updateCharCount();
+                    
+                    const count = (content.match(new RegExp(searchText, 'g')) || []).length;
+                    showNotification(`${count}箇所のテキストを置換しました`);
+                }
+            });
+            
+            // 表示オプション
+            document.getElementById('toggle-word-wrap').addEventListener('click', function() {
+                wordWrap = !wordWrap;
+                editor.style.whiteSpace = wordWrap ? 'pre-wrap' : 'pre';
+                showNotification(wordWrap ? 'ワードラップを有効にしました' : 'ワードラップを無効にしました');
+            });
+            
+            document.getElementById('toggle-line-numbers').addEventListener('click', function() {
+                // 実際の実装ではもっと複雑になりますが、ここではシンプルな通知だけ
+                showLineNumbers = !showLineNumbers;
+                showNotification(showLineNumbers ? '行番号表示を有効にしました' : '行番号表示を無効にしました');
+                // 行番号表示の実際の実装はここに追加
+            });
+            
+            // サイドバー折りたたみ
+            toggleSidebarBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                toggleSidebarBtn.textContent = sidebar.classList.contains('collapsed') ? '≫' : '≪';
+            });
+            
+            // ユーティリティ関数
+            function updateCursorPosition() {
+                const text = editor.value.substring(0, editor.selectionStart);
+                const lines = text.split('\n');
+                const lineNumber = lines.length;
+                const columnNumber = lines[lines.length - 1].length + 1;
+                cursorPosition.textContent = `行: ${lineNumber}, 列: ${columnNumber}`;
+            }
+            
+            function updateCharCount() {
+                const count = editor.value.length;
+                charactersCount.textContent = `文字数: ${count}`;
+            }
+            
+            function getActiveFile() {
+                return files.find(file => file.active);
+            }
+            
+            function updateActiveFileContent() {
+                const activeFile = getActiveFile();
+                if (activeFile) {
+                    activeFile.content = editor.value;
+                }
+            }
+            
+            function createNewFile(name = '無題.txt', content = '') {
+                // 現在のファイルのアクティブ状態を解除
+                files.forEach(file => file.active = false);
+                
+                // 新しいファイルを追加
+                const newFile = {
+                    name: name,
+                    content: content,
+                    active: true
+                };
+                
+                files.push(newFile);
+                editor.value = content;
+                currentFile.textContent = name;
+                updateFileList();
+                updateCharCount();
+                updateCursorPosition();
+                showNotification('新規ファイルを作成しました');
+            }
+            
+            function updateFileList() {
+                fileList.innerHTML = '';
+                
+                files.forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = `file-item${file.active ? ' active' : ''}`;
+                    
+                    const fileName = document.createElement('span');
+                    fileName.className = 'file-name';
+                    fileName.textContent = file.name;
+                    
+                    fileItem.appendChild(fileName);
+                    fileList.appendChild(fileItem);
+                    
+                    fileItem.addEventListener('click', function() {
+                        // ファイル切り替え
+                        files.forEach(f => f.active = false);
+                        file.active = true;
+                        editor.value = file.content;
+                        currentFile.textContent = file.name;
+                        updateFileList();
+                        updateCharCount();
+                        updateCursorPosition();
+                    });
+                });
+            }
+            
+            function showSaveModal() {
+                const activeFile = getActiveFile();
+                if (activeFile) {
+                    fileNameInput.value = activeFile.name;
+                }
+                saveModal.style.display = 'flex';
+            }
+            
+            function showFindModal() {
+                document.getElementById('search-text').value = lastSearchText;
+                findModal.style.display = 'flex';
+            }
+            
+            function showReplaceModal() {
+                document.getElementById('search-text-replace').value = lastSearchText;
+                replaceModal.style.display = 'flex';
+            }
+            
+            function findNext() {
+                if (!lastSearchText) {
+                    return false;
+                }
+                
+                const content = editor.value;
+                const position = content.indexOf(lastSearchText, lastSearchPosition);
+                
+                if (position !== -1) {
+                    editor.focus();
+                    editor.setSelectionRange(position, position + lastSearchText.length);
+                    lastSearchPosition = position + 1;
+                    return true;
+                } else {
+                    // 最初から再検索
+                    lastSearchPosition = 0;
+                    const newPosition = content.indexOf(lastSearchText, 0);
+                    if (newPosition !== -1) {
+                        editor.focus();
+                        editor.setSelectionRange(newPosition, newPosition + lastSearchText.length);
+                        lastSearchPosition = newPosition + 1;
+                        showNotification('検索の最初に戻りました');
+                        return true;
+                    } else {
+                        showNotification('見つかりませんでした');
+                        return false;
+                    }
+                }
+            }
+            
+            function showNotification(message) {
+                notification.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
