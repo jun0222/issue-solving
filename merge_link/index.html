@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>リンク生成アプリ</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div id="root" class="min-h-screen flex items-center justify-center p-4"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function LinkGenerator() {
+      const [baseUrl, setBaseUrl] = useState('');
+      const [suffix, setSuffix] = useState('');
+
+      useEffect(() => {
+        const savedBase = localStorage.getItem('baseUrl');
+        const savedSuffix = localStorage.getItem('suffix');
+        if (savedBase) setBaseUrl(savedBase);
+        if (savedSuffix) setSuffix(savedSuffix);
+      }, []);
+
+      useEffect(() => {
+        localStorage.setItem('baseUrl', baseUrl);
+        localStorage.setItem('suffix', suffix);
+      }, [baseUrl, suffix]);
+
+      const fullUrl = baseUrl && suffix ? `${baseUrl}${suffix}` : '';
+
+      return (
+        <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md">
+          <h1 className="text-2xl font-bold mb-4 text-center">リンク生成アプリ</h1>
+
+          <label className="block mb-2 text-sm font-medium text-gray-700">ベースURL</label>
+          <input
+            type="text"
+            value={baseUrl}
+            onChange={(e) => setBaseUrl(e.target.value)}
+            placeholder="https://example.com/page/"
+            className="w-full p-2 border border-gray-300 rounded-xl mb-4"
+          />
+
+          <label className="block mb-2 text-sm font-medium text-gray-700">追加文字列</label>
+          <input
+            type="text"
+            value={suffix}
+            onChange={(e) => setSuffix(e.target.value)}
+            placeholder="123"
+            className="w-full p-2 border border-gray-300 rounded-xl mb-4"
+          />
+
+          <div className="text-center mt-4">
+            {fullUrl && (
+              <a
+                href={fullUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline break-all"
+              >
+                {fullUrl}
+              </a>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<LinkGenerator />);
+  </script>
+</body>
+</html>
