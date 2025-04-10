@@ -42,4 +42,6 @@ git add .
 git commit -m "feat: tool update"
 git push origin HEAD
 
+echo "\033[32m==========================\033[0m"
 echo "\033[32mcommit and push completed.\033[0m"
+echo "\033[32m==========================\033[0m"
