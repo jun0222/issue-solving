@@ -192,6 +192,9 @@
             time: 0,
             gameRunning: true,
             isPaused: false,
+            touchActive: false,
+            touchTargetX: 0,
+            touchTargetY: 0,
             weapons: [
                 {
                     name: "Basic Shot",
@@ -285,9 +288,9 @@
             return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
         }
         
-        // Show joystick on mobile devices
+        // Show joystick on mobile devices (now disabled - using touch only)
         if (isMobileDevice()) {
-            joystickContainer.style.display = "block";
+            // joystickContainer.style.display = "block"; // 操作版を非表示に
         }
         
         // Touch events for joystick
@@ -324,40 +327,32 @@
         gameContainer.addEventListener("touchstart", (e) => {
             if (state.isPaused || !state.gameRunning) return;
             
-            // Ignore touches on joystick
-            for (let i = 0; i < e.touches.length; i++) {
-                const touch = e.touches[i];
-                const joystickRect = joystickContainer.getBoundingClientRect();
-                if (
-                    touch.clientX >= joystickRect.left &&
-                    touch.clientX <= joystickRect.right &&
-                    touch.clientY >= joystickRect.top &&
-                    touch.clientY <= joystickRect.bottom
-                ) {
-                    return;
-                }
-            }
-            
+            // 改善：タップした位置に向かって移動する
             const touch = e.touches[0];
-            moveToTouch(touch.clientX, touch.clientY);
+            const touchX = touch.clientX;
+            const touchY = touch.clientY;
+            
+            // プレイヤーの位置と目標位置の差分を計算
+            state.touchTargetX = touchX;
+            state.touchTargetY = touchY;
+            state.touchActive = true;
         });
         
         gameContainer.addEventListener("touchmove", (e) => {
             if (state.isPaused || !state.gameRunning) return;
             
-            // Only process if not on joystick
-            for (let i = 0; i < e.touches.length; i++) {
-                const touch = e.touches[i];
-                const joystickRect = joystickContainer.getBoundingClientRect();
-                if (
-                    touch.clientX < joystickRect.left ||
-                    touch.clientX > joystickRect.right ||
-                    touch.clientY < joystickRect.top ||
-                    touch.clientY > joystickRect.bottom
-                ) {
-                    moveToTouch(touch.clientX, touch.clientY);
-                    break;
-                }
+            const touch = e.touches[0];
+            state.touchTargetX = touch.clientX;
+            state.touchTargetY = touch.clientY;
+        });
+        
+        gameContainer.addEventListener("touchend", (e) => {
+            if (e.touches.length === 0) {
+                state.touchActive = false;
+                state.input.up = false;
+                state.input.down = false;
+                state.input.left = false;
+                state.input.right = false;
             }
         });
         
