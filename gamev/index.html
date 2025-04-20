@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vampire Survivors-like Game</title>
+    <title>ゲームv</title>
     <style>
         body {
             margin: 0;
@@ -177,21 +177,21 @@
     <div id="game-container">
         <div id="player"></div>
         <div id="ui">
-            <div>Time: <span id="time">0</span></div>
-            <div>Level: <span id="level">1</span></div>
-            <div>EXP: <span id="exp">0</span>/<span id="max-exp">100</span></div>
-            <div>Score: <span id="score">0</span></div>
+            <div>時間: <span id="time">0</span></div>
+            <div>レベル: <span id="level">1</span></div>
+            <div>経験値: <span id="exp">0</span>/<span id="max-exp">100</span></div>
+            <div>スコア: <span id="score">0</span></div>
             <div>HP: <span id="hp">100</span>/100</div>
         </div>
         <div id="level-up">
-            <h2>Level Up!</h2>
+            <h2>レベルアップ！</h2>
             <div id="upgrade-options"></div>
         </div>
         <div id="game-over">
-            <h2>Game Over</h2>
-            <div>You survived for <span id="final-time">0</span> seconds</div>
-            <div>Final score: <span id="final-score">0</span></div>
-            <button id="restart-button">Play Again</button>
+            <h2>ゲームオーバー</h2>
+            <div><span id="final-time">0</span>秒 生き残りました</div>
+            <div>最終スコア: <span id="final-score">0</span></div>
+            <button id="restart-button">もう一度プレイ</button>
         </div>
         <div id="joystick-container">
             <div id="joystick"></div>
@@ -250,7 +250,7 @@
             touchTargetY: 0,
             weapons: [
                 {
-                    name: "Basic Shot",
+                    name: "基本ショット",
                     damage: 20,
                     speed: 5,
                     cooldown: 500,
@@ -262,36 +262,36 @@
             ],
             upgrades: [
                 {
-                    name: "Increased Damage",
-                    description: "Increase damage by 10",
+                    name: "ダメージアップ",
+                    description: "ダメージを10増加",
                     apply: () => {
                         state.weapons[0].damage += 10;
                     }
                 },
                 {
-                    name: "Attack Speed",
-                    description: "Reduce cooldown by 15%",
+                    name: "攻撃速度アップ",
+                    description: "クールダウンを15%短縮",
                     apply: () => {
                         state.weapons[0].cooldown *= 0.85;
                     }
                 },
                 {
-                    name: "Multi Shot",
-                    description: "Add an additional projectile",
+                    name: "マルチショット",
+                    description: "発射弾数を1つ追加",
                     apply: () => {
                         state.weapons[0].projectiles += 1;
                     }
                 },
                 {
-                    name: "Player Speed",
-                    description: "Increase movement speed by 20%",
+                    name: "移動速度アップ",
+                    description: "移動速度を20%増加",
                     apply: () => {
                         state.player.speed *= 1.2;
                     }
                 },
                 {
-                    name: "Max Health",
-                    description: "Increase max health by 20",
+                    name: "最大HP増加",
+                    description: "最大HPを20増加",
                     apply: () => {
                         state.player.hp += 20;
                         document.getElementById("hp").textContent = state.player.hp;
