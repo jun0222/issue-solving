@@ -226,11 +226,11 @@
             player: {
                 x: window.innerWidth / 2,
                 y: window.innerHeight / 2,
-                speed: 3,
-                hp: 100,
+                speed: 3.5, // 3から3.5に速度を上げる
+                hp: 120, // 100から120にHPを増加
                 level: 1,
                 exp: 0,
-                maxExp: 100,
+                maxExp: 80, // 100から80に初期レベルアップに必要な経験値を下げる
                 score: 0
             },
             input: {
@@ -251,9 +251,9 @@
             weapons: [
                 {
                     name: "基本ショット",
-                    damage: 20,
+                    damage: 25, // 20から25に増加
                     speed: 5,
-                    cooldown: 500,
+                    cooldown: 450, // 500から450に減少
                     lastFired: 0,
                     level: 1,
                     projectiles: 1,
@@ -315,6 +315,10 @@
         const finalTimeEl = document.getElementById("final-time");
         const finalScoreEl = document.getElementById("final-score");
         const restartButton = document.getElementById("restart-button");
+        
+        // 初期UI更新
+        maxExpEl.textContent = state.player.maxExp;
+        hpEl.textContent = state.player.hp;
 
         // Event listeners
         window.addEventListener("keydown", (e) => {
@@ -546,7 +550,7 @@
             playerEl.style.top = state.player.y + "px";
 
             // Spawn enemies
-            if (Math.random() < 0.03) {
+            if (Math.random() < 0.01) {  // 0.03から0.01に変更して敵の出現率を下げる
                 spawnEnemy();
             }
 
@@ -695,8 +699,8 @@
             const enemy = {
                 x: x,
                 y: y,
-                hp: 30 + Math.floor(state.time / 10) * 5, // Enemy HP increases over time
-                speed: 1 + Math.random() * 0.5,
+                hp: 15 + Math.floor(state.time / 15) * 3, // 敵のHPを下げる (30から15に)
+                speed: 0.8 + Math.random() * 0.4, // 敵の速度を少し遅く
                 element: enemyEl
             };
             
@@ -737,7 +741,7 @@
             const orb = {
                 x: x,
                 y: y,
-                value: 10,
+                value: 20, // 経験値を10から20に増加
                 element: orbEl
             };
             
@@ -751,7 +755,7 @@
             state.isPaused = true;
             state.player.level++;
             state.player.exp -= state.player.maxExp;
-            state.player.maxExp = Math.floor(state.player.maxExp * 1.2);
+            state.player.maxExp = Math.floor(state.player.maxExp * 1.1); // 1.2から1.1に下げて次のレベルに必要な経験値を減らす
             
             levelEl.textContent = state.player.level;
             expEl.textContent = state.player.exp;
@@ -797,20 +801,20 @@
             // Reset game state
             state.player.x = window.innerWidth / 2;
             state.player.y = window.innerHeight / 2;
-            state.player.hp = 100;
+            state.player.hp = 120; // 100から120に更新
             state.player.level = 1;
             state.player.exp = 0;
-            state.player.maxExp = 100;
+            state.player.maxExp = 80; // 100から80に更新
             state.player.score = 0;
-            state.player.speed = 3;
+            state.player.speed = 3.5; // 3から3.5に更新
             
             state.enemies = [];
             state.projectiles = [];
             state.expOrbs = [];
             state.time = 0;
             
-            state.weapons[0].damage = 20;
-            state.weapons[0].cooldown = 500;
+            state.weapons[0].damage = 25; // 20から25に増加
+            state.weapons[0].cooldown = 450; // 500から450に減少
             state.weapons[0].projectiles = 1;
             
             // Update UI
@@ -823,6 +827,9 @@
             
             // Hide game over screen
             gameOverEl.style.display = "none";
+            
+            // Show instructions again
+            document.getElementById("instructions").style.display = "block";
             
             // Start game
             state.gameRunning = true;
