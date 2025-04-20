@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vampire Survivors-like Game</title>
     <style>
         body {
@@ -11,6 +11,7 @@
             background-color: #111;
             font-family: Arial, sans-serif;
             color: white;
+            touch-action: none;
         }
         #game-container {
             position: relative;
@@ -102,6 +103,39 @@
         button:hover {
             background-color: #6bf;
         }
+        #joystick-container {
+            position: absolute;
+            bottom: 100px;
+            left: 100px;
+            width: 120px;
+            height: 120px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            z-index: 150;
+            touch-action: none;
+            display: none;
+        }
+        #joystick {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            touch-action: none;
+        }
+        #instructions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+        }
     </style>
 </head>
 <body>
@@ -123,6 +157,13 @@
             <div>You survived for <span id="final-time">0</span> seconds</div>
             <div>Final score: <span id="final-score">0</span></div>
             <button id="restart-button">Play Again</button>
+        </div>
+        <div id="joystick-container">
+            <div id="joystick"></div>
+        </div>
+        <div id="instructions">
+            <p>パソコン: WASDキーまたは矢印キーで移動</p>
+            <p>スマホ: 画面をタップして移動</p>
         </div>
     </div>
 
@@ -229,6 +270,152 @@
         });
 
         restartButton.addEventListener("click", restartGame);
+        
+        // Mobile touch controls
+        const joystickContainer = document.getElementById("joystick-container");
+        const joystick = document.getElementById("joystick");
+        let joystickActive = false;
+        let joystickStartX = 0;
+        let joystickStartY = 0;
+        let joystickCurrentX = 0;
+        let joystickCurrentY = 0;
+        
+        // Check if device is mobile
+        function isMobileDevice() {
+            return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+        }
+        
+        // Show joystick on mobile devices
+        if (isMobileDevice()) {
+            joystickContainer.style.display = "block";
+        }
+        
+        // Touch events for joystick
+        joystickContainer.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            joystickActive = true;
+            
+            const rect = joystickContainer.getBoundingClientRect();
+            joystickStartX = rect.left + rect.width / 2;
+            joystickStartY = rect.top + rect.height / 2;
+            
+            updateJoystickPosition(touch.clientX, touch.clientY);
+        });
+        
+        joystickContainer.addEventListener("touchmove", (e) => {
+            e.preventDefault();
+            if (joystickActive) {
+                const touch = e.touches[0];
+                updateJoystickPosition(touch.clientX, touch.clientY);
+            }
+        });
+        
+        window.addEventListener("touchend", (e) => {
+            joystickActive = false;
+            resetJoystick();
+            state.input.up = false;
+            state.input.down = false;
+            state.input.left = false;
+            state.input.right = false;
+        });
+        
+        // Touch for anywhere on screen to move player (alternative control)
+        gameContainer.addEventListener("touchstart", (e) => {
+            if (state.isPaused || !state.gameRunning) return;
+            
+            // Ignore touches on joystick
+            for (let i = 0; i < e.touches.length; i++) {
+                const touch = e.touches[i];
+                const joystickRect = joystickContainer.getBoundingClientRect();
+                if (
+                    touch.clientX >= joystickRect.left &&
+                    touch.clientX <= joystickRect.right &&
+                    touch.clientY >= joystickRect.top &&
+                    touch.clientY <= joystickRect.bottom
+                ) {
+                    return;
+                }
+            }
+            
+            const touch = e.touches[0];
+            moveToTouch(touch.clientX, touch.clientY);
+        });
+        
+        gameContainer.addEventListener("touchmove", (e) => {
+            if (state.isPaused || !state.gameRunning) return;
+            
+            // Only process if not on joystick
+            for (let i = 0; i < e.touches.length; i++) {
+                const touch = e.touches[i];
+                const joystickRect = joystickContainer.getBoundingClientRect();
+                if (
+                    touch.clientX < joystickRect.left ||
+                    touch.clientX > joystickRect.right ||
+                    touch.clientY < joystickRect.top ||
+                    touch.clientY > joystickRect.bottom
+                ) {
+                    moveToTouch(touch.clientX, touch.clientY);
+                    break;
+                }
+            }
+        });
+        
+        function moveToTouch(x, y) {
+            const dx = x - state.player.x;
+            const dy = y - state.player.y;
+            
+            if (Math.abs(dx) > 10) {
+                state.input.left = dx < 0;
+                state.input.right = dx > 0;
+            } else {
+                state.input.left = false;
+                state.input.right = false;
+            }
+            
+            if (Math.abs(dy) > 10) {
+                state.input.up = dy < 0;
+                state.input.down = dy > 0;
+            } else {
+                state.input.up = false;
+                state.input.down = false;
+            }
+        }
+        
+        function updateJoystickPosition(x, y) {
+            const dx = x - joystickStartX;
+            const dy = y - joystickStartY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const maxDistance = 35;
+            
+            let limitedX, limitedY;
+            
+            if (distance > maxDistance) {
+                const ratio = maxDistance / distance;
+                limitedX = dx * ratio;
+                limitedY = dy * ratio;
+            } else {
+                limitedX = dx;
+                limitedY = dy;
+            }
+            
+            joystickCurrentX = joystickStartX + limitedX;
+            joystickCurrentY = joystickStartY + limitedY;
+            
+            joystick.style.left = (limitedX + 60) + "px";
+            joystick.style.top = (limitedY + 60) + "px";
+            
+            // Update movement direction
+            state.input.left = dx < -10;
+            state.input.right = dx > 10;
+            state.input.up = dy < -10;
+            state.input.down = dy > 10;
+        }
+        
+        function resetJoystick() {
+            joystick.style.left = "50%";
+            joystick.style.top = "50%";
+        }
 
         // Handle key inputs
         function handleKeyDown(key) {
@@ -277,6 +464,11 @@
         function update() {
             if (!state.gameRunning) return;
             if (state.isPaused) return;
+
+            // Hide instructions after a few seconds
+            if (state.time > 3) {
+                document.getElementById("instructions").style.display = "none";
+            }
 
             // Move player
             if (state.input.up) state.player.y -= state.player.speed;
