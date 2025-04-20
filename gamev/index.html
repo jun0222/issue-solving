@@ -12,6 +12,12 @@
             font-family: Arial, sans-serif;
             color: white;
             touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         #game-container {
             position: relative;
@@ -136,6 +142,35 @@
             font-size: 12px;
             z-index: 100;
         }
+        @media (max-width: 768px) {
+            #ui {
+                font-size: 14px;
+            }
+            .enemy {
+                width: 25px;
+                height: 25px;
+            }
+            .projectile {
+                width: 12px;
+                height: 12px;
+            }
+            #level-up {
+                width: 80%;
+                max-width: 300px;
+            }
+            #game-over {
+                width: 80%;
+                max-width: 300px;
+            }
+            .upgrade-option {
+                padding: 15px;
+                margin: 15px 0;
+            }
+            button {
+                padding: 15px 25px;
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -162,12 +197,30 @@
             <div id="joystick"></div>
         </div>
         <div id="instructions">
-            <p>パソコン: WASDキーまたは矢印キーで移動</p>
-            <p>スマホ: 画面をタップして移動</p>
+            <p>パソコン: WASDキー/矢印キーで移動</p>
+            <p>スマホ: 画面をタップで移動</p>
         </div>
     </div>
 
     <script>
+        // テキスト選択を防止
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        // iOS Safariでのダブルタップズームを防止
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+        
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
         // Game state
         const state = {
             player: {
@@ -466,10 +519,23 @@
             }
 
             // Move player
-            if (state.input.up) state.player.y -= state.player.speed;
-            if (state.input.down) state.player.y += state.player.speed;
-            if (state.input.left) state.player.x -= state.player.speed;
-            if (state.input.right) state.player.x += state.player.speed;
+            if (state.touchActive) {
+                // スマホでのタッチ操作の場合
+                const dx = state.touchTargetX - state.player.x;
+                const dy = state.touchTargetY - state.player.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist > 5) {  // 一定距離以上なら移動
+                    state.player.x += (dx / dist) * state.player.speed;
+                    state.player.y += (dy / dist) * state.player.speed;
+                }
+            } else {
+                // キーボードでの操作の場合
+                if (state.input.up) state.player.y -= state.player.speed;
+                if (state.input.down) state.player.y += state.player.speed;
+                if (state.input.left) state.player.x -= state.player.speed;
+                if (state.input.right) state.player.x += state.player.speed;
+            }
 
             // Keep player in bounds
             state.player.x = Math.max(0, Math.min(window.innerWidth, state.player.x));
