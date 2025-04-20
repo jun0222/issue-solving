@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vampire Survivors-like Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #111;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        #player {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #5af;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .enemy {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #f55;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .projectile {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff0;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .exp-orb {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #5f5;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+        }
+        #level-up {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 200;
+            display: none;
+            width: 300px;
+        }
+        .upgrade-option {
+            background-color: #333;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .upgrade-option:hover {
+            background-color: #444;
+        }
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 300;
+            display: none;
+            width: 300px;
+            text-align: center;
+        }
+        button {
+            background-color: #5af;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #6bf;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="player"></div>
+        <div id="ui">
+            <div>Time: <span id="time">0</span></div>
+            <div>Level: <span id="level">1</span></div>
+            <div>EXP: <span id="exp">0</span>/<span id="max-exp">100</span></div>
+            <div>Score: <span id="score">0</span></div>
+            <div>HP: <span id="hp">100</span>/100</div>
+        </div>
+        <div id="level-up">
+            <h2>Level Up!</h2>
+            <div id="upgrade-options"></div>
+        </div>
+        <div id="game-over">
+            <h2>Game Over</h2>
+            <div>You survived for <span id="final-time">0</span> seconds</div>
+            <div>Final score: <span id="final-score">0</span></div>
+            <button id="restart-button">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const state = {
+            player: {
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2,
+                speed: 3,
+                hp: 100,
+                level: 1,
+                exp: 0,
+                maxExp: 100,
+                score: 0
+            },
+            input: {
+                up: false,
+                down: false,
+                left: false,
+                right: false
+            },
+            enemies: [],
+            projectiles: [],
+            expOrbs: [],
+            time: 0,
+            gameRunning: true,
+            isPaused: false,
+            weapons: [
+                {
+                    name: "Basic Shot",
+                    damage: 20,
+                    speed: 5,
+                    cooldown: 500,
+                    lastFired: 0,
+                    level: 1,
+                    projectiles: 1,
+                    angle: 0
+                }
+            ],
+            upgrades: [
+                {
+                    name: "Increased Damage",
+                    description: "Increase damage by 10",
+                    apply: () => {
+                        state.weapons[0].damage += 10;
+                    }
+                },
+                {
+                    name: "Attack Speed",
+                    description: "Reduce cooldown by 15%",
+                    apply: () => {
+                        state.weapons[0].cooldown *= 0.85;
+                    }
+                },
+                {
+                    name: "Multi Shot",
+                    description: "Add an additional projectile",
+                    apply: () => {
+                        state.weapons[0].projectiles += 1;
+                    }
+                },
+                {
+                    name: "Player Speed",
+                    description: "Increase movement speed by 20%",
+                    apply: () => {
+                        state.player.speed *= 1.2;
+                    }
+                },
+                {
+                    name: "Max Health",
+                    description: "Increase max health by 20",
+                    apply: () => {
+                        state.player.hp += 20;
+                        document.getElementById("hp").textContent = state.player.hp;
+                    }
+                }
+            ]
+        };
+
+        // DOM elements
+        const playerEl = document.getElementById("player");
+        const gameContainer = document.getElementById("game-container");
+        const timeEl = document.getElementById("time");
+        const levelEl = document.getElementById("level");
+        const expEl = document.getElementById("exp");
+        const maxExpEl = document.getElementById("max-exp");
+        const scoreEl = document.getElementById("score");
+        const hpEl = document.getElementById("hp");
+        const levelUpEl = document.getElementById("level-up");
+        const upgradeOptionsEl = document.getElementById("upgrade-options");
+        const gameOverEl = document.getElementById("game-over");
+        const finalTimeEl = document.getElementById("final-time");
+        const finalScoreEl = document.getElementById("final-score");
+        const restartButton = document.getElementById("restart-button");
+
+        // Event listeners
+        window.addEventListener("keydown", (e) => {
+            handleKeyDown(e.key);
+        });
+
+        window.addEventListener("keyup", (e) => {
+            handleKeyUp(e.key);
+        });
+
+        restartButton.addEventListener("click", restartGame);
+
+        // Handle key inputs
+        function handleKeyDown(key) {
+            switch (key.toLowerCase()) {
+                case "w":
+                case "arrowup":
+                    state.input.up = true;
+                    break;
+                case "s":
+                case "arrowdown":
+                    state.input.down = true;
+                    break;
+                case "a":
+                case "arrowleft":
+                    state.input.left = true;
+                    break;
+                case "d":
+                case "arrowright":
+                    state.input.right = true;
+                    break;
+            }
+        }
+
+        function handleKeyUp(key) {
+            switch (key.toLowerCase()) {
+                case "w":
+                case "arrowup":
+                    state.input.up = false;
+                    break;
+                case "s":
+                case "arrowdown":
+                    state.input.down = false;
+                    break;
+                case "a":
+                case "arrowleft":
+                    state.input.left = false;
+                    break;
+                case "d":
+                case "arrowright":
+                    state.input.right = false;
+                    break;
+            }
+        }
+
+        // Game update function
+        function update() {
+            if (!state.gameRunning) return;
+            if (state.isPaused) return;
+
+            // Move player
+            if (state.input.up) state.player.y -= state.player.speed;
+            if (state.input.down) state.player.y += state.player.speed;
+            if (state.input.left) state.player.x -= state.player.speed;
+            if (state.input.right) state.player.x += state.player.speed;
+
+            // Keep player in bounds
+            state.player.x = Math.max(0, Math.min(window.innerWidth, state.player.x));
+            state.player.y = Math.max(0, Math.min(window.innerHeight, state.player.y));
+
+            // Update player element position
+            playerEl.style.left = state.player.x + "px";
+            playerEl.style.top = state.player.y + "px";
+
+            // Spawn enemies
+            if (Math.random() < 0.03) {
+                spawnEnemy();
+            }
+
+            // Move enemies toward player
+            state.enemies.forEach((enemy, index) => {
+                const dx = state.player.x - enemy.x;
+                const dy = state.player.y - enemy.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 15) {
+                    // Enemy hits player
+                    state.player.hp -= 1;
+                    hpEl.textContent = state.player.hp;
+                    
+                    if (state.player.hp <= 0) {
+                        gameOver();
+                    }
+                }
+                
+                enemy.x += (dx / dist) * enemy.speed;
+                enemy.y += (dy / dist) * enemy.speed;
+                
+                enemy.element.style.left = enemy.x + "px";
+                enemy.element.style.top = enemy.y + "px";
+            });
+
+            // Fire weapons
+            state.weapons.forEach(weapon => {
+                const now = Date.now();
+                if (now - weapon.lastFired >= weapon.cooldown) {
+                    weapon.lastFired = now;
+                    
+                    for (let i = 0; i < weapon.projectiles; i++) {
+                        const angleOffset = (i - (weapon.projectiles - 1) / 2) * (Math.PI / 8);
+                        const angle = weapon.angle + angleOffset;
+                        fireProjectile(angle, weapon);
+                    }
+                    
+                    weapon.angle += Math.PI / 16; // Rotate weapon slightly for next shot
+                }
+            });
+
+            // Move projectiles
+            state.projectiles.forEach((projectile, pIndex) => {
+                projectile.x += projectile.dx;
+                projectile.y += projectile.dy;
+                
+                projectile.element.style.left = projectile.x + "px";
+                projectile.element.style.top = projectile.y + "px";
+                
+                // Check for collisions with enemies
+                state.enemies.forEach((enemy, eIndex) => {
+                    const dx = projectile.x - enemy.x;
+                    const dy = projectile.y - enemy.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < 15) {
+                        // Projectile hits enemy
+                        enemy.hp -= projectile.damage;
+                        
+                        // Remove projectile
+                        projectile.element.remove();
+                        state.projectiles.splice(pIndex, 1);
+                        
+                        if (enemy.hp <= 0) {
+                            // Enemy killed
+                            spawnExpOrb(enemy.x, enemy.y);
+                            enemy.element.remove();
+                            state.enemies.splice(eIndex, 1);
+                            state.player.score += 10;
+                            scoreEl.textContent = state.player.score;
+                        }
+                    }
+                });
+                
+                // Remove projectiles that are off screen
+                if (
+                    projectile.x < 0 ||
+                    projectile.x > window.innerWidth ||
+                    projectile.y < 0 ||
+                    projectile.y > window.innerHeight
+                ) {
+                    projectile.element.remove();
+                    state.projectiles.splice(pIndex, 1);
+                }
+            });
+
+            // Collect exp orbs
+            state.expOrbs.forEach((orb, index) => {
+                const dx = state.player.x - orb.x;
+                const dy = state.player.y - orb.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                // Move orbs toward player when close
+                if (dist < 150) {
+                    orb.x += (dx / dist) * 3;
+                    orb.y += (dy / dist) * 3;
+                    orb.element.style.left = orb.x + "px";
+                    orb.element.style.top = orb.y + "px";
+                }
+                
+                if (dist < 20) {
+                    // Collect exp orb
+                    state.player.exp += orb.value;
+                    expEl.textContent = state.player.exp;
+                    
+                    // Check for level up
+                    if (state.player.exp >= state.player.maxExp) {
+                        levelUp();
+                    }
+                    
+                    orb.element.remove();
+                    state.expOrbs.splice(index, 1);
+                }
+            });
+        }
+
+        // Spawn an enemy at a random position outside the screen
+        function spawnEnemy() {
+            const side = Math.floor(Math.random() * 4); // 0: top, 1: right, 2: bottom, 3: left
+            let x, y;
+            
+            switch (side) {
+                case 0: // top
+                    x = Math.random() * window.innerWidth;
+                    y = -20;
+                    break;
+                case 1: // right
+                    x = window.innerWidth + 20;
+                    y = Math.random() * window.innerHeight;
+                    break;
+                case 2: // bottom
+                    x = Math.random() * window.innerWidth;
+                    y = window.innerHeight + 20;
+                    break;
+                case 3: // left
+                    x = -20;
+                    y = Math.random() * window.innerHeight;
+                    break;
+            }
+            
+            const enemyEl = document.createElement("div");
+            enemyEl.className = "enemy";
+            gameContainer.appendChild(enemyEl);
+            
+            const enemy = {
+                x: x,
+                y: y,
+                hp: 30 + Math.floor(state.time / 10) * 5, // Enemy HP increases over time
+                speed: 1 + Math.random() * 0.5,
+                element: enemyEl
+            };
+            
+            state.enemies.push(enemy);
+            enemyEl.style.left = x + "px";
+            enemyEl.style.top = y + "px";
+        }
+
+        // Fire a projectile
+        function fireProjectile(angle, weapon) {
+            const projectileEl = document.createElement("div");
+            projectileEl.className = "projectile";
+            gameContainer.appendChild(projectileEl);
+            
+            const dx = Math.cos(angle) * weapon.speed;
+            const dy = Math.sin(angle) * weapon.speed;
+            
+            const projectile = {
+                x: state.player.x,
+                y: state.player.y,
+                dx: dx,
+                dy: dy,
+                damage: weapon.damage,
+                element: projectileEl
+            };
+            
+            state.projectiles.push(projectile);
+            projectileEl.style.left = state.player.x + "px";
+            projectileEl.style.top = state.player.y + "px";
+        }
+
+        // Spawn experience orb
+        function spawnExpOrb(x, y) {
+            const orbEl = document.createElement("div");
+            orbEl.className = "exp-orb";
+            gameContainer.appendChild(orbEl);
+            
+            const orb = {
+                x: x,
+                y: y,
+                value: 10,
+                element: orbEl
+            };
+            
+            state.expOrbs.push(orb);
+            orbEl.style.left = x + "px";
+            orbEl.style.top = y + "px";
+        }
+
+        // Level up function
+        function levelUp() {
+            state.isPaused = true;
+            state.player.level++;
+            state.player.exp -= state.player.maxExp;
+            state.player.maxExp = Math.floor(state.player.maxExp * 1.2);
+            
+            levelEl.textContent = state.player.level;
+            expEl.textContent = state.player.exp;
+            maxExpEl.textContent = state.player.maxExp;
+            
+            // Show level up screen with 3 random upgrade options
+            upgradeOptionsEl.innerHTML = "";
+            
+            const upgrades = [...state.upgrades];
+            shuffleArray(upgrades);
+            
+            for (let i = 0; i < Math.min(3, upgrades.length); i++) {
+                const upgrade = upgrades[i];
+                const optionEl = document.createElement("div");
+                optionEl.className = "upgrade-option";
+                optionEl.innerHTML = `<h3>${upgrade.name}</h3><p>${upgrade.description}</p>`;
+                
+                optionEl.addEventListener("click", () => {
+                    upgrade.apply();
+                    levelUpEl.style.display = "none";
+                    state.isPaused = false;
+                });
+                
+                upgradeOptionsEl.appendChild(optionEl);
+            }
+            
+            levelUpEl.style.display = "block";
+        }
+
+        // Game over function
+        function gameOver() {
+            state.gameRunning = false;
+            finalTimeEl.textContent = state.time;
+            finalScoreEl.textContent = state.player.score;
+            gameOverEl.style.display = "block";
+        }
+
+        // Restart game function
+        function restartGame() {
+            // Clear all elements
+            document.querySelectorAll(".enemy, .projectile, .exp-orb").forEach(el => el.remove());
+            
+            // Reset game state
+            state.player.x = window.innerWidth / 2;
+            state.player.y = window.innerHeight / 2;
+            state.player.hp = 100;
+            state.player.level = 1;
+            state.player.exp = 0;
+            state.player.maxExp = 100;
+            state.player.score = 0;
+            state.player.speed = 3;
+            
+            state.enemies = [];
+            state.projectiles = [];
+            state.expOrbs = [];
+            state.time = 0;
+            
+            state.weapons[0].damage = 20;
+            state.weapons[0].cooldown = 500;
+            state.weapons[0].projectiles = 1;
+            
+            // Update UI
+            timeEl.textContent = state.time;
+            levelEl.textContent = state.player.level;
+            expEl.textContent = state.player.exp;
+            maxExpEl.textContent = state.player.maxExp;
+            scoreEl.textContent = state.player.score;
+            hpEl.textContent = state.player.hp;
+            
+            // Hide game over screen
+            gameOverEl.style.display = "none";
+            
+            // Start game
+            state.gameRunning = true;
+        }
+
+        // Helper function to shuffle array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Game loop
+        let lastTime = 0;
+        let timeCounter = 0;
+
+        function gameLoop(timestamp) {
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            // Update game state
+            update();
+            
+            // Update timer
+            if (state.gameRunning && !state.isPaused) {
+                timeCounter += deltaTime;
+                if (timeCounter >= 1000) {
+                    state.time++;
+                    timeEl.textContent = state.time;
+                    timeCounter -= 1000;
+                }
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start game
+        gameLoop(0);
+    </script>
+</body>
+</html>
