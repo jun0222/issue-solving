@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スタイル バトルゲーム</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #222;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 800px;
+            max-width: 95%;
+            margin: 20px auto;
+            background-color: #000;
+            border: 4px solid #666;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+        
+        .header {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+            border-bottom: 2px solid #666;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #fff;
+        }
+        
+        .game-screen {
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+        
+        .battle-area {
+            flex: 3;
+            background-color: #111;
+            position: relative;
+            overflow: hidden;
+            background-image: url('/api/placeholder/800/400');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .enemy-container {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        
+        .enemy-sprite {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 10px;
+            image-rendering: pixelated;
+        }
+        
+        .player-container {
+            position: absolute;
+            bottom: 10%;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .player-character {
+            width: 80px;
+            text-align: center;
+        }
+        
+        .player-sprite {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 5px;
+            image-rendering: pixelated;
+        }
+        
+        .player-name {
+            font-size: 12px;
+            color: white;
+            margin: 0;
+        }
+        
+        .player-hp {
+            font-size: 10px;
+            color: #7fff7f;
+            margin: 0;
+        }
+        
+        .player-mp {
+            font-size: 10px;
+            color: #7f7fff;
+            margin: 0;
+        }
+        
+        .message-box {
+            flex: 1;
+            background-color: #000;
+            border-top: 2px solid #666;
+            padding: 10px;
+            font-size: 18px;
+            color: #fff;
+            overflow-y: auto;
+        }
+        
+        .message-content {
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .score-display {
+            background-color: #333;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid #666;
+        }
+        
+        .score-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .score-label {
+            font-size: 14px;
+            color: #ccc;
+            margin: 0;
+        }
+        
+        .score-value {
+            font-size: 18px;
+            color: #ffcc00;
+            margin: 0;
+        }
+        
+        .start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .title {
+            font-size: 36px;
+            color: #ffcc00;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .input-container {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+        }
+        
+        .character-inputs {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .character-input {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .character-label {
+            font-size: 18px;
+            color: #fff;
+            min-width: 120px;
+        }
+        
+        input[type="text"] {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 2px solid #666;
+            background-color: #333;
+            color: #fff;
+            flex-grow: 1;
+        }
+        
+        .start-button {
+            padding: 10px 30px;
+            font-size: 20px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .start-button:hover {
+            background-color: #357abd;
+        }
+        
+        .game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .game-over-title {
+            font-size: 48px;
+            color: #ff4444;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .final-score {
+            font-size: 24px;
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+        
+        .high-score {
+            font-size: 20px;
+            color: #7fff7f;
+            margin-bottom: 30px;
+        }
+        
+        .restart-button {
+            padding: 10px 30px;
+            font-size: 20px;
+            background-color: #e24a4a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .restart-button:hover {
+            background-color: #bd3535;
+        }
+        
+        .high-scores-container {
+            margin-top: 20px;
+            width: 80%;
+            background-color: #222;
+            border: 2px solid #666;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        .high-scores-title {
+            font-size: 20px;
+            color: #ffcc00;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .high-scores-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .high-score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .high-score-item:last-child {
+            border-bottom: none;
+        }
+        
+        .high-score-rank {
+            color: #ccc;
+        }
+        
+        .high-score-team {
+            color: #fff;
+            flex-grow: 1;
+            margin: 0 10px;
+        }
+        
+        .high-score-value {
+            color: #7fff7f;
+        }
+        
+        .effects {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .damage-text {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff4444;
+            text-shadow: 1px 1px 2px #000;
+            animation: float-up 1.5s forwards;
+        }
+        
+        .heal-text {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: #7fff7f;
+            text-shadow: 1px 1px 2px #000;
+            animation: float-up 1.5s forwards;
+        }
+        
+        @keyframes float-up {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>スタイル バトルゲーム</h1>
+        </div>
+        <div class="game-screen">
+            <div class="battle-area">
+                <div class="enemy-container">
+                    <img class="enemy-sprite" src="/api/placeholder/120/120" alt="エネミー">
+                    <div class="enemy-name">スライム</div>
+                    <div class="enemy-hp">HP: 10/10</div>
+                </div>
+                <div class="player-container">
+                    <!-- キャラクターはJSで動的に追加されます -->
+                </div>
+                <div class="effects"></div>
+            </div>
+            <div class="message-box">
+                <div class="message-content"></div>
+            </div>
+        </div>
+        <div class="score-display">
+            <div class="score-item">
+                <p class="score-label">バトル</p>
+                <p class="score-value" id="battle-count">0</p>
+            </div>
+            <div class="score-item">
+                <p class="score-label">経験値</p>
+                <p class="score-value" id="exp-score">0</p>
+            </div>
+            <div class="score-item">
+                <p class="score-label">ゴールド</p>
+                <p class="score-value" id="gold-score">0</p>
+            </div>
+            <div class="score-item">
+                <p class="score-label">アイテム</p>
+                <p class="score-value" id="item-count">0</p>
+            </div>
+            <div class="score-item">
+                <p class="score-label">総スコア</p>
+                <p class="score-value" id="total-score">0</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="start-screen">
+        <div class="title">スタイル バトルゲーム</div>
+        <div class="input-container">
+            <div class="character-inputs">
+                <div class="character-input">
+                    <span class="character-label">キャラクター 1:</span>
+                    <input type="text" id="character1-name" placeholder="名前を入力">
+                </div>
+                <div class="character-input">
+                    <span class="character-label">キャラクター 2:</span>
+                    <input type="text" id="character2-name" placeholder="名前を入力">
+                </div>
+                <div class="character-input">
+                    <span class="character-label">キャラクター 3:</span>
+                    <input type="text" id="character3-name" placeholder="名前を入力">
+                </div>
+            </div>
+            <button class="start-button" id="start-game-btn">ゲームスタート</button>
+        </div>
+    </div>
+    
+    <div class="game-over-screen">
+        <div class="game-over-title">ゲームオーバー</div>
+        <div class="final-score">最終スコア: <span id="final-score">0</span></div>
+        <div class="high-score">ハイスコア: <span id="best-score">0</span></div>
+        <div class="high-scores-container">
+            <div class="high-scores-title">ハイスコアランキング</div>
+            <ul class="high-scores-list" id="high-scores-list">
+                <!-- ハイスコアはJSで動的に追加されます -->
+            </ul>
+        </div>
+        <button class="restart-button" id="restart-game-btn">もう一度プレイ</button>
+    </div>
+
+    <script>
+        // ハイスコアの保存用
+        window.gameHighScores = [];
+        
+        // キャラクタークラス
+        class Character {
+            constructor(name, type) {
+                this.name = name;
+                this.type = type;
+                this.level = 1;
+                
+                // 名前に基づいて能力値を生成
+                const nameSum = [...name].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                
+                if (type === 'player') {
+                    // プレイヤーキャラクターの能力値
+                    this.maxHp = 50 + (nameSum % 30);
+                    this.maxMp = 20 + (nameSum % 15);
+                    this.attack = 10 + (nameSum % 8);
+                    this.defense = 8 + (nameSum % 5);
+                    this.speed = 5 + (nameSum % 6);
+                    this.magic = 8 + (nameSum % 10);
+                } else {
+                    // 敵キャラクターの能力値
+                    const level = this.level;
+                    const multiplier = 1 + (level * 0.1);
+                    
+                    this.maxHp = Math.floor((20 + (nameSum % 15)) * multiplier);
+                    this.maxMp = Math.floor((5 + (nameSum % 8)) * multiplier);
+                    this.attack = Math.floor((8 + (nameSum % 5)) * multiplier);
+                    this.defense = Math.floor((5 + (nameSum % 4)) * multiplier);
+                    this.speed = Math.floor((4 + (nameSum % 5)) * multiplier);
+                    this.magic = Math.floor((3 + (nameSum % 6)) * multiplier);
+                }
+                
+                this.hp = this.maxHp;
+                this.mp = this.maxMp;
+                this.isAlive = true;
+            }
+            
+            takeDamage(amount) {
+                const actualDamage = Math.max(1, amount - Math.floor(this.defense / 2));
+                this.hp = Math.max(0, this.hp - actualDamage);
+                
+                if (this.hp <= 0) {
+                    this.isAlive = false;
+                }
+                
+                return actualDamage;
+            }
+            
+            heal(amount) {
+                const healAmount = Math.min(amount, this.maxHp - this.hp);
+                this.hp += healAmount;
+                return healAmount;
+            }
+            
+            useSkill(mpCost) {
+                if (this.mp >= mpCost) {
+                    this.mp -= mpCost;
+                    return true;
+                }
+                return false;
+            }
+            
+            castHeal(target) {
+                // 回復魔法
+                if (this.useSkill(3)) {
+                    const healPower = Math.floor(this.magic * (0.5 + Math.random() * 0.5));
+                    return target.heal(healPower);
+                }
+                return 0;
+            }
+            
+            castFireball(target) {
+                // 攻撃魔法
+                if (this.useSkill(5)) {
+                    const damageMultiplier = 1.0 + Math.random() * 0.5;
+                    const baseDamage = Math.floor(this.magic * damageMultiplier);
+                    return target.takeDamage(baseDamage);
+                }
+                return 0;
+            }
+        }
+        
+        // 敵クラス
+        class Enemy extends Character {
+            constructor(name, level) {
+                super(name, 'enemy');
+                this.level = level || 1;
+                this.expReward = Math.floor(10 * this.level * (0.8 + Math.random() * 0.4));
+                this.goldReward = Math.floor(5 * this.level * (0.8 + Math.random() * 0.4));
+                this.sprite = `/api/placeholder/120/120`;
+            }
+        }
+        
+        // 敵の種類
+        const enemyTypes = [
+            { name: 'スライム', level: 1 },
+            { name: 'ゴブリン', level: 2 },
+            { name: 'コボルト', level: 3 },
+            { name: 'ゾンビ', level: 4 },
+            { name: 'ウェアラット', level: 5 },
+            { name: 'オーク', level: 6 },
+            { name: 'ガーゴイル', level: 7 },
+            { name: 'ミノタウロス', level: 8 },
+            { name: 'バンパイア', level: 9 },
+            { name: 'ドラゴン', level: 10 }
+        ];
+        
+        // アイテムの種類
+        const itemTypes = [
+            { name: '回復薬', type: 'heal', power: 30 },
+            { name: '上級回復薬', type: 'heal', power: 60 },
+            { name: 'マジックポーション', type: 'mp', power: 20 },
+            { name: '上級マジックポーション', type: 'mp', power: 40 },
+            { name: '力の種', type: 'attack', power: 5 },
+            { name: '守りの種', type: 'defense', power: 5 },
+            { name: '素早さの種', type: 'speed', power: 3 },
+            { name: '賢さの種', type: 'magic', power: 5 }
+        ];
+        
+        // ゲーム状態
+        const gameState = {
+            players: [],
+            enemy: null,
+            battleCount: 0,
+            expScore: 0,
+            goldScore: 0,
+            itemCount: 0,
+            items: [],
+            totalScore: 0,
+            isGameOver: false,
+            messageQueue: [],
+            messageProcessing: false
+        };
+        
+        // ゲーム起動時に実行
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+            
+            // メッセージを追加
+            addMessage('ゲームを開始する準備ができました。');
+            
+            // スタートボタンのイベントリスナー
+            document.getElementById('start-game-btn').addEventListener('click', function() {
+                console.log('Start button clicked');
+                document.querySelector('.start-screen').style.display = 'none';
+                initGame();
+            });
+            
+            // リスタートボタンのイベントリスナー
+            document.getElementById('restart-game-btn').addEventListener('click', function() {
+                console.log('Restart button clicked');
+                document.querySelector('.game-over-screen').style.display = 'none';
+                resetGame();
+            });
+            
+            // ハイスコアリストの更新
+            updateHighScoresList();
+        });
+        
+        // ランダムな名前を生成
+        function generateRandomName() {
+            const prefixes = ['勇者', '戦士', '魔法使い', '僧侶', '盗賊', '狩人', '賢者', '竜騎士'];
+            const suffixes = ['アルファ', 'ベータ', 'ガンマ', 'デルタ', 'イプシロン', 'ゼータ', 'イータ', 'シータ'];
+            
+            return prefixes[Math.floor(Math.random() * prefixes.length)] + 
+                   suffixes[Math.floor(Math.random() * suffixes.length)];
+        }
+        
+        // ゲームの初期化
+        function initGame() {
+            console.log('Initializing game...');
+            
+            try {
+                // プレイヤーキャラクターの作成
+                const input1 = document.getElementById('character1-name');
+                const input2 = document.getElementById('character2-name');
+                const input3 = document.getElementById('character3-name');
+                
+                gameState.players = [
+                    new Character(input1.value.trim() || generateRandomName(), 'player'),
+                    new Character(input2.value.trim() || generateRandomName(), 'player'),
+                    new Character(input3.value.trim() || generateRandomName(), 'player')
+                ];
+                
+                console.log('Players created:', gameState.players);
+                
+                // 初期敵の生成
+                spawnEnemy();
+                
+                // UI更新
+                updatePlayerUI();
+                updateEnemyUI();
+                updateScoreUI();
+                
+                // メッセージ表示
+                addMessage('バトル開始！');
+                addMessage(`${gameState.enemy.name}が現れた！`);
+                
+                // ターン処理開始
+                setTimeout(processTurn, 1500);
+            } catch(error) {
+                console.error('Error in initGame:', error);
+                addMessage(`初期化中にエラーが発生しました: ${error.message}`);
+            }
+        }
+        
+        // 敵の生成
+        function spawnEnemy() {
+            // 難易度は進行に応じて上昇
+            const difficulty = Math.min(9, Math.floor(gameState.battleCount / 3));
+            const randomIndex = Math.min(
+                enemyTypes.length - 1, 
+                Math.floor(Math.random() * (difficulty + 2))
+            );
+            
+            const enemyType = enemyTypes[randomIndex];
+            gameState.enemy = new Enemy(
+                enemyType.name, 
+                enemyType.level + Math.floor(gameState.battleCount / 5)
+            );
+            
+            console.log('Enemy spawned:', gameState.enemy);
+        }
+        
+        // ターン処理
+        function processTurn() {
+            if (gameState.isGameOver) return;
+            
+            try {
+                console.log('Processing turn...');
+                
+                // 全キャラクターのリスト（スピード順にソート）
+                const allCharacters = [...gameState.players, gameState.enemy]
+                    .filter(char => char && char.isAlive)
+                    .sort((a, b) => b.speed - a.speed);
+                
+                // 各キャラクターのアクション処理
+                for (const character of allCharacters) {
+                    if (!character || !character.isAlive) continue;
+                    
+                    if (character.type === 'player') {
+                        performPlayerAction(character);
+                    } else {
+                        performEnemyAction(character);
+                    }
+                    
+                    // 敵が倒された場合
+                    if (gameState.enemy && !gameState.enemy.isAlive) {
+                        handleEnemyDefeat();
+                        return;
+                    }
+                    
+                    // プレイヤー全滅の場合
+                    if (gameState.players.every(player => !player || !player.isAlive)) {
+                        handleGameOver();
+                        return;
+                    }
+                }
+                
+                // ターン終了時の処理
+                setTimeout(processTurn, 2000);
+            } catch(error) {
+                console.error('Error in processTurn:', error);
+                addMessage(`ターン処理中にエラーが発生しました: ${error.message}`);
+            }
+        }
+        
+        // プレイヤーのアクション
+        function performPlayerAction(player) {
+            // 生存している敵がいない場合はスキップ
+            if (!gameState.enemy || !gameState.enemy.isAlive) return;
+            
+            // AIによるスキル選択
+            const aiDecision = Math.random();
+            let actionResult = 0;
+            let actionMessage = '';
+            
+            // 味方のHP確認、HPが低い味方がいれば回復優先
+            const lowHpAlly = gameState.players.find(p => 
+                p && p.isAlive && p.hp < p.maxHp * 0.5
+            );
+            
+            // 味方の回復が必要かつMPが十分ならヒール
+            if (lowHpAlly && player.mp >= 3 && aiDecision < 0.7) {
+                actionResult = player.castHeal(lowHpAlly);
+                actionMessage = `${player.name}は${lowHpAlly.name}を回復した！ ${actionResult}ポイント回復！`;
+                showHealText(lowHpAlly, actionResult);
+            } 
+            // MPが十分ならファイアボール
+            else if (player.mp >= 5 && aiDecision < 0.4) {
+                actionResult = player.castFireball(gameState.enemy);
+                actionMessage = `${player.name}はファイアボールを唱えた！ ${gameState.enemy.name}に${actionResult}のダメージ！`;
+                showDamageText(gameState.enemy, actionResult);
+            } 
+            // 通常攻撃
+            else {
+                // Character.prototype.attackメソッドを使用
+                const damageMultiplier = 0.8 + Math.random() * 0.4; // 0.8 ~ 1.2
+                const baseDamage = Math.floor(player.attack * damageMultiplier);
+                actionResult = gameState.enemy.takeDamage(baseDamage);
+                
+                actionMessage = `${player.name}の攻撃！ ${gameState.enemy.name}に${actionResult}のダメージ！`;
+                showDamageText(gameState.enemy, actionResult);
+            }
+            
+            addMessage(actionMessage);
+            updateEnemyUI();
+        }
+        
+        // 敵のアクション
+        function performEnemyAction(enemy) {
+            // 生存しているプレイヤーがいない場合はスキップ
+            const alivePlayers = gameState.players.filter(p => p && p.isAlive);
+            if (alivePlayers.length === 0) return;
+            
+            // ランダムなターゲット選択
+            const targetIndex = Math.floor(Math.random() * alivePlayers.length);
+            const target = alivePlayers[targetIndex];
+            
+            // AIによるスキル選択
+            const aiDecision = Math.random();
+            let actionResult = 0;
+            let actionMessage = '';
+            
+            // 敵のHPが低く、MPが十分ならセルフヒール
+            if (enemy.hp < enemy.maxHp * 0.3 && enemy.mp >= 3 && aiDecision < 0.6) {
+                actionResult = enemy.castHeal(enemy);
+                actionMessage = `${enemy.name}は回復魔法を唱えた！ ${actionResult}ポイント回復！`;
+                showHealText(enemy, actionResult);
+            } 
+            // MPが十分ならファイアボール
+            else if (enemy.mp >= 5 && aiDecision < 0.3) {
+                actionResult = enemy.castFireball(target);
+                actionMessage = `${enemy.name}はファイアボールを唱えた！ ${target.name}に${actionResult}のダメージ！`;
+                showDamageText(target, actionResult);
+            } 
+            // 通常攻撃
+            else {
+                // 直接ダメージ計算
+                const damageMultiplier = 0.8 + Math.random() * 0.4; // 0.8 ~ 1.2
+                const baseDamage = Math.floor(enemy.attack * damageMultiplier);
+                actionResult = target.takeDamage(baseDamage);
+                
+                actionMessage = `${enemy.name}の攻撃！ ${target.name}に${actionResult}のダメージ！`;
+                showDamageText(target, actionResult);
+            }
+            
+            addMessage(actionMessage);
+            updatePlayerUI();
+        }
+        
+        // 敵を倒した時の処理
+        function handleEnemyDefeat() {
+            const enemy = gameState.enemy;
+            
+            // 戦闘回数の更新
+            gameState.battleCount++;
+            
+            // 報酬の獲得
+            const expReward = enemy.expReward;
+            const goldReward = enemy.goldReward;
+            
+            // スコアに加算
+            gameState.expScore += expReward;
+            gameState.goldScore += goldReward;
+            
+            // メッセージ表示
+            addMessage(`${enemy.name}を倒した！`);
+            addMessage(`${expReward}の経験値と${goldReward}ゴールドを獲得！`);
+            
+            // アイテムドロップ判定
+            if (Math.random() < 0.3) {
+                const randomItemIndex = Math.floor(Math.random() * itemTypes.length);
+                const itemTemplate = itemTypes[randomItemIndex];
+                const item = {
+                    name: itemTemplate.name,
+                    type: itemTemplate.type,
+                    power: itemTemplate.power
+                };
+                
+                gameState.items.push(item);
+                gameState.itemCount++;
+                
+                addMessage(`${item.name}を手に入れた！`);
+                
+                // アイテムの効果を適用
+                applyItemEffect(item);
+            }
+            
+            // 総スコアの更新
+            updateTotalScore();
+            
+            // UIの更新
+            updateScoreUI();
+            updatePlayerUI();
+            
+            // 次の敵の生成
+            setTimeout(() => {
+                spawnEnemy();
+                updateEnemyUI();
+                addMessage(`${gameState.enemy.name}が現れた！`);
+                
+                // 次のターン開始
+                setTimeout(processTurn, 1500);
+            }, 2000);
+        }
+        
+        // アイテムの効果を適用
+        function applyItemEffect(item) {
+            // 消費アイテムは自動使用
+            const alivePlayers = gameState.players.filter(p => p && p.isAlive);
+            if (alivePlayers.length === 0) return;
+            
+            const targetIndex = Math.floor(Math.random() * alivePlayers.length);
+            const target = alivePlayers[targetIndex];
+            
+            if (item.type === 'heal') {
+                const healAmount = target.heal(item.power);
+                addMessage(`${target.name}のHPが${healAmount}回復した！`);
+                showHealText(target, healAmount);
+            } else if (item.type === 'mp') {
+                const mpAmount = Math.min(item.power, target.maxMp - target.mp);
+                target.mp += mpAmount;
+                addMessage(`${target.name}のMPが${mpAmount}回復した！`);
+            } else if (item.type === 'attack') {
+                target.attack += item.power;
+                addMessage(`${target.name}の攻撃力が${item.power}上がった！`);
+            } else if (item.type === 'defense') {
+                target.defense += item.power;
+                addMessage(`${target.name}の防御力が${item.power}上がった！`);
+            } else if (item.type === 'speed') {
+                target.speed += item.power;
+                addMessage(`${target.name}の素早さが${item.power}上がった！`);
+            } else if (item.type === 'magic') {
+                target.magic += item.power;
+                addMessage(`${target.name}の魔力が${item.power}上がった！`);
+            }
+        }
+        
+        // ゲームオーバー処理
+        function handleGameOver() {
+            gameState.isGameOver = true;
+            
+            addMessage('ゲームオーバー...');
+            
+            // ハイスコア更新の確認と保存
+            saveHighScore();
+            
+            // UIの更新
+            updateGameOverUI();
+            
+            // ゲームオーバー画面の表示
+            setTimeout(() => {
+                document.querySelector('.game-over-screen').style.display = 'flex';
+            }, 2000);
+        }
+        
+        // 総スコアの計算
+        function updateTotalScore() {
+            gameState.totalScore = gameState.expScore + (gameState.goldScore * 2) + (gameState.itemCount * 50);
+        }
+        
+        // プレイヤーUIの更新
+        function updatePlayerUI() {
+            // 既存のプレイヤー表示をクリア
+            const playerContainer = document.querySelector('.player-container');
+            playerContainer.innerHTML = '';
+            
+            // 各プレイヤーの表示を更新
+            gameState.players.forEach(player => {
+                if (!player) return;
+                
+                const playerElement = document.createElement('div');
+                playerElement.className = 'player-character';
+                
+                if (!player.isAlive) {
+                    playerElement.style.opacity = '0.5';
+                }
+                
+                playerElement.innerHTML = `
+                    <img class="player-sprite" src="/api/placeholder/60/60" alt="${player.name}">
+                    <p class="player-name">${player.name}</p>
+                    <p class="player-hp">HP: ${player.hp}/${player.maxHp}</p>
+                    <p class="player-mp">MP: ${player.mp}/${player.maxMp}</p>
+                `;
+                
+                playerContainer.appendChild(playerElement);
+            });
+        }
+        
+        // 敵UIの更新
+        function updateEnemyUI() {
+            if (!gameState.enemy) return;
+            
+            const enemy = gameState.enemy;
+            const enemyElement = document.querySelector('.enemy-container');
+            
+            if (!enemy.isAlive) {
+                enemyElement.style.opacity = '0.5';
+            } else {
+                enemyElement.style.opacity = '1';
+            }
+            
+            enemyElement.innerHTML = `
+                <img class="enemy-sprite" src="${enemy.sprite}" alt="${enemy.name}">
+                <div class="enemy-name">${enemy.name}</div>
+                <div class="enemy-hp">HP: ${enemy.hp}/${enemy.maxHp}</div>
+            `;
+        }
+        
+        // スコアUIの更新
+        function updateScoreUI() {
+            document.getElementById('battle-count').textContent = gameState.battleCount;
+            document.getElementById('exp-score').textContent = gameState.expScore;
+            document.getElementById('gold-score').textContent = gameState.goldScore;
+            document.getElementById('item-count').textContent = gameState.itemCount;
+            document.getElementById('total-score').textContent = gameState.totalScore;
+        }
+        
+        // ゲームオーバーUIの更新
+        function updateGameOverUI() {
+            document.getElementById('final-score').textContent = gameState.totalScore;
+            
+            // ハイスコアの表示
+            const highScores = getHighScores();
+            document.getElementById('best-score').textContent = highScores.length > 0 ? highScores[0].score : 0;
+            
+            // ハイスコアリストの更新
+            updateHighScoresList();
+        }
+        
+        // メッセージの追加
+        function addMessage(message) {
+            gameState.messageQueue.push(message);
+            processMessageQueue();
+        }
+        
+        // メッセージキューの処理
+        function processMessageQueue() {
+            if (gameState.messageProcessing || gameState.messageQueue.length === 0) return;
+            
+            gameState.messageProcessing = true;
+            const message = gameState.messageQueue.shift();
+            
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            document.querySelector('.message-content').appendChild(messageElement);
+            document.querySelector('.message-content').scrollTop = document.querySelector('.message-content').scrollHeight;
+            
+            setTimeout(() => {
+                gameState.messageProcessing = false;
+                processMessageQueue();
+            }, 1200); // メッセージの表示間隔
+        }
+        
+        // ダメージテキストの表示エフェクト
+        function showDamageText(target, amount) {
+            try {
+                let x, y;
+                const battleArea = document.querySelector('.battle-area');
+                
+                if (target.type === 'enemy') {
+                    const enemyElement = document.querySelector('.enemy-container');
+                    const rect = enemyElement.getBoundingClientRect();
+                    const containerRect = battleArea.getBoundingClientRect();
+                    
+                    x = rect.left - containerRect.left + rect.width / 2;
+                    y = rect.top - containerRect.top + rect.height / 2;
+                } else {
+                    // プレイヤーの場合
+                    const playerElements = document.querySelectorAll('.player-character');
+                    const playerIndex = gameState.players.findIndex(p => p && p.name === target.name);
+                    
+                    if (playerIndex >= 0 && playerIndex < playerElements.length) {
+                        const playerElement = playerElements[playerIndex];
+                        const rect = playerElement.getBoundingClientRect();
+                        const containerRect = battleArea.getBoundingClientRect();
+                        
+                        x = rect.left - containerRect.left + rect.width / 2;
+                        y = rect.top - containerRect.top + rect.height / 2;
+                    } else {
+                        // 位置が特定できない場合はデフォルト位置
+                        x = battleArea.clientWidth / 2;
+                        y = battleArea.clientHeight / 2;
+                    }
+                }
+                
+                const damageText = document.createElement('div');
+                damageText.className = 'damage-text';
+                damageText.textContent = amount;
+                damageText.style.left = `${x}px`;
+                damageText.style.top = `${y}px`;
+                
+                document.querySelector('.effects').appendChild(damageText);
+                
+                // アニメーション終了後に要素を削除
+                setTimeout(() => {
+                    if (damageText.parentNode) {
+                        damageText.parentNode.removeChild(damageText);
+                    }
+                }, 1500);
+            } catch (error) {
+                console.error('Error showing damage text:', error);
+            }
+        }
+        
+        // 回復テキストの表示エフェクト
+        function showHealText(target, amount) {
+            try {
+                let x, y;
+                const battleArea = document.querySelector('.battle-area');
+                
+                if (target.type === 'enemy') {
+                    const enemyElement = document.querySelector('.enemy-container');
+                    const rect = enemyElement.getBoundingClientRect();
+                    const containerRect = battleArea.getBoundingClientRect();
+                    
+                    x = rect.left - containerRect.left + rect.width / 2;
+                    y = rect.top - containerRect.top + rect.height / 2;
+                } else {
+                    // プレイヤーの場合
+                    const playerElements = document.querySelectorAll('.player-character');
+                    const playerIndex = gameState.players.findIndex(p => p && p.name === target.name);
+                    
+                    if (playerIndex >= 0 && playerIndex < playerElements.length) {
+                        const playerElement = playerElements[playerIndex];
+                        const rect = playerElement.getBoundingClientRect();
+                        const containerRect = battleArea.getBoundingClientRect();
+                        
+                        x = rect.left - containerRect.left + rect.width / 2;
+                        y = rect.top - containerRect.top + rect.height / 2;
+                    } else {
+                        // 位置が特定できない場合はデフォルト位置
+                        x = battleArea.clientWidth / 2;
+                        y = battleArea.clientHeight / 2;
+                    }
+                }
+                
+                const healText = document.createElement('div');
+                healText.className = 'heal-text';
+                healText.textContent = amount;
+                healText.style.left = `${x}px`;
+                healText.style.top = `${y}px`;
+                
+                document.querySelector('.effects').appendChild(healText);
+                
+                // アニメーション終了後に要素を削除
+                setTimeout(() => {
+                    if (healText.parentNode) {
+                        healText.parentNode.removeChild(healText);
+                    }
+                }, 1500);
+            } catch (error) {
+                console.error('Error showing heal text:', error);
+            }
+        }
+        
+        // ハイスコアの取得
+        function getHighScores() {
+            return window.gameHighScores || [];
+        }
+        
+        // ハイスコアの保存
+        function saveHighScore() {
+            const highScores = getHighScores();
+            
+            // チーム名の作成
+            const teamName = gameState.players
+                .filter(p => p)
+                .map(p => p.name)
+                .join(', ');
+            
+            // 新しいスコアエントリの作成
+            const newScore = {
+                team: teamName,
+                score: gameState.totalScore,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            // スコアリストに追加してソート
+            highScores.push(newScore);
+            highScores.sort((a, b) => b.score - a.score);
+            
+            // 上位10件だけ保存
+            const topScores = highScores.slice(0, 10);
+            
+            // グローバル変数に保存
+            window.gameHighScores = topScores;
+            
+            return topScores;
+        }
+        
+        // ハイスコアリストの更新
+        function updateHighScoresList() {
+            const highScores = getHighScores();
+            const highScoresList = document.getElementById('high-scores-list');
+            
+            if (!highScoresList) return;
+            
+            // リストをクリア
+            highScoresList.innerHTML = '';
+            
+            // 各スコアをリストに追加
+            highScores.forEach((score, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'high-score-item';
+                
+                listItem.innerHTML = `
+                    <span class="high-score-rank">${index + 1}.</span>
+                    <span class="high-score-team">${score.team}</span>
+                    <span class="high-score-value">${score.score}</span>
+                `;
+                
+                highScoresList.appendChild(listItem);
+            });
+            
+            // スコアがない場合のメッセージ
+            if (highScores.length === 0) {
+                const noScoresItem = document.createElement('li');
+                noScoresItem.className = 'high-score-item';
+                noScoresItem.textContent = 'ハイスコアはまだありません。';
+                highScoresList.appendChild(noScoresItem);
+            }
+        }
+        
+        // ゲームのリセット
+        function resetGame() {
+            // ゲーム状態のリセット
+            gameState.players = [];
+            gameState.enemy = null;
+            gameState.battleCount = 0;
+            gameState.expScore = 0;
+            gameState.goldScore = 0;
+            gameState.itemCount = 0;
+            gameState.items = [];
+            gameState.totalScore = 0;
+            gameState.isGameOver = false;
+            gameState.messageQueue = [];
+            gameState.messageProcessing = false;
+            
+            // UIのリセット
+            document.querySelector('.message-content').innerHTML = '';
+            document.querySelector('.player-container').innerHTML = '';
+            document.querySelector('.enemy-container').innerHTML = '';
+            document.querySelector('.effects').innerHTML = '';
+            updateScoreUI();
+            
+            // スタート画面の表示
+            document.querySelector('.start-screen').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
