@@ -194,7 +194,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ランダムな名前を生成
 function generateRandomName() {
-    const prefixes = ['勇者', '戦士', '魔法使い', '僧侶', '盗賊', '狩人', '賢者', '竜騎士'];
+    // const prefixes = ['勇者', '戦士', '魔法使い', '僧侶', '盗賊', '狩人', '賢者', '竜騎士'];
+    const prefixes = [''];
     const suffixes = ['アルファ', 'ベータ', 'ガンマ', 'デルタ', 'イプシロン', 'ゼータ', 'イータ', 'シータ'];
     
     return prefixes[Math.floor(Math.random() * prefixes.length)] + 
