@@ -33,6 +33,9 @@ done
 
 # ./archiveディレクトリを手動で追加して無視する
 find_ignore_opts+=" -path ./archive -prune -o"
+
+# ./gamedディレクトリを手動で追加して無視する
+find_ignore_opts+=" -path ./gamed -prune -o"
 find_ignore_opts+=" -path ./cheat -prune -o"
 
 # ディレクトリ内の全HTMLファイルを再帰的に検索
