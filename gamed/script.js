@@ -4,22 +4,22 @@ window.gameHighScores = [];
 // モンスター画像データ（12体のモンスター）
 const monsterImages = [
     // 1行目
-    { url: "https://i.imgur.com/IzSy0Ts.png", name: "ワンアイ" },
-    { url: "https://i.imgur.com/LD9M54K.png", name: "フレイム" },
-    { url: "https://i.imgur.com/Bf517bk.png", name: "アクア" },
-    { url: "https://i.imgur.com/cQLTjmb.png", name: "ゴーレム" },
-    
+    { url: "./images/monsters/アゴマン.png", name: "アゴマン" },
+    { url: "./images/monsters/ほのおマン.png", name: "ほのおマン" },
+    { url: "./images/monsters/いしだ.png", name: "いしだ" },
+    { url: "./images/monsters/いのライオン.png", name: "いのライオン" },
+
     // 2行目
-    { url: "https://i.imgur.com/6K4jkJW.png", name: "ドラゴン" },
-    { url: "https://i.imgur.com/PNO8Slm.png", name: "ゴースト" },
-    { url: "https://i.imgur.com/PxjKPXb.png", name: "ビースト" },
-    { url: "https://i.imgur.com/zQ9hzDn.png", name: "デーモン" },
+    { url: "./images/monsters/おおとかげ.png", name: "おおとかげ" },
+    { url: "./images/monsters/おばけ.png", name: "おばけ" },
+    { url: "./images/monsters/さんぱくがん.png", name: "さんぱくがん" },
+    { url: "./images/monsters/つちのこ.png", name: "つちのこ" },
     
     // 3行目
-    { url: "https://i.imgur.com/pIgTFaD.png", name: "サイクロプス" },
-    { url: "https://i.imgur.com/5SaqRei.png", name: "ヘルファイア" },
-    { url: "https://i.imgur.com/ZDuBPrK.png", name: "ファイアウィング" },
-    { url: "https://i.imgur.com/OIfK6xB.png", name: "サンドワーム" }
+    { url: "./images/monsters/たきびまん.png", name: "たきびまん" },
+    { url: "./images/monsters/ひとつめマン.png", name: "ひとつめマン" },
+    { url: "./images/monsters/モヒカン.png", name: "モヒカン" },
+    { url: "./images/monsters/ドラゴン.png", name: "ドラゴン" },
 ];
 
 // プレイヤー画像
