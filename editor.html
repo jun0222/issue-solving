@@ -95,13 +95,13 @@
     document.addEventListener("keydown", function (e) {
       if ((e.ctrlKey || e.metaKey) && e.key === "s") {
         e.preventDefault();
-        alert("テキストは自動で保存されます");
+        // alert("テキストは自動で保存されます");
       }
       // タブキーでスペース2つを挿入
-      if (e.key === "Tab") {
-        e.preventDefault();
-        insertTextAtCursor(editor, "  ");
-      }
+      // if (e.key === "Tab") {
+      //   e.preventDefault();
+      //   insertTextAtCursor(editor, "  ");
+      // }
     });
 
     // エンターキーでToDoリストの項目を自動挿入
