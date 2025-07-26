@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>太鼓の達人 練習アプリ</title>
+    <style>
+      #timeline {
+        position: relative;
+        width: 800px;
+        height: 150px;
+        border: 1px solid #ccc;
+        overflow: hidden;
+      }
+      .note {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+        color: white;
+      }
+      .don {
+        background: red;
+        top: 40px;
+      }
+      .ka {
+        background: blue;
+        top: 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>譜面エディタ</h1>
+    <button id="addDon">Don (D)</button>
+    <button id="addKa">Ka (K)</button>
+    <button id="save">Save</button>
+    <button id="load">Load</button>
+    <div id="timeline"></div>
+
+    <h1>譜面エディタ</h1>
+    <!-- 既存エディタボタンたち -->
+    <button id="start">Start (Play)</button>
+    <div id="timeline"></div>
+    <div
+      id="judge-line"
+      style="
+        position: absolute;
+        top: 0;
+        left: 100px;
+        width: 5px;
+        height: 150px;
+        background: red;
+      "
+    ></div>
+
+    <script type="module" src="./src/editor.js"></script>
+    <script type="module" src="./src/player.js"></script>
+
+    <script type="module" src="./src/editor.js"></script>
+  </body>
+</html>

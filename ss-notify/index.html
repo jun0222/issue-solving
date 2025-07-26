@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>スプレッドシートビュー</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        background: #f8f8f8;
+        margin: 0;
+        padding: 2rem;
+      }
+      .card {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+      }
+      .label {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+      .content {
+        white-space: pre-wrap;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>通知一覧</h1>
+    <div id="app">読み込み中...</div>
+
+    <script>
+      // Google Apps Scriptのdoget関数のデプロイメントIDを指定してください
+      const gasDeploymentId = "YOUR_DEPLOYMENT_ID"; // ここに実際のデプロイメントIDを入力してください
+
+      const scriptUrl =
+        "https://script.google.com/macros/s/" + gasDeploymentId + "/exec";
+
+      fetch(scriptUrl)
+        .then((res) => res.json())
+        .then((data) => {
+          const app = document.getElementById("app");
+          app.innerHTML = "";
+
+          data.forEach((item) => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const label = document.createElement("div");
+            label.className = "label";
+            label.textContent = item.label;
+
+            const content = document.createElement("div");
+            content.className = "content";
+            content.textContent = item.content;
+
+            card.appendChild(label);
+            card.appendChild(content);
+            app.appendChild(card);
+          });
+        })
+        .catch((err) => {
+          document.getElementById("app").textContent =
+            "エラーが発生しました: " + err;
+        });
+    </script>
+  </body>
+</html>
