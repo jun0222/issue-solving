@@ -3,13 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>日付自動置換付きプロンプト生成ツール</title>
+    <title>栄養管理プロンプト生成ツール</title>
     <style>
       :root {
+        --primary: #3b82f6;
+        --primary-hover: #2563eb;
+        --success: #10b981;
         --fg: #1f2328;
         --muted: #6a737d;
         --border: #e5e7eb;
         --bg: #f8fafc;
+        --card-bg: #fff;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       }
       * {
         box-sizing: border-box;
@@ -20,92 +25,209 @@
           "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
         color: var(--fg);
         background: var(--bg);
+        line-height: 1.6;
       }
       .wrap {
-        max-width: 820px;
-        margin: 40px auto;
-        padding: 0 16px;
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 0 20px;
       }
       header {
-        margin-bottom: 16px;
+        margin-bottom: 24px;
+        text-align: center;
       }
       h1 {
-        font-size: 20px;
-        margin: 0 0 4px;
+        font-size: 28px;
+        margin: 0 0 8px;
+        background: linear-gradient(135deg, var(--primary), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
       p.lead {
         margin: 0;
         color: var(--muted);
-        font-size: 14px;
+        font-size: 16px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      @media (min-width: 768px) {
+        .grid {
+          grid-template-columns: 300px 1fr;
+        }
       }
       .card {
-        background: #fff;
+        background: var(--card-bg);
         border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 16px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+      .settings-card h2 {
+        margin: 0 0 20px;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .form-group {
+        margin-bottom: 16px;
+      }
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      input[type="number"], select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        background: var(--card-bg);
+        transition: border-color 0.2s;
+      }
+      input[type="number"]:focus, select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      .macro-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .macro-item {
+        text-align: center;
+        padding: 12px 8px;
+        background: #f1f5f9;
+        border-radius: 8px;
+        font-size: 12px;
+      }
+      .macro-value {
+        display: block;
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--primary);
       }
       textarea {
         width: 100%;
-        min-height: 260px;
+        min-height: 320px;
         resize: vertical;
-        padding: 12px 14px;
-        line-height: 1.6;
-        border-radius: 10px;
+        padding: 16px;
+        line-height: 1.7;
+        border-radius: 12px;
         border: 1px solid var(--border);
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
           "Noto Sans Mono CJK JP", monospace;
-        background: #fff;
+        background: var(--card-bg);
+        font-size: 14px;
+        transition: border-color 0.2s;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       }
       .toolbar {
         display: flex;
-        gap: 8px;
-        margin-top: 12px;
+        gap: 12px;
+        margin-top: 16px;
         flex-wrap: wrap;
+        align-items: center;
       }
       button {
         appearance: none;
-        border: 1px solid var(--border);
-        background: #111827;
+        border: 1px solid var(--primary);
+        background: var(--primary);
         color: #fff;
-        padding: 10px 14px;
+        padding: 12px 20px;
         border-radius: 10px;
         cursor: pointer;
         font-weight: 600;
         font-size: 14px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      button:hover:not(:disabled) {
+        background: var(--primary-hover);
+        border-color: var(--primary-hover);
+        transform: translateY(-1px);
       }
       button.secondary {
-        background: #fff;
-        color: #111827;
+        background: transparent;
+        color: var(--primary);
+      }
+      button.secondary:hover:not(:disabled) {
+        background: rgba(59, 130, 246, 0.1);
       }
       button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+        transform: none;
       }
-      .hint {
-        margin-top: 8px;
+      .status {
+        margin-left: auto;
         font-size: 12px;
         color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
-      /* toast */
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      .hint {
+        margin-top: 12px;
+        font-size: 12px;
+        color: var(--muted);
+        padding: 12px 16px;
+        background: #f8fafc;
+        border-radius: 8px;
+        border-left: 3px solid var(--primary);
+      }
       .toast {
         position: fixed;
         left: 50%;
-        bottom: 24px;
+        bottom: 32px;
         transform: translateX(-50%) translateY(20px);
         background: #111827;
         color: #fff;
-        padding: 10px 14px;
-        border-radius: 999px;
+        padding: 12px 20px;
+        border-radius: 12px;
         opacity: 0;
         pointer-events: none;
-        transition: 0.25s ease;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         font-size: 14px;
+        font-weight: 500;
+        z-index: 1000;
       }
       .toast.show {
         opacity: 1;
         transform: translateX(-50%) translateY(0);
+      }
+      .icon {
+        width: 16px;
+        height: 16px;
+        stroke-width: 2;
+        stroke: currentColor;
+        fill: none;
       }
       @media (prefers-color-scheme: dark) {
         :root {
@@ -113,14 +235,36 @@
           --muted: #9ca3af;
           --border: #374151;
           --bg: #0b1220;
+          --card-bg: #0f172a;
         }
-        .card,
-        textarea {
-          background: #0f172a;
+        .macro-item {
+          background: #1e293b;
         }
-        button.secondary {
-          background: #0f172a;
-          color: #e5e7eb;
+        .hint {
+          background: #1e293b;
+        }
+      }
+      @media (max-width: 767px) {
+        .wrap {
+          padding: 0 16px;
+          margin: 16px auto;
+        }
+        .grid {
+          gap: 16px;
+        }
+        .card {
+          padding: 20px;
+        }
+        h1 {
+          font-size: 24px;
+        }
+        .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .status {
+          margin: 0;
+          justify-content: center;
         }
       }
     </style>
@@ -128,23 +272,77 @@
   <body>
     <div class="wrap">
       <header>
-        <h1>プロンプト生成（当日日付を自動挿入）</h1>
+        <h1>栄養管理プロンプト生成ツール</h1>
         <p class="lead">
-          「YYYY/MM/DD
-          たべたもの」から始まる定型プロンプトを、東京タイムゾーンの当日で生成します。
+          個人の目標値に合わせてカスタマイズ可能な栄養管理プロンプトを生成
         </p>
       </header>
 
-      <div class="card">
-        <textarea id="output" readonly></textarea>
-        <div class="toolbar">
-          <button id="copyBtn">コピー</button>
-          <button id="regenBtn" class="secondary" title="手動で再生成">
-            再生成
-          </button>
+      <div class="grid">
+        <div class="card settings-card">
+          <h2>
+            <svg class="icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M12 1v6m0 10v6m11-7h-6m-10 0H1m15.5-6.5L19 9.5m-13 5L7.5 16M16.5 7.5L15 9m-6 5l-1.5 1.5"></path>
+            </svg>
+            設定
+          </h2>
+          
+          <div class="form-group">
+            <label for="calories">目標カロリー (kcal)</label>
+            <input type="number" id="calories" value="1980" min="1000" max="5000" step="10">
+          </div>
+
+          <div class="form-group">
+            <label for="goal">目標</label>
+            <select id="goal">
+              <option value="maintenance">体重維持</option>
+              <option value="cut">減量</option>
+              <option value="bulk">増量</option>
+            </select>
+          </div>
+
+          <div class="macro-grid">
+            <div class="macro-item">
+              <span class="macro-value" id="protein-display">99</span>
+              タンパク質 (g)
+            </div>
+            <div class="macro-item">
+              <span class="macro-value" id="fat-display">66</span>
+              脂質 (g)
+            </div>
+            <div class="macro-item">
+              <span class="macro-value" id="carb-display">248</span>
+              炭水化物 (g)
+            </div>
+          </div>
         </div>
-        <div class="hint">
-          ※ 毎分チェックして日付が変われば自動で更新します（Asia/Tokyo）。
+
+        <div class="card">
+          <textarea id="output" readonly></textarea>
+          <div class="toolbar">
+            <button id="copyBtn">
+              <svg class="icon" viewBox="0 0 24 24">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              コピー
+            </button>
+            <button id="regenBtn" class="secondary">
+              <svg class="icon" viewBox="0 0 24 24">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+              再生成
+            </button>
+            <div class="status">
+              <div class="status-dot"></div>
+              自動更新中
+            </div>
+          </div>
+          <div class="hint">
+            <strong>💡 使用のヒント:</strong> 毎日午前0時（日本時間）に日付が自動更新されます。設定を変更すると即座にプロンプトに反映されます。
+          </div>
         </div>
       </div>
     </div>
@@ -158,67 +356,164 @@
         const $copy = document.getElementById("copyBtn");
         const $regen = document.getElementById("regenBtn");
         const $toast = document.getElementById("toast");
+        const $calories = document.getElementById("calories");
+        const $goal = document.getElementById("goal");
+        const $proteinDisplay = document.getElementById("protein-display");
+        const $fatDisplay = document.getElementById("fat-display");
+        const $carbDisplay = document.getElementById("carb-display");
+
+        // ローカルストレージから設定を読み込み
+        function loadSettings() {
+          const stored = localStorage.getItem('nutrition-settings');
+          if (stored) {
+            try {
+              const settings = JSON.parse(stored);
+              $calories.value = settings.calories || 1980;
+              $goal.value = settings.goal || 'maintenance';
+            } catch (e) {
+              console.log('設定の読み込みに失敗しました');
+            }
+          }
+        }
+
+        // 設定を保存
+        function saveSettings() {
+          const settings = {
+            calories: parseInt($calories.value),
+            goal: $goal.value
+          };
+          localStorage.setItem('nutrition-settings', JSON.stringify(settings));
+        }
 
         function nowTokyo() {
-          // 安全に東京の現在日時を生成
           return new Date(new Date().toLocaleString("en-US", { timeZone: TZ }));
         }
+
         function fmtDateYYYYMMDD(d) {
           const y = d.getFullYear();
           const m = String(d.getMonth() + 1).padStart(2, "0");
           const day = String(d.getDate()).padStart(2, "0");
           return `${y}/${m}/${day}`;
         }
+
+        function calculateMacros(totalCalories, goal) {
+          let proteinRatio, fatRatio, carbRatio;
+          
+          switch (goal) {
+            case 'cut': // 減量: 高タンパク、低炭水化物
+              proteinRatio = 0.25;
+              fatRatio = 0.35;
+              carbRatio = 0.40;
+              break;
+            case 'bulk': // 増量: バランス重視、やや高炭水化物
+              proteinRatio = 0.20;
+              fatRatio = 0.25;
+              carbRatio = 0.55;
+              break;
+            default: // 維持: バランス
+              proteinRatio = 0.20;
+              fatRatio = 0.30;
+              carbRatio = 0.50;
+          }
+
+          return {
+            protein: Math.round((totalCalories * proteinRatio) / 4),
+            fat: Math.round((totalCalories * fatRatio) / 9),
+            carb: Math.round((totalCalories * carbRatio) / 4)
+          };
+        }
+
+        function updateMacroDisplay() {
+          const calories = parseInt($calories.value) || 1980;
+          const goal = $goal.value;
+          const macros = calculateMacros(calories, goal);
+          
+          $proteinDisplay.textContent = macros.protein;
+          $fatDisplay.textContent = macros.fat;
+          $carbDisplay.textContent = macros.carb;
+        }
+
         function buildPrompt() {
           const date = fmtDateYYYYMMDD(nowTokyo());
-          return `${date} 
-        
-たべたもの
+          const calories = parseInt($calories.value) || 1980;
+          const macros = calculateMacros(calories, $goal.value);
+          
+          const goalText = {
+            'maintenance': '体重維持',
+            'cut': '減量',
+            'bulk': '増量'
+          }[$goal.value] || '体重維持';
 
-1日の基準値
-- 総摂取カロリー：1,980 kcal
-- P：99 g（396 kcal）
-- F：66 g（594 kcal）
-- C：247.5 g（990 kcal）
-今日食べたものの、基準値に対しての達成率をわかりやすくコードブロックで出して。`;
+          return `${date} 食事記録
+
+たべたもの：
+
+
+目標設定：${goalText}
+1日の基準値：
+- 総摂取カロリー：${calories.toLocaleString()} kcal
+- タンパク質：${macros.protein} g（${macros.protein * 4} kcal）
+- 脂質：${macros.fat} g（${macros.fat * 9} kcal）
+- 炭水化物：${macros.carb} g（${macros.carb * 4} kcal）
+
+上記の基準値に対して、今日食べたもののPFC達成率と総カロリーをわかりやすく表形式で分析してください。不足している栄養素があれば改善提案もお願いします。`;
         }
+
         function render() {
+          updateMacroDisplay();
           $out.value = buildPrompt();
         }
-        function showToast(msg) {
+
+        function showToast(msg, duration = 2000) {
           $toast.textContent = msg;
           $toast.classList.add("show");
           clearTimeout(showToast._t);
           showToast._t = setTimeout(
             () => $toast.classList.remove("show"),
-            1800
+            duration
           );
         }
 
-        // 初期描画
+        // 初期化
+        loadSettings();
         render();
 
-        // コピー
+        // イベントリスナー
+        $calories.addEventListener('input', () => {
+          render();
+          saveSettings();
+        });
+
+        $goal.addEventListener('change', () => {
+          render();
+          saveSettings();
+        });
+
         $copy.addEventListener("click", async () => {
           try {
             await navigator.clipboard.writeText($out.value);
-            showToast("コピーしました");
+            showToast("📋 コピーしました！");
           } catch {
-            // フォールバック
             $out.select();
             document.execCommand("copy");
-            showToast("コピーしました");
+            showToast("📋 コピーしました！");
           }
         });
 
-        // 手動再生成
-        $regen.addEventListener("click", render);
+        $regen.addEventListener("click", () => {
+          render();
+          showToast("🔄 プロンプトを再生成しました");
+        });
 
-        // 1分ごとに日付変化を検知して自動更新（0:00跨ぎ対応）
+        // 日付変化の監視（1分ごと）
+        let lastDate = fmtDateYYYYMMDD(nowTokyo());
         setInterval(() => {
-          const generated = $out.value;
-          const fresh = buildPrompt();
-          if (generated !== fresh) $out.value = fresh;
+          const currentDate = fmtDateYYYYMMDD(nowTokyo());
+          if (currentDate !== lastDate) {
+            lastDate = currentDate;
+            render();
+            showToast("📅 日付が更新されました", 3000);
+          }
         }, 60 * 1000);
       })();
     </script>
