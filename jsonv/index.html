@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フードデリバリー・テイクアウト テストデータ生成ツール</title>
+    <style>
+        body {
+            font-family: 'Hiragino Sans', 'ヒラギノ角ゴシック', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .view-toggle {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .toggle-btn {
+            background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(142, 68, 173, 0.3);
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(142, 68, 173, 0.4);
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .data-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .data-section h2 {
+            color: #e74c3c;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+
+        .data-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .data-item:hover {
+            border-color: #e74c3c;
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.2);
+        }
+
+        .data-item h3 {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .copy-icon {
+            color: #95a5a6;
+            font-size: 0.9em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .data-item:hover .copy-icon {
+            opacity: 1;
+        }
+
+        .data-preview {
+            color: #6c757d;
+            font-size: 0.9em;
+            font-family: 'Courier New', monospace;
+            line-height: 1.4;
+        }
+
+        .data-key {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .data-value {
+            color: #2c3e50;
+        }
+
+        .random-section {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .random-section h2 {
+            color: white;
+            border-bottom: 2px solid white;
+        }
+
+        .random-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .random-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .random-btn:hover {
+            background: white;
+            color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .json-view {
+            display: none;
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 2px solid #34495e;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .json-view:hover {
+            border-color: #e74c3c;
+            background: #34495e;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.3);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        .badge {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(135deg, #7f8c8d 0%, #566667 100%);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🍕 フードデリバリー・テイクアウト テストデータ生成ツール</h1>
+
+    <div class="view-toggle">
+        <button class="toggle-btn active" onclick="switchView('card')" id="cardViewBtn">カード表示</button>
+        <button class="toggle-btn" onclick="switchView('json')" id="jsonViewBtn">JSON表示</button>
+    </div>
+
+    <div id="cardView" class="data-grid">
+        <!-- レストラン情報 -->
+        <div class="data-section">
+            <h2><span class="icon">🏪</span>レストラン情報 <span class="badge">5</span></h2>
+            <div id="restaurants"></div>
+        </div>
+
+        <!-- メニュー項目 -->
+        <div class="data-section">
+            <h2><span class="icon">📋</span>メニュー項目 <span class="badge">5</span></h2>
+            <div id="menus"></div>
+        </div>
+
+        <!-- 注文情報 -->
+        <div class="data-section">
+            <h2><span class="icon">🛒</span>注文情報 <span class="badge">5</span></h2>
+            <div id="orders"></div>
+        </div>
+
+        <!-- ユーザー情報 -->
+        <div class="data-section">
+            <h2><span class="icon">👤</span>ユーザー情報 <span class="badge">5</span></h2>
+            <div id="users"></div>
+        </div>
+
+        <!-- 配送情報 -->
+        <div class="data-section">
+            <h2><span class="icon">🚚</span>配送情報 <span class="badge">5</span></h2>
+            <div id="deliveries"></div>
+        </div>
+
+        <!-- 支払い情報 -->
+        <div class="data-section">
+            <h2><span class="icon">💳</span>支払い情報 <span class="badge">5</span></h2>
+            <div id="payments"></div>
+        </div>
+
+        <!-- ランダム生成 -->
+        <div class="data-section random-section">
+            <h2><span class="icon">🎲</span>ランダム生成</h2>
+            <div class="random-controls">
+                <button class="random-btn" onclick="generateAndDisplay('restaurant')">ランダムレストラン</button>
+                <button class="random-btn" onclick="generateAndDisplay('menu')">ランダムメニュー</button>
+                <button class="random-btn" onclick="generateAndDisplay('order')">ランダム注文</button>
+                <button class="random-btn" onclick="generateAndDisplay('user')">ランダムユーザー</button>
+                <button class="random-btn" onclick="generateAndDisplay('delivery')">ランダム配送</button>
+                <button class="random-btn" onclick="generateAndDisplay('payment')">ランダム支払い</button>
+                <button class="random-btn" onclick="generateAndDisplay('complete')">完全セット</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="jsonView" class="json-view" onclick="copyJsonView()">
+        ここをクリックしてJSONをコピー
+    </div>
+
+    <button class="clear-btn" onclick="clearJsonView()">JSONビューをクリア</button>
+</div>
+
+<div class="toast" id="toast">📋 クリップボードにコピーしました！</div>
+
+<script>
+    // データ定義（前回と同じデータ）
+    const restaurants = [
+        {
+            id: "rest_001",
+            name: "和風亭 さくら",
+            type: "和食",
+            address: "東京都渋谷区道玄坂1-2-3",
+            phone: "03-1234-5678",
+            rating: 4.5,
+            delivery_fee: 300,
+            min_order: 1500
+        },
+        {
+            id: "rest_002",
+            name: "Bella Vista Italian",
+            type: "イタリアン",
+            address: "大阪府大阪市中央区心斎橋2-1-5",
+            phone: "06-9876-5432",
+            rating: 4.8,
+            delivery_fee: 400,
+            min_order: 2000
+        },
+        {
+            id: "rest_003",
+            name: "龍王中華楼",
+            type: "中華料理",
+            address: "神奈川県横浜市中区中華街123-45",
+            phone: "045-111-2222",
+            rating: 4.3,
+            delivery_fee: 350,
+            min_order: 1800
+        },
+        {
+            id: "rest_004",
+            name: "Quick Burger Express",
+            type: "ファストフード",
+            address: "愛知県名古屋市中区栄3-4-5",
+            phone: "052-333-4444",
+            rating: 3.9,
+            delivery_fee: 200,
+            min_order: 800
+        },
+        {
+            id: "rest_005",
+            name: "Café Lumière",
+            type: "カフェ",
+            address: "福岡県福岡市中央区天神2-3-4",
+            phone: "092-555-6666",
+            rating: 4.6,
+            delivery_fee: 250,
+            min_order: 1000
+        }
+    ];
+
+    const menus = [
+        [
+            { id: "menu_001", name: "特選親子丼定食", category: "定食", price: 1280, description: "国産鶏肉と新鮮卵を使用", allergens: ["卵", "小麦"] },
+            { id: "menu_002", name: "天ぷら定食", category: "定食", price: 1580, description: "エビ、野菜の天ぷら盛り合わせ", allergens: ["えび", "小麦"] }
+        ],
+        [
+            { id: "menu_003", name: "マルゲリータピザ（M）", category: "ピザ", price: 1680, description: "トマトソース、モッツァレラ、バジル", allergens: ["小麦", "乳"] },
+            { id: "menu_004", name: "クアトロフォルマッジ（L）", category: "ピザ", price: 2480, description: "4種のチーズを贅沢に使用", allergens: ["小麦", "乳"] }
+        ],
+        [
+            { id: "menu_005", name: "醤油ラーメン", category: "ラーメン", price: 780, description: "昔ながらの醤油スープ", allergens: ["小麦", "大豆"] },
+            { id: "menu_006", name: "特製味噌ラーメン", category: "ラーメン", price: 980, description: "コク深い味噌スープ", allergens: ["小麦", "大豆"] }
+        ],
+        [
+            { id: "menu_007", name: "特上握り寿司セット", category: "寿司", price: 2800, description: "厳選ネタ10貫セット", allergens: ["魚", "大豆"] },
+            { id: "menu_008", name: "海鮮丼", category: "丼", price: 1680, description: "新鮮な刺身の盛り合わせ丼", allergens: ["魚", "大豆"] }
+        ],
+        [
+            { id: "menu_009", name: "季節のフルーツパフェ", category: "デザート", price: 880, description: "旬のフルーツたっぷり", allergens: ["乳", "卵"] },
+            { id: "menu_010", name: "手作りティラミス", category: "デザート", price: 680, description: "マスカルポーネチーズ使用", allergens: ["乳", "卵"] }
+        ]
+    ];
+
+    const orders = [
+        {
+            id: "order_001",
+            user_id: "user_12345",
+            restaurant_id: "rest_001",
+            status: "confirmed",
+            total: 1738,
+            payment_method: "credit_card",
+            delivery_type: "delivery"
+        },
+        {
+            id: "order_002",
+            user_id: "user_67890",
+            restaurant_id: "rest_002",
+            status: "preparing",
+            total: 6364,
+            payment_method: "qr_payment",
+            delivery_type: "delivery"
+        },
+        {
+            id: "order_003",
+            user_id: "user_111213",
+            restaurant_id: "rest_003",
+            status: "out_for_delivery",
+            total: 6909,
+            payment_method: "cash_on_delivery",
+            delivery_type: "delivery"
+        },
+        {
+            id: "order_004",
+            user_id: "user_141516",
+            restaurant_id: "rest_004",
+            status: "completed",
+            total: 2880,
+            payment_method: "electronic_money",
+            delivery_type: "pickup"
+        },
+        {
+            id: "order_005",
+            user_id: "user_171819",
+            restaurant_id: "rest_005",
+            status: "cancelled",
+            total: 2959,
+            payment_method: "debit_card",
+            delivery_type: "scheduled_delivery"
+        }
+    ];
+
+    const users = [
+        { id: "user_12345", name: "田中 太郎", email: "tanaka.taro@example.com", member_type: "regular", total_orders: 42 },
+        { id: "user_67890", name: "佐藤 花子", email: "sato.hanako@example.com", member_type: "premium", total_orders: 158 },
+        { id: "user_111213", name: "山田商事株式会社", email: "orders@yamada-corp.co.jp", member_type: "corporate", total_orders: 89 },
+        { id: "user_141516", name: "鈴木 次郎", email: "suzuki.jiro@newmail.com", member_type: "new", total_orders: 3 },
+        { id: "user_171819", name: "高橋 美咲", email: "takahashi.misaki@vip.example.com", member_type: "vip", total_orders: 324 }
+    ];
+
+    const deliveries = [
+        { id: "delivery_001", type: "standard", fee: 300, estimated_time: 30, area: "都内23区" },
+        { id: "delivery_002", type: "express", fee: 500, estimated_time: 15, area: "大阪市内" },
+        { id: "delivery_003", type: "scheduled", fee: 200, estimated_time: 45, area: "横浜市内" },
+        { id: "delivery_004", type: "contactless", fee: 250, estimated_time: 25, area: "名古屋市内" },
+        { id: "delivery_005", type: "pickup", fee: 0, estimated_time: 10, area: "店舗受取" }
+    ];
+
+    const payments = [
+        { id: "payment_001", method: "credit_card", amount: 1738, status: "completed", brand: "VISA" },
+        { id: "payment_002", method: "debit_card", amount: 2959, status: "pending", brand: "JCB" },
+        { id: "payment_003", method: "electronic_money", amount: 2880, status: "completed", service: "Suica" },
+        { id: "payment_004", method: "qr_payment", amount: 6364, status: "completed", service: "PayPay" },
+        { id: "payment_005", method: "cash_on_delivery", amount: 6909, status: "pending", change_prepared: 1091 }
+    ];
+
+    let currentJsonData = null;
+
+    // 初期化
+    document.addEventListener('DOMContentLoaded', function() {
+        renderDataItems();
+    });
+
+    // データアイテムをレンダリング
+    function renderDataItems() {
+        renderSection('restaurants', restaurants, renderRestaurant);
+        renderSection('menus', menus, renderMenu);
+        renderSection('orders', orders, renderOrder);
+        renderSection('users', users, renderUser);
+        renderSection('deliveries', deliveries, renderDelivery);
+        renderSection('payments', payments, renderPayment);
+    }
+
+    function renderSection(containerId, data, renderFunction) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        data.forEach((item, index) => {
+            const element = renderFunction(item, index);
+            container.appendChild(element);
+        });
+    }
+
+    function createDataItem(title, preview, data) {
+        const item = document.createElement('div');
+        item.className = 'data-item';
+        item.onclick = () => copyData(data, title);
+
+        item.innerHTML = `
+                <h3>
+                    ${title}
+                    <span class="copy-icon">📋 コピー</span>
+                </h3>
+                <div class="data-preview">${preview}</div>
+            `;
+
+        return item;
+    }
+
+    function renderRestaurant(restaurant, index) {
+        const preview = `<span class="data-key">店名:</span> <span class="data-value">${restaurant.name}</span><br>
+                           <span class="data-key">業態:</span> <span class="data-value">${restaurant.type}</span><br>
+                           <span class="data-key">評価:</span> <span class="data-value">⭐ ${restaurant.rating}</span><br>
+                           <span class="data-key">配送料:</span> <span class="data-value">¥${restaurant.delivery_fee}</span>`;
+        return createDataItem(restaurant.name, preview, restaurant);
+    }
+
+    function renderMenu(menuSet, index) {
+        const menuTypes = ['定食メニュー', 'ピザメニュー', 'ラーメンメニュー', '寿司メニュー', 'デザートメニュー'];
+        const preview = menuSet.map(item =>
+            `<span class="data-key">${item.name}:</span> <span class="data-value">¥${item.price}</span>`
+        ).join('<br>');
+        return createDataItem(menuTypes[index], preview, menuSet);
+    }
+
+    function renderOrder(order, index) {
+        const statusMap = {
+            'confirmed': '確認済み',
+            'preparing': '調理中',
+            'out_for_delivery': '配送中',
+            'completed': '完了',
+            'cancelled': 'キャンセル'
+        };
+        const preview = `<span class="data-key">注文ID:</span> <span class="data-value">${order.id}</span><br>
+                           <span class="data-key">ステータス:</span> <span class="data-value">${statusMap[order.status] || order.status}</span><br>
+                           <span class="data-key">合計:</span> <span class="data-value">¥${order.total}</span><br>
+                           <span class="data-key">支払方法:</span> <span class="data-value">${order.payment_method}</span>`;
+        return createDataItem(`注文 #${order.id.split('_')[1]}`, preview, order);
+    }
+
+    function renderUser(user, index) {
+        const typeMap = {
+            'regular': '一般',
+            'premium': 'プレミアム',
+            'corporate': '法人',
+            'new': '新規',
+            'vip': 'VIP'
+        };
+        const preview = `<span class="data-key">名前:</span> <span class="data-value">${user.name}</span><br>
+                           <span class="data-key">タイプ:</span> <span class="data-value">${typeMap[user.member_type]}</span><br>
+                           <span class="data-key">注文回数:</span> <span class="data-value">${user.total_orders}回</span><br>
+                           <span class="data-key">メール:</span> <span class="data-value">${user.email}</span>`;
+        return createDataItem(user.name, preview, user);
+    }
+
+    function renderDelivery(delivery, index) {
+        const typeMap = {
+            'standard': '通常配送',
+            'express': 'お急ぎ配送',
+            'scheduled': '時間指定',
+            'contactless': '置き配',
+            'pickup': '店舗受取'
+        };
+        const preview = `<span class="data-key">タイプ:</span> <span class="data-value">${typeMap[delivery.type]}</span><br>
+                           <span class="data-key">配送料:</span> <span class="data-value">¥${delivery.fee}</span><br>
+                           <span class="data-key">所要時間:</span> <span class="data-value">${delivery.estimated_time}分</span><br>
+                           <span class="data-key">エリア:</span> <span class="data-value">${delivery.area}</span>`;
+        return createDataItem(typeMap[delivery.type], preview, delivery);
+    }
+
+    function renderPayment(payment, index) {
+        const methodMap = {
+            'credit_card': 'クレジットカード',
+            'debit_card': 'デビットカード',
+            'electronic_money': '電子マネー',
+            'qr_payment': 'QRコード決済',
+            'cash_on_delivery': '代金引換'
+        };
+        const statusMap = {
+            'completed': '完了',
+            'pending': '処理中',
+            'failed': '失敗'
+        };
+        const preview = `<span class="data-key">方法:</span> <span class="data-value">${methodMap[payment.method]}</span><br>
+                           <span class="data-key">金額:</span> <span class="data-value">¥${payment.amount}</span><br>
+                           <span class="data-key">ステータス:</span> <span class="data-value">${statusMap[payment.status]}</span><br>
+                           <span class="data-key">サービス:</span> <span class="data-value">${payment.brand || payment.service || '-'}</span>`;
+        return createDataItem(methodMap[payment.method], preview, payment);
+    }
+
+    // コピー機能
+    function copyData(data, title) {
+        const text = JSON.stringify(data, null, 2);
+        copyToClipboard(text, `${title} をコピーしました！`);
+        updateJsonView(data);
+    }
+
+    function copyToClipboard(text, message = 'コピーしました！') {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(message);
+            }).catch(err => {
+                fallbackCopyTextToClipboard(text);
+                showToast(message);
+            });
+        } else {
+            fallbackCopyTextToClipboard(text);
+            showToast(message);
+        }
+    }
+
+    function fallbackCopyTextToClipboard(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            console.error('フォールバックコピーに失敗:', err);
+        }
+        document.body.removeChild(textArea);
+    }
+
+    function showToast(message = '📋 クリップボードにコピーしました！') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2000);
+    }
+
+    // ビュー切り替え
+    function switchView(viewType) {
+        const cardView = document.getElementById('cardView');
+        const jsonView = document.getElementById('jsonView');
+        const cardBtn = document.getElementById('cardViewBtn');
+        const jsonBtn = document.getElementById('jsonViewBtn');
+
+        if (viewType === 'card') {
+            cardView.style.display = 'grid';
+            jsonView.style.display = 'none';
+            cardBtn.classList.add('active');
+            jsonBtn.classList.remove('active');
+        } else {
+            cardView.style.display = 'none';
+            jsonView.style.display = 'block';
+            cardBtn.classList.remove('active');
+            jsonBtn.classList.add('active');
+        }
+    }
+
+    function updateJsonView(data) {
+        currentJsonData = data;
+        document.getElementById('jsonView').textContent = JSON.stringify(data, null, 2);
+    }
+
+    function copyJsonView() {
+        if (currentJsonData) {
+            copyToClipboard(JSON.stringify(currentJsonData, null, 2), 'JSONデータをコピーしました！');
+        }
+    }
+
+    function clearJsonView() {
+        currentJsonData = null;
+        document.getElementById('jsonView').textContent = 'ここをクリックしてJSONをコピー';
+    }
+
+    // ランダム生成
+    function generateAndDisplay(type) {
+        let data;
+        let title;
+
+        switch(type) {
+            case 'restaurant':
+                data = generateRandomRestaurant();
+                title = 'ランダムレストラン';
+                break;
+            case 'menu':
+                data = generateRandomMenu();
+                title = 'ランダムメニュー';
+                break;
+            case 'order':
+                data = generateRandomOrder();
+                title = 'ランダム注文';
+                break;
+            case 'user':
+                data = generateRandomUser();
+                title = 'ランダムユーザー';
+                break;
+            case 'delivery':
+                data = generateRandomDelivery();
+                title = 'ランダム配送';
+                break;
+            case 'payment':
+                data = generateRandomPayment();
+                title = 'ランダム支払い';
+                break;
+            case 'complete':
+                data = {
+                    restaurant: generateRandomRestaurant(),
+                    menu: generateRandomMenu(),
+                    order: generateRandomOrder(),
+                    user: generateRandomUser(),
+                    delivery: generateRandomDelivery(),
+                    payment: generateRandomPayment(),
+                    timestamp: new Date().toISOString()
+                };
+                title = 'ランダム完全セット';
+                break;
+        }
+
+        copyData(data, title);
+    }
+
+    // ランダム生成用データ
+    const randomData = {
+        restaurantNames: ["美味亭", "グルメ王", "食楽園", "旨味屋", "料理の森", "味の宝石箱", "絶品堂", "うまいもん処"],
+        restaurantTypes: ["和食", "洋食", "中華", "韓国料理", "タイ料理", "インド料理", "フレンチ", "イタリアン"],
+        menuNames: ["特製定食", "おすすめセット", "人気No.1", "シェフのこだわり", "季節限定", "名物料理"],
+        categories: ["メイン", "サイド", "デザート", "ドリンク", "セット", "限定"],
+        allergens: [["卵"], ["乳"], ["小麦"], ["えび"], ["かに"], ["大豆"], ["魚"], ["肉類"]],
+        addresses: [
+            "東京都新宿区歌舞伎町1-1-1",
+            "大阪府大阪市北区梅田2-2-2",
+            "愛知県名古屋市中区栄3-3-3",
+            "福岡県福岡市博多区博多駅前4-4-4",
+            "北海道札幌市中央区すすきの5-5-5"
+        ],
+        userNames: ["田中", "佐藤", "鈴木", "高橋", "伊藤", "渡辺", "山本", "中村", "小林", "加藤"],
+        firstNames: ["太郎", "花子", "次郎", "美咲", "健太", "由美", "大輔", "恵子", "翔太", "真理"]
+    };
+
+    // ランダム生成関数
+    function generateRandomRestaurant() {
+        const name = randomData.restaurantNames[Math.floor(Math.random() * randomData.restaurantNames.length)];
+        const type = randomData.restaurantTypes[Math.floor(Math.random() * randomData.restaurantTypes.length)];
+        const address = randomData.addresses[Math.floor(Math.random() * randomData.addresses.length)];
+
+        return {
+            id: `rest_${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
+            name: name,
+            type: type,
+            address: address,
+            phone: `0${Math.floor(Math.random() * 9) + 1}-${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}`,
+            rating: Math.round((Math.random() * 2 + 3) * 10) / 10,
+            delivery_fee: Math.floor(Math.random() * 500) + 200,
+            min_order: Math.floor(Math.random() * 1500) + 1000,
+            business_hours: {
+                open: `${Math.floor(Math.random() * 4) + 10}:00`,
+                close: `${Math.floor(Math.random() * 4) + 21}:00`
+            },
+            delivery_area: ["都内", "市内", "県内"][Math.floor(Math.random() * 3)]
+        };
+    }
+
+    function generateRandomMenu() {
+        const menuCount = Math.floor(Math.random() * 3) + 2;
+        const menu = [];
+
+        for (let i = 0; i < menuCount; i++) {
+            const name = randomData.menuNames[Math.floor(Math.random() * randomData.menuNames.length)];
+            const category = randomData.categories[Math.floor(Math.random() * randomData.categories.length)];
+            const allergens = randomData.allergens[Math.floor(Math.random() * randomData.allergens.length)];
+
+            menu.push({
+                id: `menu_${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
+                name: `${name} ${i + 1}`,
+                category: category,
+                price: Math.floor(Math.random() * 2000) + 500,
+                description: `美味しい${category}メニューです`,
+                allergens: allergens,
+                is_vegetarian: Math.random() > 0.7,
+                calories: Math.floor(Math.random() * 800) + 200,
+                cooking_time: Math.floor(Math.random() * 20) + 10
+            });
+        }
+
+        return menu;
+    }
+
+    function generateRandomOrder() {
+        const itemCount = Math.floor(Math.random() * 4) + 1;
+        const items = [];
+        let subtotal = 0;
+
+        for (let i = 0; i < itemCount; i++) {
+            const price = Math.floor(Math.random() * 2000) + 500;
+            const quantity = Math.floor(Math.random() * 3) + 1;
+            const itemTotal = price * quantity;
+            subtotal += itemTotal;
+
+            items.push({
+                menu_id: `menu_${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+                quantity: quantity,
+                price: price,
+                options: Math.random() > 0.5 ? ["extra_sauce"] : []
+            });
+        }
+
+        const deliveryFee = Math.floor(Math.random() * 400) + 200;
+        const tax = Math.floor(subtotal * 0.1);
+        const discount = Math.random() > 0.7 ? Math.floor(Math.random() * 500) : 0;
+        const total = subtotal + deliveryFee + tax - discount;
+
+        return {
+            id: `order_${Math.floor(Math.random() * 100000).toString().padStart(6, '0')}`,
+            user_id: `user_${Math.floor(Math.random() * 100000).toString().padStart(6, '0')}`,
+            restaurant_id: `rest_${Math.floor(Math.random() * 1000).toString().padStart(4, '0')}`,
+            status: ["pending", "confirmed", "preparing", "out_for_delivery", "completed"][Math.floor(Math.random() * 5)],
+            items: items,
+            subtotal: subtotal,
+            delivery_fee: deliveryFee,
+            tax: tax,
+            discount: discount,
+            total: total,
+            payment_method: ["credit_card", "debit_card", "qr_payment", "electronic_money"][Math.floor(Math.random() * 4)],
+            delivery_type: ["delivery", "pickup"][Math.floor(Math.random() * 2)],
+            estimated_delivery: new Date(Date.now() + Math.random() * 3600000).toISOString(),
+            special_instructions: Math.random() > 0.5 ? "特別な要望があります" : ""
+        };
+    }
+
+    function generateRandomUser() {
+        const lastName = randomData.userNames[Math.floor(Math.random() * randomData.userNames.length)];
+        const firstName = randomData.firstNames[Math.floor(Math.random() * randomData.firstNames.length)];
+        const memberType = ["regular", "premium", "corporate", "new", "vip"][Math.floor(Math.random() * 5)];
+
+        return {
+            id: `user_${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`,
+            name: `${lastName} ${firstName}`,
+            email: `${lastName.toLowerCase()}.${firstName.toLowerCase()}@example.com`,
+            phone: `0${Math.floor(Math.random() * 9) + 70}-${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}`,
+            member_type: memberType,
+            registration_date: new Date(2020 + Math.random() * 5, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0],
+            total_orders: Math.floor(Math.random() * 200),
+            total_spent: Math.floor(Math.random() * 500000),
+            is_active: Math.random() > 0.1,
+            favorite_cuisines: randomData.restaurantTypes.slice(0, Math.floor(Math.random() * 3) + 1),
+            address: {
+                postal_code: `${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+                prefecture: ["東京都", "大阪府", "神奈川県", "愛知県", "福岡県"][Math.floor(Math.random() * 5)],
+                city: "テスト市",
+                street: `テスト町${Math.floor(Math.random() * 10) + 1}-${Math.floor(Math.random() * 20) + 1}-${Math.floor(Math.random() * 30) + 1}`,
+                building: `テストマンション${Math.floor(Math.random() * 500) + 100}号`
+            }
+        };
+    }
+
+    function generateRandomDelivery() {
+        const types = ["standard", "express", "scheduled", "contactless", "pickup"];
+        const type = types[Math.floor(Math.random() * types.length)];
+
+        return {
+            id: `delivery_${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
+            type: type,
+            fee: type === "pickup" ? 0 : Math.floor(Math.random() * 500) + 200,
+            estimated_time: Math.floor(Math.random() * 40) + 15,
+            distance_km: Math.round(Math.random() * 8 * 10) / 10,
+            area: ["都内", "大阪市内", "横浜市内", "名古屋市内", "福岡市内"][Math.floor(Math.random() * 5)],
+            conditions: {
+                min_order: Math.floor(Math.random() * 1500) + 500,
+                max_distance: Math.floor(Math.random() * 8) + 3,
+                available_hours: "10:00-22:00"
+            },
+            driver_info: {
+                name: "配送員" + Math.floor(Math.random() * 100),
+                phone: `090-${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}`,
+                vehicle: ["バイク", "自転車", "軽自動車", "電動バイク"][Math.floor(Math.random() * 4)]
+            }
+        };
+    }
+
+    function generateRandomPayment() {
+        const methods = ["credit_card", "debit_card", "electronic_money", "qr_payment", "cash_on_delivery"];
+        const method = methods[Math.floor(Math.random() * methods.length)];
+        const amount = Math.floor(Math.random() * 10000) + 1000;
+        const brands = {
+            credit_card: ["VISA", "MasterCard", "JCB"],
+            debit_card: ["VISA", "MasterCard", "JCB"],
+            electronic_money: ["Suica", "nanaco", "WAON", "楽天Edy"],
+            qr_payment: ["PayPay", "LINE Pay", "楽天Pay", "d払い"]
+        };
+
+        return {
+            id: `payment_${Math.floor(Math.random() * 100000).toString().padStart(6, '0')}`,
+            method: method,
+            amount: amount,
+            currency: "JPY",
+            status: ["pending", "completed", "failed"][Math.floor(Math.random() * 3)],
+            transaction_id: `txn_${method.substring(0, 2)}_${Math.floor(Math.random() * 100000).toString().padStart(6, '0')}`,
+            timestamp: new Date().toISOString(),
+            ...(brands[method] && {
+                [method.includes('card') ? 'brand' : 'service']: brands[method][Math.floor(Math.random() * brands[method].length)]
+            }),
+            ...(method.includes('card') && {
+                last_four: Math.floor(Math.random() * 9000) + 1000,
+                expiry: `${Math.floor(Math.random() * 12) + 1}/${Math.floor(Math.random() * 8) + 25}`
+            })
+        };
+    }
+</script>
+</body>
+</html>
