@@ -21,6 +21,9 @@ while getopts "i:b:h" opt; do
   esac
 done
 
+# 最初にgit pullする
+git pull origin HEAD
+
 # Gitのステージングエリアにカレントディレクトリのすべての変更を追加
 git add .
 
