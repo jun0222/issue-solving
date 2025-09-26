@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$ 削除ツール</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: system-ui, sans-serif;
+            background: #f8f9fa;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .content { padding: 2rem; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: Monaco, monospace;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        #output { background: #f8f9fa; }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-primary { background: #007bff; }
+        .btn-secondary { background: #28a745; }
+        .btn-outline { background: #6c757d; }
+
+        .toast {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: #28a745;
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+        }
+
+        .toast.show { transform: translateX(0); }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            body { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>$ 削除ツール</h1>
+        <p>技術記事のコマンドから先頭の $ を削除</p>
+    </div>
+
+    <div class="content">
+        <div class="grid">
+                <textarea id="input" placeholder="$ cd $HOME
+$ git clone https://github.com/user/repo.git
+$ make install"></textarea>
+            <textarea id="output" readonly></textarea>
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-primary" onclick="processCommands()">変換</button>
+            <button class="btn btn-secondary" onclick="copyOutput()">📋 コピー</button>
+            <button class="btn btn-outline" onclick="clearAll()">クリア</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">コピーしました</div>
+
+<script>
+    function processCommands() {
+        const input = document.getElementById('input').value;
+        const output = document.getElementById('output');
+
+        // 各行の先頭の "$ " を削除
+        const processed = input
+            .split('\n')
+            .map(line => line.replace(/^\$ /, ''))
+            .join('\n');
+
+        output.value = processed;
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('output');
+
+        if (!output.value.trim()) {
+            alert('コピーする内容がありません');
+            return;
+        }
+
+        navigator.clipboard.writeText(output.value).then(() => {
+            showToast();
+        }).catch(() => {
+            output.select();
+            document.execCommand('copy');
+            showToast();
+        });
+    }
+
+    function clearAll() {
+        document.getElementById('input').value = '';
+        document.getElementById('output').value = '';
+        document.getElementById('input').focus();
+    }
+
+    function showToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2000);
+    }
+
+    // 入力時に自動処理
+    document.getElementById('input').addEventListener('input', processCommands);
+
+    // 初期フォーカス
+    document.getElementById('input').focus();
+</script>
+</body>
+</html>
