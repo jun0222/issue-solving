@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Typing Game</title>
+    <!-- Toastify CSS -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css"
+    />
+    <style>
+      body {
+        font-family: monospace;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        background: white;
+        border: 2px solid #333;
+        border-radius: 10px;
+        padding: 30px;
+        max-width: 900px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .page {
+        display: none;
+      }
+
+      .page.active {
+        display: block;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .nav-buttons {
+        margin-bottom: 30px;
+      }
+
+      .nav-button {
+        font-size: 16px;
+        padding: 10px 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+        background: white;
+        cursor: pointer;
+        margin: 0 10px;
+      }
+
+      .nav-button:hover {
+        background: #f0f0f0;
+      }
+
+      .nav-button.active {
+        background: #333;
+        color: white;
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 30px;
+        padding: 15px;
+        background: #f8f8f8;
+        border-radius: 5px;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .combo-display {
+        background: #f8f8f8;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 20px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .problem-info {
+        background: #e8f4fd;
+        border: 1px solid #bee5eb;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+        text-align: left;
+        font-size: 14px;
+        color: #0c5460;
+      }
+
+      .problem-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .word-display {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 30px 0;
+        min-height: 200px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        background: #f8f8f8;
+        border-radius: 5px;
+        padding: 30px;
+        white-space: pre-wrap;
+        text-align: left;
+        overflow-wrap: break-word;
+        border: 2px solid #ddd;
+      }
+
+      .correct {
+        color: green;
+        background-color: #e8f5e8;
+      }
+
+      .current {
+        color: blue;
+        background-color: #e8f0ff;
+        animation: blink 1s infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        50% {
+          opacity: 1;
+        }
+        51%,
+        100% {
+          opacity: 0.3;
+        }
+      }
+
+      input,
+      textarea {
+        font-size: 16px;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-family: monospace;
+      }
+
+      input {
+        width: 80%;
+        text-align: left;
+      }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #333;
+      }
+
+      textarea {
+        width: 90%;
+        height: 200px;
+        resize: vertical;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      button {
+        font-size: 16px;
+        padding: 10px 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+        background: white;
+        cursor: pointer;
+        margin: 5px;
+      }
+
+      button:hover {
+        background: #f0f0f0;
+      }
+
+      button:disabled {
+        background: #ddd;
+        cursor: not-allowed;
+      }
+
+      .score-display {
+        background: #f8f8f8;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        padding: 30px;
+        margin: 30px 0;
+      }
+
+      .score-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .score-stats {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0;
+      }
+
+      .score-item {
+        text-align: center;
+      }
+
+      .score-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .score-label {
+        font-size: 14px;
+        color: #666;
+      }
+
+      .repeat-message {
+        font-size: 18px;
+        margin: 20px 0;
+        color: #333;
+      }
+
+      .alert {
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+
+      .alert-success {
+        background: #f8f8f8;
+        border: 1px solid #ddd;
+        color: #333;
+      }
+
+      .alert-warning {
+        background: #f8f8f8;
+        border: 1px solid #ddd;
+        color: #333;
+      }
+
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #333;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 1000;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        font-size: 14px;
+        max-width: 300px;
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+
+      .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background: #666;
+        animation: confetti-fall 3s linear infinite;
+        z-index: 999;
+      }
+
+      .confetti:nth-child(2n) {
+        background: #777;
+      }
+      .confetti:nth-child(3n) {
+        background: #888;
+      }
+      .confetti:nth-child(4n) {
+        background: #999;
+      }
+      .confetti:nth-child(5n) {
+        background: #aaa;
+      }
+      .confetti:nth-child(6n) {
+        background: #bbb;
+      }
+
+      @keyframes confetti-fall {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Typing Game</h1>
+
+      <div class="nav-buttons">
+        <button class="nav-button active" onclick="showPage('game')">
+          ゲーム
+        </button>
+        <button class="nav-button" onclick="showPage('manage')">
+          問題管理
+        </button>
+      </div>
+
+      <!-- ゲームページ -->
+      <div id="gamePage" class="page active">
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value" id="wpm">0</div>
+            <div class="stat-label">WPM</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="accuracy">100%</div>
+            <div class="stat-label">Accuracy</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="progress">0/0</div>
+            <div class="stat-label">Progress</div>
+          </div>
+        </div>
+
+        <div class="combo-display" id="comboDisplay">🔥 0 COMBO</div>
+
+        <div class="problem-info" id="problemInfo" style="display: none">
+          <div class="problem-title" id="problemTitle">Problem:</div>
+          <div id="problemDesc">Description will appear here</div>
+        </div>
+
+        <div class="word-display">
+          <div class="word" id="word">
+            問題を登録してからSPACEを押してスタート
+          </div>
+        </div>
+
+        <div id="gameControls">
+          <button id="startBtn" onclick="startGame()">
+            Start (or press SPACE)
+          </button>
+        </div>
+
+        <!-- スコア表示 -->
+        <div class="score-display" id="scoreDisplay" style="display: none">
+          <div class="score-title">🎉 問題完了！</div>
+          <div class="score-stats">
+            <div class="score-item">
+              <div class="score-value" id="scoreWpm">0</div>
+              <div class="score-label">WPM</div>
+            </div>
+            <div class="score-item">
+              <div class="score-value" id="scoreAccuracy">0%</div>
+              <div class="score-label">正確性</div>
+            </div>
+            <div class="score-item">
+              <div class="score-value" id="scoreCombo">0</div>
+              <div class="score-label">最大コンボ</div>
+            </div>
+            <div class="score-item">
+              <div class="score-value" id="scoreTime">0s</div>
+              <div class="score-label">完了時間</div>
+            </div>
+          </div>
+          <div class="repeat-message">
+            <strong>もう一度挑戦する場合は SPACEキー を押してください</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- 問題管理ページ -->
+      <div id="managePage" class="page">
+        <h2>問題管理</h2>
+
+        <div class="form-group">
+          <label for="problemTitleInput">問題タイトル:</label>
+          <input
+            type="text"
+            id="problemTitleInput"
+            placeholder="例: SELECT文の基本"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="problemDescInput">問題説明:</label>
+          <input
+            type="text"
+            id="problemDescInput"
+            placeholder="例: ユーザーテーブルから全データを取得する"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="problemTextInput">SQLコード:</label>
+          <textarea
+            id="problemTextInput"
+            placeholder="例:&#10;select *&#10;from users&#10;where active = 1;"
+          ></textarea>
+        </div>
+
+        <button onclick="saveProblem()">問題を保存</button>
+        <button onclick="clearProblem()">問題をクリア</button>
+
+        <div id="saveMessage"></div>
+
+        <div id="currentProblem" style="margin-top: 30px">
+          <h3>現在の問題</h3>
+          <div id="currentProblemDisplay">問題が設定されていません</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentProblem = null;
+      let currentIndex = 0;
+      let correctChars = 0;
+      let totalChars = 0;
+      let startTime = 0;
+      let isGameActive = false;
+      let combo = 0;
+      let maxCombo = 0;
+      let correctStreak = 0;
+      let lastToastTime = 0;
+
+      // コンボメッセージ
+      const comboMessages = [
+        "🔥 NICE COMBO!",
+        "⚡ AMAZING STREAK!",
+        "🚀 ON FIRE!",
+        "💯 UNSTOPPABLE!",
+        "🌟 LEGENDARY!",
+        "💥 INCREDIBLE!",
+        "🎯 PERFECT!",
+        "⭐ GODLIKE!",
+      ];
+
+      const wordDisplay = document.getElementById("word");
+      const wpmDisplay = document.getElementById("wpm");
+      const accuracyDisplay = document.getElementById("accuracy");
+      const progressDisplay = document.getElementById("progress");
+      const comboDisplay = document.getElementById("comboDisplay");
+      const scoreDisplay = document.getElementById("scoreDisplay");
+      const startBtn = document.getElementById("startBtn");
+      const problemInfo = document.getElementById("problemInfo");
+      const problemTitle = document.getElementById("problemTitle");
+      const problemDesc = document.getElementById("problemDesc");
+
+      function showPage(pageId) {
+        document
+          .querySelectorAll(".page")
+          .forEach((page) => page.classList.remove("active"));
+        document
+          .querySelectorAll(".nav-button")
+          .forEach((btn) => btn.classList.remove("active"));
+
+        document.getElementById(pageId + "Page").classList.add("active");
+        event.target.classList.add("active");
+
+        if (pageId === "manage") {
+          loadCurrentProblem();
+          loadProblemToForm(); // フォームに既存問題を読み込み
+        }
+      }
+
+      function loadProblemToForm() {
+        const saved = localStorage.getItem("sqlTypingProblem");
+        if (saved) {
+          const problem = JSON.parse(saved);
+          document.getElementById("problemTitleInput").value = problem.title;
+          document.getElementById("problemDescInput").value = problem.desc;
+          document.getElementById("problemTextInput").value = problem.text;
+        }
+      }
+
+      function saveProblem() {
+        const title = document.getElementById("problemTitleInput").value.trim();
+        const desc = document.getElementById("problemDescInput").value.trim();
+        const text = document.getElementById("problemTextInput").value.trim();
+
+        if (!title || !desc || !text) {
+          showMessage("すべての項目を入力してください", "warning");
+          return;
+        }
+
+        const problem = { title, desc, text };
+        localStorage.setItem("sqlTypingProblem", JSON.stringify(problem));
+        showMessage("問題を保存しました！", "success");
+        loadCurrentProblem();
+
+        // 問題保存後、ゲーム画面に自動遷移
+        setTimeout(() => {
+          showPage("game");
+          document.querySelector(".nav-button").classList.add("active");
+          document
+            .querySelectorAll(".nav-button")[1]
+            .classList.remove("active");
+        }, 1000);
+      }
+
+      function clearProblem() {
+        if (confirm("問題をクリアしてもよろしいですか？")) {
+          localStorage.removeItem("sqlTypingProblem");
+          document.getElementById("problemTitleInput").value = "";
+          document.getElementById("problemDescInput").value = "";
+          document.getElementById("problemTextInput").value = "";
+          showMessage("問題をクリアしました", "success");
+          loadCurrentProblem();
+        }
+      }
+
+      function loadCurrentProblem() {
+        const saved = localStorage.getItem("sqlTypingProblem");
+        if (saved) {
+          const problem = JSON.parse(saved);
+          document.getElementById(
+            "currentProblemDisplay"
+          ).innerHTML = `<strong>${problem.title}</strong><br>${problem.desc}<br><pre>${problem.text}</pre>`;
+        } else {
+          document.getElementById("currentProblemDisplay").textContent =
+            "問題が設定されていません";
+        }
+      }
+
+      function showMessage(message, type) {
+        const messageDiv = document.getElementById("saveMessage");
+        messageDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        setTimeout(() => (messageDiv.innerHTML = ""), 3000);
+      }
+
+      function showToast(message, duration = 2000) {
+        const currentTime = Date.now();
+        if (currentTime - lastToastTime < 500) return;
+        lastToastTime = currentTime;
+
+        // Toastifyが利用可能な場合は使用、そうでなければフォールバック
+        if (typeof Toastify !== "undefined") {
+          Toastify({
+            text: message,
+            duration: duration,
+            gravity: "top",
+            position: "right",
+            style: {
+              background: "#333",
+              color: "#fff",
+              fontSize: "14px",
+              borderRadius: "8px",
+            },
+          }).showToast();
+        } else {
+          // フォールバック：シンプルなアラート
+          alert(message);
+        }
+      }
+
+      function updateCombo() {
+        if (correctStreak > 0 && correctStreak % 5 === 0) {
+          combo++;
+          maxCombo = Math.max(maxCombo, combo);
+          const message =
+            comboMessages[Math.min(combo - 1, comboMessages.length - 1)];
+          showToast(`${combo} COMBO! ${message}`, 2500);
+
+          if (combo % 5 === 0) {
+            createConfetti();
+            showToast(`🎉 ${combo} COMBO CELEBRATION! 🎉`, 3000);
+          }
+        }
+
+        comboDisplay.textContent = `🔥 ${combo} COMBO`;
+      }
+
+      function startGame() {
+        const saved = localStorage.getItem("sqlTypingProblem");
+        if (!saved) {
+          showToast("先に問題を登録してください", 3000);
+          return;
+        }
+
+        // 画面トップにスクロール
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        currentProblem = JSON.parse(saved);
+        isGameActive = true;
+        currentIndex = 0;
+        correctChars = 0;
+        totalChars = 0;
+        combo = 0;
+        maxCombo = 0;
+        correctStreak = 0;
+        startTime = Date.now();
+
+        problemTitle.textContent = currentProblem.title;
+        problemDesc.textContent = currentProblem.desc;
+        problemInfo.style.display = "block";
+
+        displayWord();
+
+        startBtn.textContent = "タイピング中...";
+        startBtn.disabled = true;
+
+        scoreDisplay.style.display = "none";
+        updateCombo();
+        updateStats();
+
+        showToast("🎮 ゲーム開始！", 2000);
+      }
+
+      function endGame() {
+        isGameActive = false;
+        startBtn.textContent = "Start (or press SPACE)";
+        startBtn.disabled = false;
+
+        const completionTime = Math.round((Date.now() - startTime) / 1000);
+        const wpm = Math.round(
+          currentProblem.text.length / 5 / (completionTime / 60)
+        );
+        const accuracy =
+          totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
+
+        document.getElementById("scoreWpm").textContent = wpm;
+        document.getElementById("scoreAccuracy").textContent = accuracy + "%";
+        document.getElementById("scoreCombo").textContent = maxCombo;
+        document.getElementById("scoreTime").textContent = completionTime + "s";
+
+        scoreDisplay.style.display = "block";
+
+        // スコア表示位置にスクロール
+        setTimeout(() => {
+          scoreDisplay.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
+
+        if (maxCombo >= 20) {
+          showToast("🏆 SQL MASTER! Ultimate combo!", 4000);
+        } else if (maxCombo >= 10) {
+          showToast("🔥 EXCELLENT! Double digit combo!", 3000);
+        } else if (maxCombo >= 5) {
+          showToast("⚡ GREAT JOB! Nice combo streak!", 3000);
+        }
+      }
+
+      function displayWord() {
+        if (!currentProblem) return;
+
+        let html = "";
+        for (let i = 0; i < currentProblem.text.length; i++) {
+          const char = currentProblem.text[i];
+          let displayChar = char;
+
+          if (char === "\n") {
+            displayChar = "↵<br>";
+          } else if (char === " ") {
+            displayChar = "&nbsp;"; // 通常のスペースとして表示
+          }
+
+          if (i < currentIndex) {
+            html += '<span class="correct">' + displayChar + "</span>";
+          } else if (i === currentIndex) {
+            html += '<span class="current">' + displayChar + "</span>";
+          } else {
+            html += "<span>" + displayChar + "</span>";
+          }
+        }
+        wordDisplay.innerHTML = html;
+      }
+
+      function updateStats() {
+        if (!currentProblem) return;
+
+        const timeElapsed = (Date.now() - startTime) / 1000 / 60;
+        const wpm =
+          timeElapsed > 0 ? Math.round(currentIndex / 5 / timeElapsed) : 0;
+        // 正答率計算を修正：自動処理された文字は除外
+        const accuracy =
+          totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
+
+        wpmDisplay.textContent = wpm;
+        accuracyDisplay.textContent = Math.min(accuracy, 100) + "%"; // 100%上限
+        progressDisplay.textContent = `${currentIndex}/${currentProblem.text.length}`;
+      }
+
+      document.addEventListener("keydown", function (e) {
+        // 問題管理画面ではスペースキーでゲーム開始しない
+        if (
+          e.key === " " &&
+          !isGameActive &&
+          document.getElementById("gamePage").classList.contains("active")
+        ) {
+          e.preventDefault();
+          startGame();
+        } else if (e.key === "Escape") {
+          if (isGameActive) {
+            isGameActive = false;
+            startBtn.textContent = "Start (or press SPACE)";
+            startBtn.disabled = false;
+            scoreDisplay.style.display = "none";
+          }
+        } else if (isGameActive && currentProblem) {
+          // ゲーム中のキー入力処理
+          if (e.key.length === 1) {
+            // 通常の文字キーのみ
+            e.preventDefault();
+
+            const inputChar = e.key;
+            const targetChar = currentProblem.text[currentIndex];
+            totalChars++;
+
+            if (inputChar === targetChar) {
+              correctChars++;
+              correctStreak++;
+              currentIndex++;
+
+              // 改行の自動処理（correctCharsとtotalCharsには含めない）
+              while (
+                currentIndex < currentProblem.text.length &&
+                currentProblem.text[currentIndex] === "\n"
+              ) {
+                currentIndex++;
+
+                // 改行後の行頭スペース（インデント）を自動処理
+                while (
+                  currentIndex < currentProblem.text.length &&
+                  currentProblem.text[currentIndex] === " "
+                ) {
+                  currentIndex++;
+                }
+              }
+
+              updateCombo();
+
+              if (currentIndex >= currentProblem.text.length) {
+                endGame();
+                return;
+              }
+
+              displayWord();
+            } else {
+              correctStreak = 0;
+              combo = 0;
+              updateCombo();
+            }
+
+            updateStats();
+          }
+        }
+      });
+
+      // 初期化
+      loadCurrentProblem();
+    </script>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+  </body>
+</html>
